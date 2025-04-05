@@ -56,9 +56,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		// }
 
 		validation := validator.New()
-
 		err = validation.Struct(payload)
-
 		if err != nil {
 			response.Json(w, err.Error(), 402)
 			return
