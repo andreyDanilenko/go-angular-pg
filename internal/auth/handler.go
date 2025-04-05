@@ -3,10 +3,13 @@ package auth
 import (
 	"admin/panel/configs"
 	"admin/panel/pkg/response"
-	"admin/panel/pkg/validation"
+
+	// "admin/panel/pkg/validation"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/go-playground/validator"
 )
 
 type AuthHandler struct {
@@ -42,13 +45,22 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		}
 
 		// 2. Валидация (можно использовать github.com/go-playground/validator)
-		if payload.Email == "" || payload.Password == "" {
-			http.Error(w, "Email and password are required", http.StatusUnprocessableEntity)
-			return
-		}
+		// if payload.Email == "" || payload.Password == "" {
+		// 	http.Error(w, "Email and password are required", http.StatusUnprocessableEntity)
+		// 	return
+		// }
 
-		if !validation.ValidateEmail(payload.Email) {
-			http.Error(w, "Wrong email", http.StatusUnprocessableEntity)
+		// if !validation.ValidateEmail(payload.Email) {
+		// 	http.Error(w, "Wrong email", http.StatusUnprocessableEntity)
+		// 	return
+		// }
+
+		validation := validator.New()
+
+		err = validation.Struct(payload)
+
+		if err != nil {
+			response.Json(w, err.Error(), 402)
 			return
 		}
 
@@ -67,12 +79,12 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		}
 
 		// 5. Формируем ответ
-		res := LoginResponse{
+		data := LoginResponse{
 			Token: token,
 		}
 
 		// 6. Отправка ответа
-		response.Json(w, res, 200)
+		response.Json(w, data, 200)
 	}
 }
 
