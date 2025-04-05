@@ -15,12 +15,14 @@ type AuthHandler struct {
 }
 
 type AuthHandlerDeps struct {
+	TokenService TokenService // Сервис для работы с JWT
 	*configs.Config
 }
 
 func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	handler := &AuthHandler{
-		Config: deps.Config,
+		tokenService: deps.TokenService,
+		Config:       deps.Config,
 	}
 	router.HandleFunc("POST /auth/login", handler.Login())
 	router.HandleFunc("POST /auth/register", handler.Register())
@@ -30,7 +32,10 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		// получить body
 		var payload LoginRequest
+		fmt.Print("Body", req.Body)
 		err := json.NewDecoder(req.Body).Decode(&payload)
+
+		fmt.Print("BodyErr", err)
 
 		if err != nil {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -50,17 +55,17 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		// }
 
 		// 4. Генерация токена
-		token, err := handler.tokenService.GenerateToken(payload.Email + payload.LastName + payload.FirstName)
+		token, err := handler.tokenService.GenerateToken(payload.Password + payload.Email)
 		if err != nil {
 			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
 		}
 
-		// res := LoginResponse{
-		// 	Token: "123",
-		// }
+		res := LoginResponse{
+			Token: token,
+		}
 
-		response.Json(w, token, 200)
+		response.Json(w, res, 200)
 	}
 }
 

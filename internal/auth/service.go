@@ -18,17 +18,17 @@ type TokenService interface {
 // 	Authenticate(email, password string) (*User, error)
 // }
 
-type tokenServiceImpl struct {
-	secretKey string
+type TokenServiceImpl struct {
+	SecretKey string
 }
 
-func (s *tokenServiceImpl) GenerateToken(userID string) (string, error) {
+func (s *TokenServiceImpl) GenerateToken(userID string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": userID,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	return token.SignedString([]byte(s.secretKey))
+	return token.SignedString([]byte(s.SecretKey))
 }
 
 // func (s *authServiceImpl) Authenticate(email, password string) (*User, error) {

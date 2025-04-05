@@ -10,8 +10,9 @@ import (
 func main() {
 	conf := configs.LoadConfig()
 	router := http.NewServeMux()
+	tokenService := &auth.TokenServiceImpl{SecretKey: conf.Auth.Secret}
 
-	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf})
+	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf, TokenService: tokenService})
 
 	server := http.Server{
 		Addr:    ":8081",
