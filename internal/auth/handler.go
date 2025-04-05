@@ -3,6 +3,7 @@ package auth
 import (
 	"admin/panel/configs"
 	"admin/panel/pkg/response"
+	"admin/panel/pkg/validation"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -32,18 +33,22 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		// получить body
 		var payload LoginRequest
-		fmt.Print("Body", req.Body)
+		// 1. Парсим JSON
 		err := json.NewDecoder(req.Body).Decode(&payload)
-
-		fmt.Print("BodyErr", err)
 
 		if err != nil {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
 
+		// 2. Валидация (можно использовать github.com/go-playground/validator)
 		if payload.Email == "" || payload.Password == "" {
 			http.Error(w, "Email and password are required", http.StatusUnprocessableEntity)
+			return
+		}
+
+		if !validation.ValidateEmail(payload.Email) {
+			http.Error(w, "Wrong email", http.StatusUnprocessableEntity)
 			return
 		}
 
@@ -61,10 +66,12 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
+		// 5. Формируем ответ
 		res := LoginResponse{
 			Token: token,
 		}
 
+		// 6. Отправка ответа
 		response.Json(w, res, 200)
 	}
 }
