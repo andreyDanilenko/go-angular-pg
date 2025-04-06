@@ -2,14 +2,13 @@ package auth
 
 import (
 	"admin/panel/configs"
+	"admin/panel/pkg/request"
 	"admin/panel/pkg/response"
 
 	// "admin/panel/pkg/validation"
-	"encoding/json"
+
 	"fmt"
 	"net/http"
-
-	"github.com/go-playground/validator"
 )
 
 type AuthHandler struct {
@@ -32,31 +31,13 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	router.HandleFunc("POST /auth/register", handler.Register())
 }
 
+// request из pkg/request
+// response из pkg/response
+
 func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		// получить body
-		var payload LoginRequest
-		// 1. Парсим JSON
-		err := json.NewDecoder(req.Body).Decode(&payload)
-
-		if err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-
-		// 2. Валидация (можно использовать github.com/go-playground/validator)
-		// if payload.Email == "" || payload.Password == "" {
-		// 	http.Error(w, "Email and password are required", http.StatusUnprocessableEntity)
-		// 	return
-		// }
-
-		// if !validation.ValidateEmail(payload.Email) {
-		// 	http.Error(w, "Wrong email", http.StatusUnprocessableEntity)
-		// 	return
-		// }
-
-		validation := validator.New()
-		err = validation.Struct(payload)
+		// 1. Декодируем body и валидируем данные
+		body, err := request.HandleBody[LoginRequest](&w, req)
 		if err != nil {
 			response.Json(w, err.Error(), 422)
 			return
@@ -70,9 +51,10 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		// }
 
 		// 4. Генерация токена
-		token, err := handler.tokenService.GenerateToken(payload.Password + payload.Email)
+		token, err := handler.tokenService.GenerateToken(body.Password + body.Email)
 		if err != nil {
-			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+			response.Json(w, err.Error(), 422)
+			// http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
 		}
 
