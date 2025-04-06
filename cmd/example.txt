@@ -19,3 +19,9 @@ docker exec -it container_name psql -U POSTGRES_USER -c "CREATE DATABASE testdb;
 Подключиться к конкретной БД:
 docker exec -it container_name psql -U POSTGRES_USER -d testdb
 
+Кратко: команды для управления:
+Подключиться к PostgreSQL:	docker exec -it container_name psql -U POSTGRES_USER
+Создать БД:	CREATE DATABASE dbname;
+Показать БД:	\l
+Удалить БД:	DROP DATABASE dbname;
+Выйти из psql:	\q
