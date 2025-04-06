@@ -5,9 +5,6 @@ import (
 	"admin/panel/pkg/request"
 	"admin/panel/pkg/response"
 
-	// "admin/panel/pkg/validation"
-
-	"fmt"
 	"net/http"
 )
 
@@ -39,7 +36,6 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		// 1. Декодируем body и валидируем данные
 		body, err := request.HandleBody[LoginRequest](&w, r)
 		if err != nil {
-			response.Json(w, err.Error(), 422)
 			return
 		}
 
@@ -54,7 +50,6 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		token, err := handler.tokenService.GenerateToken(body.Password + body.Email)
 		if err != nil {
 			response.Json(w, err.Error(), 422)
-			// http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
 		}
 
@@ -69,7 +64,23 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 }
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("Register")
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 1. Декодируем body и валидируем данные
+		body, err := request.HandleBody[RegisterRequest](&w, r)
+		if err != nil {
+			return
+		}
+
+		token, err := handler.tokenService.GenerateToken(body.Password + body.Email)
+		if err != nil {
+			response.Json(w, err.Error(), 422)
+			return
+		}
+
+		data := LoginResponse{
+			Token: token,
+		}
+
+		response.Json(w, data, 200)
 	}
 }
