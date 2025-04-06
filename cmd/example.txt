@@ -3,3 +3,19 @@ docker compose up -d
 
 Удалить контейнер:
 docker compose down
+
+Подключается к уже запущенному серверу PostgreSQL внутри контейнера:
+docker exec -it container_name psql -U POSTGRES_USER
+
+Проверить, что контейнер запущен:
+docker ps
+
+Проверить логи PostgreSQL в контейнере:
+docker logs container_name
+
+Создать новую базу данных через psql:
+docker exec -it container_name psql -U POSTGRES_USER -c "CREATE DATABASE testdb;"
+
+Подключиться к конкретной БД:
+docker exec -it container_name psql -U POSTGRES_USER -d testdb
+
