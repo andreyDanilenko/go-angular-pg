@@ -35,9 +35,9 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 // response из pkg/response
 
 func (handler *AuthHandler) Login() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// 1. Декодируем body и валидируем данные
-		body, err := request.HandleBody[LoginRequest](&w, req)
+		body, err := request.HandleBody[LoginRequest](&w, r)
 		if err != nil {
 			response.Json(w, err.Error(), 422)
 			return
