@@ -1,0 +1,5 @@
+Запуск контенера:
+docker compose up -d
+
+Удалить контейнер:
+docker compose down
