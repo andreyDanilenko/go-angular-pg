@@ -3,12 +3,14 @@ package main
 import (
 	"admin/panel/configs"
 	"admin/panel/internal/auth"
+	"admin/panel/pkg/database"
 	"fmt"
 	"net/http"
 )
 
 func main() {
 	conf := configs.LoadConfig()
+	_ = database.NewDb(conf)
 	router := http.NewServeMux()
 	tokenService := &auth.TokenServiceImpl{SecretKey: conf.Auth.Secret}
 
