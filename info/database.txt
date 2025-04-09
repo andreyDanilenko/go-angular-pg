@@ -26,3 +26,11 @@ docker exec -it container_name psql -U POSTGRES_USER -d testdb
 Переключится на другую БД: \c my_go_db
 Удалить БД:	DROP DATABASE dbname;
 Выйти из psql:	\q
+
+
+docker run -d --name my_postgres \
+  -e POSTGRES_PASSWORD=my_pass \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=postgres \
+  -p 5432:5432 \
+  postgres:17.4
