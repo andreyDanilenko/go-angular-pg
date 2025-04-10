@@ -10,3 +10,4 @@ services:
       - ./postgres-data:/data/postgres
     ports:
       - 5432:5432
+
