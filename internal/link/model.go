@@ -1,9 +1,7 @@
 package link
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"time"
+	"fmt"
 
 	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
@@ -18,19 +16,13 @@ type Link struct {
 func NewLink(url string) *Link {
 	return &Link{
 		Url:  url,
-		Hash: generateSimpleHash(url),
+		Hash: generateRandomHash(),
 	}
 }
 
 // generateSimpleHash создает короткий хэш на основе URL и случайного числа
-func generateSimpleHash(url string) string {
-	// Инициализация генератора случайных чисел
-	rand.Seed(time.Now().UnixNano())
-
-	// Создаем MD5 хэш от URL + случайное число
-	data := []byte(url + string(rand.Intn(1000000)))
-	hash := md5.Sum(data)
-
-	// Берем первые 6 символов хэша
-	return hex.EncodeToString(hash[:])[:6]
+func generateRandomHash() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)
 }

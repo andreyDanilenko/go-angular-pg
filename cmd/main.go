@@ -3,6 +3,7 @@ package main
 import (
 	"admin/panel/configs"
 	"admin/panel/internal/auth"
+	"admin/panel/internal/sendEmail"
 	"admin/panel/pkg/database"
 	"fmt"
 	"net/http"
@@ -15,6 +16,7 @@ func main() {
 	tokenService := &auth.TokenServiceImpl{SecretKey: conf.Auth.Secret}
 
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf, TokenService: tokenService})
+	sendEmail.NewEmailHandler(router, sendEmail.EmailHandlerDeps{Config: conf})
 
 	server := http.Server{
 		Addr:    ":8081",

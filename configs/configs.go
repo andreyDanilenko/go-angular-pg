@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	Db   DbConfig
-	Auth AuthConfig
+	Db        DbConfig
+	Auth      AuthConfig
+	SendEmail EmailConfig
 }
 
 type DbConfig struct {
@@ -19,6 +20,8 @@ type DbConfig struct {
 type AuthConfig struct {
 	Secret string
 }
+
+type EmailConfig struct{}
 
 func LoadConfig() *Config {
 	err := godotenv.Load()
@@ -34,5 +37,6 @@ func LoadConfig() *Config {
 		Auth: AuthConfig{
 			Secret: os.Getenv("TOKEN"),
 		},
+		SendEmail: EmailConfig{},
 	}
 }
