@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	BaseURL   string
 	Db        DbConfig
 	Auth      AuthConfig
 	SendEmail EmailConfig
@@ -21,7 +22,12 @@ type AuthConfig struct {
 	Secret string
 }
 
-type EmailConfig struct{}
+type EmailConfig struct {
+	SmtpHost     string
+	SmtpPort     string
+	SmtpUsername string
+	SmtpPassword string
+}
 
 func LoadConfig() *Config {
 	err := godotenv.Load()
@@ -31,12 +37,18 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
+		BaseURL: os.Getenv("BASE_URL"),
 		Db: DbConfig{
 			Dsn: os.Getenv("DSN"),
 		},
 		Auth: AuthConfig{
 			Secret: os.Getenv("TOKEN"),
 		},
-		SendEmail: EmailConfig{},
+		SendEmail: EmailConfig{
+			SmtpHost:     os.Getenv("SMTP_HOST"),
+			SmtpPort:     os.Getenv("SMTP_PORT"),
+			SmtpUsername: os.Getenv("SMTP_USERNAME"),
+			SmtpPassword: os.Getenv("SMTP_PASSWORD"),
+		},
 	}
 }

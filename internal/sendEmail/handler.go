@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"strings"
 	"sync"
 	"text/template"
 )
@@ -38,62 +39,91 @@ func NewEmailHandler(router *http.ServeMux, deps EmailHandlerDeps) {
 	handler := &EmailHandler{
 		Config: deps.Config,
 	}
-	router.HandleFunc("POST /send/email", handler.SendHandler)
+
+	loadRecords()
+	router.HandleFunc("POST /send/email", handler.SendHandler())
+	router.HandleFunc("GET /verify", handler.VerifyHandler())
 }
 
-func (handler *EmailHandler) SendHandler(w http.ResponseWriter, r *http.Request) {
+func (handler *EmailHandler) SendHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := request.HandleBody[EmailRequest](&w, r)
 
-	body, err := request.HandleBody[EmailRequest](&w, r)
-	fmt.Println(body.Email)
+		if err != nil {
+			return
+		}
 
-	if err != nil {
-		return
+		email := body.Email
+
+		if email == "" {
+			http.Error(w, "Email is required", http.StatusBadRequest)
+			return
+		}
+
+		hash := generateRandomHash()
+		record := VerificationRecord{Email: email, Hash: hash}
+
+		// Сохраняем запись
+		recordsMutex.Lock()
+		records = append(records, record)
+		saveRecords()
+		recordsMutex.Unlock()
+
+		// Отправляем email
+		err = handler.sendVerificationEmail(email, hash)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintf(w, "Verification email sent to %s", email)
 	}
-
-	fmt.Println(body)
-
-	email := body.Email
-
-	if email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
-		return
-	}
-
-	hash := generateRandomHash()
-	record := VerificationRecord{Email: email, Hash: hash}
-
-	// Сохраняем запись
-	recordsMutex.Lock()
-	records = append(records, record)
-	saveRecords()
-	recordsMutex.Unlock()
-
-	// Отправляем email
-	err = sendVerificationEmail(email, hash)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to send email: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprintf(w, "Verification email sent to %s", email)
 }
 
-func generateRandomHash() string {
-	b := make([]byte, 16)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)
+func (handler *EmailHandler) VerifyHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/verify/")
+		if path == "" {
+			http.Error(w, "Hash is required", http.StatusBadRequest)
+			return
+		}
+
+		parts := strings.Split(path, "/")
+		hash := parts[0]
+
+		recordsMutex.Lock()
+		defer recordsMutex.Unlock()
+
+		found := false
+		index := -1
+
+		for i, record := range records {
+			if record.Hash == hash {
+				found = true
+				index = i
+				break
+			}
+		}
+
+		if found {
+			// Удаляем использованный hash
+			records = append(records[:index], records[index+1:]...)
+			saveRecords()
+			fmt.Fprint(w, "true")
+		} else {
+			fmt.Fprint(w, "false")
+		}
+	}
 }
 
-func sendVerificationEmail(email, hash string) error {
-	// Конфигурация SMTP (замените на свои реальные данные)
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	smtpUsername := "danilko.a.g@gmail.com"
-	smtpPassword := "cezvqxmcrrycaers"
+func (handler *EmailHandler) sendVerificationEmail(email, hash string) error {
+	smtpHost := handler.Config.SendEmail.SmtpHost
+	smtpPort := handler.Config.SendEmail.SmtpPort
+	smtpUsername := handler.Config.SendEmail.SmtpUsername
+	smtpPassword := handler.Config.SendEmail.SmtpPassword
 
 	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
-
-	verificationLink := fmt.Sprintf("http://localhost:8081/verify/%s", hash)
+	verificationLink := fmt.Sprintf("%s/verify/%s", handler.Config.BaseURL, hash)
 
 	// Загрузка HTML шаблона
 	tmpl, err := template.ParseFiles("templates/email_template.html")
@@ -127,6 +157,25 @@ func sendVerificationEmail(email, hash string) error {
 	return nil
 }
 
+func loadRecords() {
+	recordsMutex.Lock()
+	defer recordsMutex.Unlock()
+
+	file, err := os.ReadFile(storageFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			records = []VerificationRecord{}
+			return
+		}
+		log.Fatalf("Failed to read storage file: %v", err)
+	}
+
+	err = json.Unmarshal(file, &records)
+	if err != nil {
+		log.Fatalf("Failed to unmarshal records: %v", err)
+	}
+}
+
 func saveRecords() {
 	data, err := json.MarshalIndent(records, "", "  ")
 	if err != nil {
@@ -138,4 +187,10 @@ func saveRecords() {
 	if err != nil {
 		log.Printf("Failed to write storage file: %v", err)
 	}
+}
+
+func generateRandomHash() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)
 }
