@@ -16,7 +16,7 @@ func main() {
 	tokenService := &auth.TokenServiceImpl{SecretKey: conf.Auth.Secret}
 
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf, TokenService: tokenService})
-	sendEmail.NewEmailHandler(router, sendEmail.EmailHandlerDeps{Config: conf})
+	sendEmail.Setup(router, conf)
 
 	server := http.Server{
 		Addr:    ":8081",
