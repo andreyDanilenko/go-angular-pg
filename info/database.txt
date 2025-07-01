@@ -28,9 +28,11 @@ docker exec -it container_name psql -U POSTGRES_USER -d testdb
 Выйти из psql:	\q
 
 
+Запусти Docker
 docker run -d --name my_postgres \
   -e POSTGRES_PASSWORD=my_pass \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_DB=postgres \
   -p 5432:5432 \
   postgres:17.4
+Запусти сборку  
