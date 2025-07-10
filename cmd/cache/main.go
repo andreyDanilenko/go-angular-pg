@@ -1,79 +1,111 @@
 package main
 
 import (
-	"admin/panel/internal/cache"
+	cachePack "admin/panel/internal/cache"
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
 func main() {
+	var cache cachePack.Cache
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Введите размер кэша: ")
-	input, _ := reader.ReadString('\n')
-	capacity, _ := strconv.Atoi(strings.TrimSpace(input))
-	lru := cache.NewCache(capacity) // создаём кэш
+	fmt.Println("LRU Cache Management Console")
+	fmt.Println("----------------------------")
+	fmt.Println("Available commands:")
+	fmt.Println("init <capacity> - Initialize cache with given capacity")
+	fmt.Println("set <key> <value> - Set key-value pair")
+	fmt.Println("get <key> - Get value by key")
+	fmt.Println("clear - Clear the cache")
+	fmt.Println("stats - Show cache statistics")
+	fmt.Println("exit - Exit the program")
+	fmt.Println("----------------------------")
 
 	for {
-		fmt.Println("\nМеню:")
-		fmt.Println("1. Добавить элемент в кэш")
-		fmt.Println("2. Получить элемент из кэша")
-		fmt.Println("3. Очистить кэш")
-		fmt.Println("4. Показать все элементы в кэше")
-		fmt.Println("5. Выйти")
-		fmt.Print("Выберите действие: ")
+		fmt.Print("> ")
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		parts := strings.Fields(input)
 
-		cmd, _ := reader.ReadString('\n')
-		cmd = strings.TrimSpace(cmd)
+		if len(parts) == 0 {
+			continue
+		}
 
-		switch cmd {
-		case "1":
-			fmt.Print("Введите ключ: ")
-			k, _ := reader.ReadString('\n')
-			key := cache.Key(strings.TrimSpace(k))
+		command := parts[0]
+		args := parts[1:]
 
-			fmt.Print("Введите значение: ")
-			v, _ := reader.ReadString('\n')
-			value := strings.TrimSpace(v)
+		switch command {
+		case "init":
+			if len(args) != 1 {
+				fmt.Println("Usage: init <capacity>")
+				continue
+			}
+			var capacity int
+			_, err := fmt.Sscanf(args[0], "%d", &capacity)
+			if err != nil || capacity <= 0 {
+				fmt.Println("Capacity must be a positive integer")
+				continue
+			}
+			cache = cachePack.NewCache(capacity)
+			fmt.Printf("Initialized cache with capacity %d\n", capacity)
 
-			updated := lru.Set(key, value)
-			if updated {
-				fmt.Println("Элемент обновлен.")
+		case "set":
+			if cache == nil {
+				fmt.Println("Cache not initialized. Use 'init <capacity>' first.")
+				continue
+			}
+			if len(args) < 2 {
+				fmt.Println("Usage: set <key> <value>")
+				continue
+			}
+			key := cachePack.Key(args[0])
+			value := strings.Join(args[1:], " ")
+			existed := cache.Set(key, value)
+			fmt.Printf("Set %s = %s (existed: %t)\n", key, value, existed)
+
+		case "get":
+			if cache == nil {
+				fmt.Println("Cache not initialized. Use 'init <capacity>' first.")
+				continue
+			}
+			if len(args) != 1 {
+				fmt.Println("Usage: get <key>")
+				continue
+			}
+			key := cachePack.Key(args[0])
+			value, ok := cache.Get(key)
+			if ok {
+				fmt.Printf("Got %s = %v\n", key, value)
 			} else {
-				fmt.Println("Элемент добавлен.")
+				fmt.Printf("Key %s not found\n", key)
 			}
 
-		case "2":
-			fmt.Print("Введите ключ: ")
-			k, _ := reader.ReadString('\n')
-			key := cache.Key(strings.TrimSpace(k))
-
-			if val, ok := lru.Get(key); ok {
-				fmt.Println("Значение:", val)
-			} else {
-				fmt.Println("Элемент не найден.")
+		case "clear":
+			if cache == nil {
+				fmt.Println("Cache not initialized. Use 'init <capacity>' first.")
+				continue
 			}
+			cache.Clear()
+			fmt.Println("Cache cleared")
 
-		case "3":
-			lru.Clear()
-			fmt.Println("Кэш очищен.")
-
-		case "4":
-			fmt.Println("Элементы в кэше (от новых к старым):")
-			for item := lru.List().Front(); item != nil; item = item.Next {
-				elem := item.Value.(*cache.CacheItem)
-				fmt.Printf("Ключ: %s, Значение: %v\n", elem.Key, elem.Value)
+		case "stats":
+			if cache == nil {
+				fmt.Println("Cache not initialized. Use 'init <capacity>' first.")
+				continue
 			}
+			// Более безопасный способ получения статистики без доступа к неэкспортированным полям
+			// В реальном приложении вам нужно добавить соответствующие методы в интерфейс Cache
+			fmt.Println("Cache statistics:")
+			fmt.Println("(Detailed statistics require additional methods in Cache interface)")
 
-		case "5":
-			fmt.Println("Выход.")
+		case "exit":
+			fmt.Println("Exiting...")
 			return
 
 		default:
-			fmt.Println("Неверная команда.")
+			fmt.Println("Unknown command. Available commands: init, set, get, clear, stats, exit")
 		}
 	}
 }
