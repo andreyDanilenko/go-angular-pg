@@ -4,17 +4,21 @@ import (
 	"admin/panel/configs"
 	"admin/panel/internal/auth"
 	"admin/panel/internal/sendEmail"
+	"admin/panel/internal/token"
 	"admin/panel/pkg/database"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func main() {
 	conf := configs.LoadConfig()
 	_ = database.NewDb(conf)
 	router := http.NewServeMux()
-	tokenService := &auth.TokenServiceImpl{SecretKey: conf.Auth.Secret}
-
+	tokenService := token.NewService(
+		conf.Auth.Secret, // Секретный ключ из конфига
+		24*time.Hour,     // Время жизни access токена
+	)
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: conf, TokenService: tokenService})
 	sendEmail.Setup(router, conf)
 

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"admin/panel/configs"
+	"admin/panel/internal/token"
 	"admin/panel/pkg/request"
 	"admin/panel/pkg/response"
 
@@ -10,12 +11,13 @@ import (
 
 type AuthHandler struct {
 	// authService  AuthService  // Сервис для работы с аутентификацией
-	tokenService TokenService // Сервис для работы с JWT
+	tokenService *token.Service
+	// Сервис для работы с JWT
 	*configs.Config
 }
 
 type AuthHandlerDeps struct {
-	TokenService TokenService // Сервис для работы с JWT
+	TokenService *token.Service // Сервис для работы с JWT
 	*configs.Config
 }
 
@@ -47,7 +49,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 		// }
 
 		// 4. Генерация токена
-		token, err := handler.tokenService.GenerateToken(body.Password + body.Email)
+		token, err := handler.tokenService.Generate(body.Email, body.Password)
 		if err != nil {
 			response.Json(w, err.Error(), 422)
 			return
@@ -71,7 +73,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		token, err := handler.tokenService.GenerateToken(body.Password + body.Email)
+		token, err := handler.tokenService.Generate(body.Password, body.Email)
 		if err != nil {
 			response.Json(w, err.Error(), 422)
 			return
