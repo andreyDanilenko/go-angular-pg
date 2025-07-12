@@ -8,11 +8,11 @@ import (
 )
 
 // GenerateToken создает новый JWT токен для пользователя
-func Generate(userID int64, secret string) (string, error) {
+func Generate(userID uint, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": userID,                                // subject (user ID)
-		"exp": time.Now().Add(time.Hour * 24).Unix(), // expiration time
-		"iat": time.Now().Unix(),                     // issued at time
+		"sub": userID,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"iat": time.Now().Unix(),
 	})
 
 	return token.SignedString([]byte(secret))

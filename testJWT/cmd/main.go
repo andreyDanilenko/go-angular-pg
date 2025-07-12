@@ -2,7 +2,6 @@ package main
 
 import (
 	"admin/panel/testJWT/internal/config"
-	"admin/panel/testJWT/internal/database"
 	"admin/panel/testJWT/internal/handler"
 	"admin/panel/testJWT/internal/middleware"
 	"admin/panel/testJWT/internal/repository"
@@ -11,18 +10,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	cfg := config.LoadConfig()
-
-	// Проверяем существование папки миграций
-	if _, err := os.Stat("migrations"); os.IsNotExist(err) {
-		log.Fatal("Migrations directory does not exist")
-	}
 
 	db, err := sql.Open("postgres", fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -35,11 +28,6 @@ func main() {
 
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
-	}
-
-	// Применяем миграции с проверкой ошибок
-	if err := database.ApplyMigrations(db); err != nil {
-		log.Fatalf("Failed to apply migrations: %v", err)
 	}
 
 	// Инициализация зависимостей

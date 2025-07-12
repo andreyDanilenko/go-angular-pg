@@ -1,14 +1,14 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
-	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	gorm.Model
+	Username string `json:"username" gorm:"uniqueIndex;size:50"`
+	Email    string `json:"email" gorm:"uniqueIndex;size:255"`
+	Password string `json:"-" gorm:"size:255"`
 }
 
 type SignUpInput struct {

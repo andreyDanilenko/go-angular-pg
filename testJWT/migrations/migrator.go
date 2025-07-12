@@ -1,51 +1,39 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"io/ioutil"
+	"admin/panel/testJWT/internal/config"
+	"admin/panel/testJWT/internal/model"
 	"log"
-	"os"
-	"path/filepath"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
-	// Подключение без GORM для raw SQL
-	db, err := sql.Open("postgres", fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-	))
+	cfg := config.LoadConfig()
+
+	// Формируем DSN строку для подключения
+	dsn := "host=" + cfg.DBHost +
+		" user=" + cfg.DBUser +
+		" password=" + cfg.DBPassword +
+		" dbname=" + cfg.DBName +
+		" port=" + cfg.DBPort +
+		" sslmode=disable TimeZone=UTC"
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
 
-	// Применяем все SQL-файлы из migrations
-	files, err := ioutil.ReadDir("migrations")
+	// Выполняем миграции для всех моделей
+	err = db.AutoMigrate(
+		&model.User{},
+		&model.Article{},
+		// Добавьте другие модели по мере необходимости
+	)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
-	for _, file := range files {
-		if filepath.Ext(file.Name()) == ".sql" {
-			content, err := ioutil.ReadFile(filepath.Join("migrations", file.Name()))
-			if err != nil {
-				log.Printf("Failed to read %s: %v", file.Name(), err)
-				continue
-			}
-
-			_, err = db.Exec(string(content))
-			if err != nil {
-				log.Printf("Failed to execute %s: %v", file.Name(), err)
-			} else {
-				log.Printf("Applied %s successfully", file.Name())
-			}
-		}
-	}
+	log.Println("Migration completed successfully")
 }
