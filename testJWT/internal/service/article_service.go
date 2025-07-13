@@ -3,6 +3,7 @@ package service
 import (
 	"admin/panel/testJWT/internal/model"
 	"admin/panel/testJWT/internal/repository"
+	"fmt"
 
 	"context"
 )
@@ -15,8 +16,23 @@ func NewArticleService(repo *repository.ArticleRepository) *ArticleService {
 	return &ArticleService{repo: repo}
 }
 
-func (s *ArticleService) CreateArticle(ctx context.Context, authorID string, input model.ArticleInput) (*model.Article, error) {
-	return s.repo.CreateArticle(ctx, authorID, input.Title, input.Content)
+func (s *ArticleService) CreateArticle(
+	ctx context.Context,
+	authorID string,
+	input model.ArticleInput,
+) (*model.Article, error) {
+	// Проверка категории (дублирующая проверка для безопасности)
+	if !input.Category.IsValid() {
+		return nil, fmt.Errorf("invalid article category")
+	}
+
+	return s.repo.CreateArticle(
+		ctx,
+		authorID,
+		input.Title,
+		input.Content,
+		input.Category,
+	)
 }
 
 func (s *ArticleService) GetArticle(ctx context.Context, id string) (*model.Article, error) {

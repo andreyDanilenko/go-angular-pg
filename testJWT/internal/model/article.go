@@ -15,7 +15,8 @@ type Article struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 
-	Author *User `gorm:"foreignKey:AuthorID" json:"author,omitempty"` // Опциональная подгрузка автора
+	Author   *User           `gorm:"foreignKey:AuthorID" json:"author,omitempty"` // Опциональная подгрузка автора
+	Category ArticleCategory `gorm:"size:50;not null;default:'general'" json:"category,omitempty"`
 }
 
 // BeforeCreate - хук для генерации ID
@@ -29,6 +30,7 @@ func (a *Article) BeforeCreate(tx *gorm.DB) error {
 }
 
 type ArticleInput struct {
-	Title   string `json:"title" validate:"required,min=5,max=100"`
-	Content string `json:"content" validate:"required,min=10"`
+	Title    string          `json:"title" validate:"required,min=5,max=100"`
+	Content  string          `json:"content" validate:"required,min=10"`
+	Category ArticleCategory `gorm:"size:50;not null;default:'general'" json:"category,omitempty"`
 }

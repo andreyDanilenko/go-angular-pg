@@ -30,6 +30,12 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Валидация (может быть также через middleware)
+	if !input.Category.IsValid() {
+		http.Error(w, "Invalid article category", http.StatusBadRequest)
+		return
+	}
+
 	article, err := h.service.CreateArticle(r.Context(), userID, input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

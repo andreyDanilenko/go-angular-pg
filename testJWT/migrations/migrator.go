@@ -25,10 +25,10 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Очищаем таблицы перед миграцией (опционально)
-	if err := resetDatabase(db); err != nil {
-		log.Fatalf("Failed to reset database: %v", err)
-	}
+	// // Очищаем таблицы перед миграцией (опционально)
+	// if err := resetDatabase(db); err != nil {
+	// 	log.Fatalf("Failed to reset database: %v", err)
+	// }
 
 	// Выполняем миграции для всех моделей
 	err = db.AutoMigrate(

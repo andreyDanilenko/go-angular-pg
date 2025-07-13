@@ -4,6 +4,7 @@ import (
 	"admin/panel/testJWT/internal/model"
 	"context"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -16,11 +17,22 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 	return &ArticleRepository{db: db}
 }
 
-func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID string, title, content string) (*model.Article, error) {
+func (r *ArticleRepository) CreateArticle(
+	ctx context.Context,
+	authorID string,
+	title string,
+	content string,
+	category model.ArticleCategory,
+) (*model.Article, error) {
 	article := &model.Article{
 		AuthorID: authorID,
 		Title:    title,
 		Content:  content,
+		Category: category,
+	}
+
+	if !category.IsValid() {
+		return nil, fmt.Errorf("invalid article category")
 	}
 
 	result := r.db.WithContext(ctx).Create(article)
