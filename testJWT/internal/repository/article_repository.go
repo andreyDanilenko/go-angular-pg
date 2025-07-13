@@ -16,7 +16,7 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 	return &ArticleRepository{db: db}
 }
 
-func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID uint, title, content string) (*model.Article, error) {
+func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID string, title, content string) (*model.Article, error) {
 	article := &model.Article{
 		AuthorID: authorID,
 		Title:    title,
@@ -31,21 +31,39 @@ func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID uint, ti
 	return article, nil
 }
 
-func (r *ArticleRepository) GetArticleByID(ctx context.Context, id uint) (*model.Article, error) {
+func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*model.Article, error) {
 	var article model.Article
-	result := r.db.WithContext(ctx).First(&article, id)
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	// Явно указываем условие WHERE для строкового ID
+	err := r.db.WithContext(ctx).
+		Where("id = ?", id).
+		First(&article).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
-	if result.Error != nil {
-		return nil, result.Error
+	if err != nil {
+		return nil, err
 	}
 
 	return &article, nil
 }
 
-func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID uint) ([]*model.Article, error) {
+func (r *ArticleRepository) GetAllArticles(ctx context.Context) ([]*model.Article, error) {
+	var articles []*model.Article
+	result := r.db.WithContext(ctx).
+		Order("created_at DESC").
+		Find(&articles)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return articles, nil
+}
+
+func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID string) ([]*model.Article, error) {
 	var articles []*model.Article
 	result := r.db.WithContext(ctx).
 		Where("author_id = ?", authorID).
@@ -59,26 +77,61 @@ func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID ui
 	return articles, nil
 }
 
-func (r *ArticleRepository) UpdateArticle(ctx context.Context, id int64, title, content string) (*model.Article, error) {
-	article := &model.Article{
-		Title:   title,
-		Content: content,
+func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
+	// Сначала получаем статью
+	var article model.Article
+	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
+		return nil, err
 	}
 
+	// Обновляем только необходимые поля
 	result := r.db.WithContext(ctx).
-		Model(&model.Article{}).
-		Where("id = ?", id).
-		Updates(article).
-		First(article, id)
+		Model(&article).
+		Updates(map[string]interface{}{
+			"title":   title,
+			"content": content,
+		})
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return article, nil
+	// Возвращаем обновленную статью
+	return &article, nil
 }
 
-func (r *ArticleRepository) DeleteArticle(ctx context.Context, id uint) error {
-	result := r.db.WithContext(ctx).Delete(&model.Article{}, id)
-	return result.Error
+// func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
+//     var article model.Article
+
+//     result := r.db.WithContext(ctx).
+//         Model(&model.Article{}).
+//         Where("id = ?", id).
+//         Updates(map[string]interface{}{
+//             "title":   title,
+//             "content": content,
+//         }).
+//         First(&article)  // Получаем обновленную запись
+
+//     if result.Error != nil {
+//         return nil, result.Error
+//     }
+
+//     return &article, nil
+// }
+
+func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error {
+	result := r.db.WithContext(ctx).
+		Where("id = ?", id). // Явное указание условия
+		Delete(&model.Article{})
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Проверяем, что действительно удалили запись
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
 }

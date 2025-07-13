@@ -1,11 +1,11 @@
 package handler
 
 import (
+	"admin/panel/testJWT/internal/middleware"
 	"admin/panel/testJWT/internal/model"
 	"admin/panel/testJWT/internal/service"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -17,13 +17,16 @@ type ArticleHandler struct {
 func NewArticleHandler(service *service.ArticleService) *ArticleHandler {
 	return &ArticleHandler{service: service}
 }
-
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(uint)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var input model.ArticleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
@@ -34,19 +37,13 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(article)
 }
 
 func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid article ID", http.StatusBadRequest)
-		return
-	}
+	id := chi.URLParam(r, "id")
 
-	article, err := h.service.GetArticle(r.Context(), uint(id))
+	article, err := h.service.GetArticle(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -57,7 +54,7 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) GetUserArticles(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(uint)
+	userID := r.Context().Value("userID").(string)
 
 	articles, err := h.service.GetArticlesByAuthor(r.Context(), userID)
 	if err != nil {
@@ -69,14 +66,23 @@ func (h *ArticleHandler) GetUserArticles(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(articles)
 }
 
-func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
-	// userID := r.Context().Value("userID").(int64)
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+// handler/article_handler.go
+func (h *ArticleHandler) GetAllArticles(w http.ResponseWriter, r *http.Request) {
+	articles, err := h.service.GetAllArticles(r.Context())
 	if err != nil {
-		http.Error(w, "Invalid article ID", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(articles); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	// userID := r.Context().Value("userID").(int64)
+	id := chi.URLParam(r, "id")
 
 	var input model.ArticleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -95,15 +101,9 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
-	// userID := r.Context().Value("userID").(int64)
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid article ID", http.StatusBadRequest)
-		return
-	}
+	id := chi.URLParam(r, "id")
 
-	if err := h.service.DeleteArticle(r.Context(), uint(id)); err != nil {
+	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

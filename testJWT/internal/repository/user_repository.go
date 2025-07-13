@@ -25,7 +25,10 @@ func (r *UserRepository) Create(ctx context.Context, input model.SignUpInput) (*
 	}
 
 	user := &model.User{
-		Username: input.Username,
+		Username:  input.Username,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		// MiddleName: input.MiddleName,
 		Email:    input.Email,
 		Password: string(hashedPassword),
 	}
@@ -37,7 +40,7 @@ func (r *UserRepository) Create(ctx context.Context, input model.SignUpInput) (*
 	return user, nil
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, id uint) (*model.User, error) {
+func (r *UserRepository) GetByID(ctx context.Context, id string) (*model.User, error) {
 	var user model.User
 	err := r.db.WithContext(ctx).First(&user, id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {

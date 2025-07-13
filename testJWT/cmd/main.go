@@ -49,6 +49,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Post("/signup", authHandler.SignUp)
 		r.Post("/signin", authHandler.SignIn)
+		r.Get("/articles/all", articleHandler.GetAllArticles)
 		r.Get("/articles/{id}", articleHandler.GetArticle)
 	})
 
@@ -56,8 +57,8 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.JWTAuth(cfg.JWTSecret))
 
-		r.Post("/articles", articleHandler.CreateArticle)
 		r.Get("/articles", articleHandler.GetUserArticles)
+		r.Post("/articles", articleHandler.CreateArticle)
 		r.Put("/articles/{id}", articleHandler.UpdateArticle)
 		r.Delete("/articles/{id}", articleHandler.DeleteArticle)
 	})

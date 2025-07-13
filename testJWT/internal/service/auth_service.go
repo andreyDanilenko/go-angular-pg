@@ -93,6 +93,6 @@ func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*mode
 	return user, token, nil
 }
 
-func (s *UserService) GetProfile(ctx context.Context, userID uint) (*model.User, error) {
+func (s *UserService) GetProfile(ctx context.Context, userID string) (*model.User, error) {
 	return s.repo.GetByID(ctx, userID)
 }
