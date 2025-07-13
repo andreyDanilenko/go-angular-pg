@@ -19,7 +19,7 @@ func NewArticleHandler(service *service.ArticleService) *ArticleHandler {
 }
 
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(int64)
+	userID := r.Context().Value("userID").(uint)
 
 	var input model.ArticleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -40,13 +40,13 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid article ID", http.StatusBadRequest)
 		return
 	}
 
-	article, err := h.service.GetArticle(r.Context(), id)
+	article, err := h.service.GetArticle(r.Context(), uint(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -57,7 +57,7 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) GetUserArticles(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(int64)
+	userID := r.Context().Value("userID").(uint)
 
 	articles, err := h.service.GetArticlesByAuthor(r.Context(), userID)
 	if err != nil {
@@ -97,13 +97,13 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	// userID := r.Context().Value("userID").(int64)
 	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid article ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
+	if err := h.service.DeleteArticle(r.Context(), uint(id)); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

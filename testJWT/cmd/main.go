@@ -6,52 +6,65 @@ import (
 	"admin/panel/testJWT/internal/middleware"
 	"admin/panel/testJWT/internal/repository"
 	"admin/panel/testJWT/internal/service"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
-	_ "github.com/lib/pq"
+	"github.com/go-chi/chi/v5"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 
-	db, err := sql.Open("postgres", fmt.Sprintf(
+	// Инициализация GORM
+	gormDB, err := gorm.Open(postgres.Open(fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
-	))
+	)), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to initialize GORM: %v", err)
+	}
+
+	// Получаем *sql.DB из GORM для обратной совместимости
+	db, err := gormDB.DB()
+	if err != nil {
+		log.Fatalf("Failed to get underlying DB connection: %v", err)
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Failed to ping database: %v", err)
-	}
-
 	// Инициализация зависимостей
-	userRepo := repository.NewUserRepository(db)
-	articleRepo := repository.NewArticleRepository(db)
-	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
+	userRepo := repository.NewUserRepository(gormDB)
+	articleRepo := repository.NewArticleRepository(gormDB)
+	authService := service.NewUserService(userRepo, cfg.JWTSecret)
 	articleService := service.NewArticleService(articleRepo)
-	authHandler := handler.NewAuthHandler(authService)
+	authHandler := handler.NewUserHandler(authService)
 	articleHandler := handler.NewArticleHandler(articleService)
 
 	// Настройка роутера
-	router := http.NewServeMux()
-	router.HandleFunc("GET /articles/{id}", articleHandler.GetArticle)
-	router.HandleFunc("POST /signup", authHandler.SignUp)
-	router.HandleFunc("POST /signin", authHandler.SignIn)
-	router.Handle("POST /articles",
-		middleware.JWTAuth(cfg.JWTSecret)(
-			http.HandlerFunc(articleHandler.CreateArticle),
-		),
-	)
+	r := chi.NewRouter()
+
+	// Публичные маршруты
+	r.Group(func(r chi.Router) {
+		r.Post("/signup", authHandler.SignUp)
+		r.Post("/signin", authHandler.SignIn)
+		r.Get("/articles/{id}", articleHandler.GetArticle)
+	})
+
+	// Защищенные маршруты (требуют JWT)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.JWTAuth(cfg.JWTSecret))
+
+		r.Post("/articles", articleHandler.CreateArticle)
+		r.Get("/articles", articleHandler.GetUserArticles)
+		r.Put("/articles/{id}", articleHandler.UpdateArticle)
+		r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+	})
 
 	// Запуск сервера
 	log.Println("Server is running on port 8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

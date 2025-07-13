@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"admin/panel/testJWT/internal/model"
@@ -11,11 +12,11 @@ import (
 )
 
 type AuthHandler struct {
-	authService *service.AuthService
+	authService *service.UserService
 	validate    *validator.Validate
 }
 
-func NewAuthHandler(authService *service.AuthService) *AuthHandler {
+func NewUserHandler(authService *service.UserService) *AuthHandler {
 	return &AuthHandler{
 		authService: authService,
 		validate:    validator.New(),
@@ -25,7 +26,7 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var input model.SignUpInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -34,8 +35,15 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.authService.SignUp(r.Context(), input)
+	user, token, err := h.authService.Register(r.Context(), input)
 	if err != nil {
+		var conflictErr *model.ConflictError
+		if errors.As(err, &conflictErr) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			json.NewEncoder(w).Encode(conflictErr)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -61,7 +69,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.authService.SignIn(r.Context(), input)
+	user, token, err := h.authService.Login(r.Context(), input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return

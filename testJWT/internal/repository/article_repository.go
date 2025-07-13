@@ -2,97 +2,83 @@ package repository
 
 import (
 	"admin/panel/testJWT/internal/model"
-
 	"context"
-	"database/sql"
+	"errors"
+
+	"gorm.io/gorm"
 )
 
 type ArticleRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewArticleRepository(db *sql.DB) *ArticleRepository {
+func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 	return &ArticleRepository{db: db}
 }
 
-func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID int64, title, content string) (*model.Article, error) {
-	query := `
-		INSERT INTO articles (author_id, title, content)
-		VALUES ($1, $2, $3)
-		RETURNING id, author_id, title, content, created_at, updated_at
-	`
-
-	article := &model.Article{}
-	err := r.db.QueryRowContext(ctx, query, authorID, title, content).
-		Scan(&article.ID, &article.AuthorID, &article.Title, &article.Content, &article.CreatedAt, &article.UpdatedAt)
-
-	return article, err
-}
-
-func (r *ArticleRepository) GetArticleByID(ctx context.Context, id int64) (*model.Article, error) {
-	query := `
-		SELECT id, author_id, title, content, created_at, updated_at
-		FROM articles
-		WHERE id = $1
-	`
-
-	article := &model.Article{}
-	err := r.db.QueryRowContext(ctx, query, id).
-		Scan(&article.ID, &article.AuthorID, &article.Title, &article.Content, &article.CreatedAt, &article.UpdatedAt)
-
-	return article, err
-}
-
-func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID int64) ([]*model.Article, error) {
-	query := `
-		SELECT id, author_id, title, content, created_at, updated_at
-		FROM articles
-		WHERE author_id = $1
-		ORDER BY created_at DESC
-	`
-
-	rows, err := r.db.QueryContext(ctx, query, authorID)
-	if err != nil {
-		return nil, err
+func (r *ArticleRepository) CreateArticle(ctx context.Context, authorID uint, title, content string) (*model.Article, error) {
+	article := &model.Article{
+		AuthorID: authorID,
+		Title:    title,
+		Content:  content,
 	}
-	defer rows.Close()
 
+	result := r.db.WithContext(ctx).Create(article)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return article, nil
+}
+
+func (r *ArticleRepository) GetArticleByID(ctx context.Context, id uint) (*model.Article, error) {
+	var article model.Article
+	result := r.db.WithContext(ctx).First(&article, id)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &article, nil
+}
+
+func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID uint) ([]*model.Article, error) {
 	var articles []*model.Article
-	for rows.Next() {
-		var article model.Article
-		if err := rows.Scan(
-			&article.ID,
-			&article.AuthorID,
-			&article.Title,
-			&article.Content,
-			&article.CreatedAt,
-			&article.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		articles = append(articles, &article)
+	result := r.db.WithContext(ctx).
+		Where("author_id = ?", authorID).
+		Order("created_at DESC").
+		Find(&articles)
+
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return articles, nil
 }
 
 func (r *ArticleRepository) UpdateArticle(ctx context.Context, id int64, title, content string) (*model.Article, error) {
-	query := `
-		UPDATE articles
-		SET title = $1, content = $2, updated_at = NOW()
-		WHERE id = $3
-		RETURNING id, author_id, title, content, created_at, updated_at
-	`
+	article := &model.Article{
+		Title:   title,
+		Content: content,
+	}
 
-	article := &model.Article{}
-	err := r.db.QueryRowContext(ctx, query, title, content, id).
-		Scan(&article.ID, &article.AuthorID, &article.Title, &article.Content, &article.CreatedAt, &article.UpdatedAt)
+	result := r.db.WithContext(ctx).
+		Model(&model.Article{}).
+		Where("id = ?", id).
+		Updates(article).
+		First(article, id)
 
-	return article, err
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return article, nil
 }
 
-func (r *ArticleRepository) DeleteArticle(ctx context.Context, id int64) error {
-	query := `DELETE FROM articles WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
-	return err
+func (r *ArticleRepository) DeleteArticle(ctx context.Context, id uint) error {
+	result := r.db.WithContext(ctx).Delete(&model.Article{}, id)
+	return result.Error
 }
