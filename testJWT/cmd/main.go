@@ -46,23 +46,24 @@ func main() {
 	r := chi.NewRouter()
 
 	// Публичные маршруты
-	r.Group(func(r chi.Router) {
-		r.Post("/signup", authHandler.SignUp)
-		r.Post("/signin", authHandler.SignIn)
-		r.Get("/articles/all", articleHandler.GetAllArticles)
-		r.Get("/articles/{id}", articleHandler.GetArticle)
+	r.Route("/api", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Post("/signup", authHandler.SignUp)
+			r.Post("/signin", authHandler.SignIn)
+			r.Get("/articles/all", articleHandler.GetAllArticles)
+			r.Get("/articles/{id}", articleHandler.GetArticle)
+		})
+
+		// Защищенные маршруты (требуют JWT)
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.JWTAuth(cfg.JWTSecret))
+
+			r.Get("/articles", articleHandler.GetUserArticles)
+			r.Post("/articles", articleHandler.CreateArticle)
+			r.Put("/articles/{id}", articleHandler.UpdateArticle)
+			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+		})
 	})
-
-	// Защищенные маршруты (требуют JWT)
-	r.Group(func(r chi.Router) {
-		r.Use(middleware.JWTAuth(cfg.JWTSecret))
-
-		r.Get("/articles", articleHandler.GetUserArticles)
-		r.Post("/articles", articleHandler.CreateArticle)
-		r.Put("/articles/{id}", articleHandler.UpdateArticle)
-		r.Delete("/articles/{id}", articleHandler.DeleteArticle)
-	})
-
 	// Запуск сервера
 	log.Println("Server is running on port 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

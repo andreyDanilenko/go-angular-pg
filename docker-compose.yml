@@ -11,11 +11,25 @@
 #     ports:
 #       - "5432:5432"
 #     restart: unless-stopped
+# version: '3.8'
+
+# services:
+#   postgres:
+#     container_name: auth_service
+#     image: postgres:17.4
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: my_pass
+#       POSTGRES_DB: auth_service
+#     ports:
+#       - "5432:5432"
+#     restart: unless-stopped
+
 version: '3.8'
 
 services:
   postgres:
-    container_name: auth_service
+    container_name: auth_service_db
     image: postgres:17.4
     environment:
       POSTGRES_USER: postgres
@@ -24,3 +38,23 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    container_name: auth_service_app
+    build: .
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: my_pass
+      DB_NAME: auth_service
+      DB_PORT: 5432
+
+volumes:
+  postgres_data:
