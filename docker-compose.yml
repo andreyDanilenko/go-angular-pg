@@ -1,13 +1,26 @@
+# services:
+#   postgres:
+#     container_name: auth_service
+#     image: postgres:17.4
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: my_pass
+#       POSTGRES_DB: auth_service
+#     volumes:
+#       - ./postgres-data:/var/lib/postgresql/data
+#     ports:
+#       - "5432:5432"
+#     restart: unless-stopped
+version: '3.8'
+
 services:
   postgres:
-    container_name: postgres_go
+    container_name: auth_service
     image: postgres:17.4
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: my_pass
-      PGDATA: /data/postgres
-    volumes: 
-      - ./postgres-data:/data/postgres
+      POSTGRES_DB: auth_service
     ports:
-      - 5432:5432
-
+      - "5432:5432"
+    restart: unless-stopped
