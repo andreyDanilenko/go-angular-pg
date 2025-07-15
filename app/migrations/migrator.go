@@ -1,8 +1,8 @@
 package main
 
 import (
-	"admin/panel/testJWT/internal/config"
-	"admin/panel/testJWT/internal/model"
+	"admin/panel/app/internal/config"
+	"admin/panel/app/internal/model"
 	"log"
 
 	"gorm.io/driver/postgres"
