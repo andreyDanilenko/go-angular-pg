@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /main ./testJWT/cmd/main.go
+RUN go build -o /main ./app/cmd/main.go
 
 EXPOSE 8080
 
