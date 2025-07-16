@@ -31,3 +31,16 @@ ssh root@62.113.103.222
 2. Подключаемся к нему
 3. Устанавливаем инструменты необходимые для работы приложения
 4. Добавляем проект в нужную папку 
+
+
+Работа с docker
+1. Удалить остановленые контейнеры
+docker container prune
+2. Удалить остановленые image
+docker image prune -a
+3. Очистить ceshe сборки
+docker builder prune
+4. Удалить все неиспользуемые тома (volumes)
+docker volume prune
+5. Удаляем конкретный image
+docker rmi <IMAGE_ID>
