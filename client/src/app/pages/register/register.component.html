@@ -1,20 +1,43 @@
 <h2>Регистрация</h2>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <label>
+    Username:
+    <input formControlName="username" />
+  </label>
+  <div *ngIf="form.controls['username'].invalid && form.controls['username'].touched" style="color:red">
+    Username обязателен
+  </div>
+
+  <label>
     Email:
     <input type="email" formControlName="email" />
   </label>
   <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" style="color:red">
-    Введите корректный email
+    Корректный email обязателен
   </div>
 
   <label>
-    Пароль:
+    Password:
     <input type="password" formControlName="password" />
   </label>
   <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" style="color:red">
-    Пароль обязателен (минимум 6 символов)
+    Минимум 6 символов
   </div>
+
+  <label>
+    First Name:
+    <input formControlName="firstName" />
+  </label>
+
+  <label>
+    Last Name:
+    <input formControlName="lastName" />
+  </label>
+
+  <label>
+    Middle Name:
+    <input formControlName="middleName" />
+  </label>
 
   <button type="submit" [disabled]="form.invalid">Зарегистрироваться</button>
 </form>
