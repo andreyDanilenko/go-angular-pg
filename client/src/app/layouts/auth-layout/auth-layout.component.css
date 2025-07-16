@@ -13,14 +13,6 @@
   font-weight: bold;
 }
 
-.auth-content {
-  width: 320px;
-  padding: 20px;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  border-radius: 6px;
-}
-
 .auth-footer {
   margin-top: 30px;
   font-size: 12px;

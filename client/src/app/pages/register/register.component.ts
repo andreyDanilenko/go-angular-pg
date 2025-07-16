@@ -25,16 +25,19 @@ export class RegisterComponent {
     middleName: ['']
   });
 
+  apiError: string | null = null;
+
   onSubmit() {
+    this.apiError = null;
+
     if (this.form.invalid) return;
 
-    this.api.post('signup', this.form.value).subscribe({
+    this.api.post('auth/register', this.form.value).subscribe({
       next: () => {
-        alert('Регистрация прошла успешно!');
         this.router.navigate(['/auth/login']);
       },
       error: (err) => {
-        alert('Ошибка при регистрации: ' + err.message);
+        this.apiError = err?.error?.message || 'Ошибка при регистрации';
       }
     });
   }
