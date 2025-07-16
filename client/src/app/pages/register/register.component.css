@@ -1,15 +1,21 @@
 :host {
   display: block;
-  max-width: 600px;
+  width: 100%;
   margin: 2rem auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #444;
 }
 
+.auth {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .title {
   margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
+  text-align: center;
 }
 
 form {

@@ -1,62 +1,72 @@
-<h1  class="title">Моё приложение — Регистрация</h1>
+<div class="auth">
+  <h1  class="title">Регистрация</h1>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <!-- Ошибка от API -->
-  <div *ngIf="apiError" class="api-error">
-    {{ apiError }}
-  </div>
-
-  <div class="section">
-    <label>
-      Никнейм
-      <input formControlName="username" />
-    </label>
-    <div *ngIf="form.controls['username'].invalid && form.controls['username'].touched" class="error">
-      Никнейм обязателен
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Ошибка от API -->
+    <div *ngIf="apiError" class="api-error">
+      {{ apiError }}
     </div>
-  </div>
 
-  <div class="section">
-    <label>
-      Email:
-      <input type="email" formControlName="email" />
-    </label>
-    <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
-      Корректный email обязателен
+    <div class="section">
+      <label>
+        Никнейм
+        <input formControlName="username" />
+      </label>
+      <div *ngIf="form.controls['username'].invalid && form.controls['username'].touched" class="error">
+        Никнейм обязателен
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <label>
-      Пароль:
-      <input type="password" formControlName="password" />
-    </label>
-    <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
-      Минимум 6 символов
+    <div class="section">
+      <label>
+        Email:
+        <input type="email" formControlName="email" />
+      </label>
+      <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
+        Корректный email обязателен
+      </div>
     </div>
-  </div>
+
+    <div class="section">
+      <label>
+        Пароль:
+        <input type="password" formControlName="password" />
+      </label>
+      <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
+        Минимум 6 символов
+      </div>
+    </div>
 
 
-  <div class="section">
-    <label>
-      Фамилия:
-      <input formControlName="lastName" />
-    </label>
-  </div>
+    <div class="section">
+      <label>
+        Фамилия:
+        <input formControlName="lastName" />
+      </label>
+    </div>
 
-  <div class="section">
-    <label>
-      Имя:
-      <input formControlName="firstName" />
-    </label>
-  </div>
+    <div class="section">
+      <label>
+        Имя:
+        <input formControlName="firstName" />
+      </label>
+    </div>
 
-  <div class="section">
-    <label>
-      Отчество:
-      <input formControlName="middleName" />
-    </label>
-  </div>
+    <div class="section">
+      <label>
+        Отчество:
+        <input formControlName="middleName" />
+      </label>
+    </div>
 
-  <button type="submit" [disabled]="form.invalid">Зарегистрироваться</button>
-</form>
+    <button type="submit" [disabled]="form.invalid">Зарегистрироваться</button>
+
+
+    <div style="margin-top: 12px; font-size: 0.9rem; color: #555;">
+      Нет аккаунта?
+      <a routerLink="/auth/login" style="color: #4a90e2; text-decoration: none; border-bottom: 1px solid transparent; cursor: pointer;">
+        Войдите
+      </a>
+    </div>
+  </form>
+</div>

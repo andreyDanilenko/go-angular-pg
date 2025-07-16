@@ -1,29 +1,38 @@
-<h1  class="title">Моё приложение — Вход</h1>
+<div class="auth">
+  <h1  class="title">Вход</h1>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="section">
-    <label>
-      Email:
-      <input type="email" formControlName="email" />
-    </label>
-    <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
-      Корректный email обязателен
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="section">
+      <label>
+        Email:
+        <input type="email" formControlName="email" />
+      </label>
+      <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
+        Корректный email обязателен
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <label>
-      Пароль:
-      <input type="password" formControlName="password" />
-    </label>
-    <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
-      Минимум 6 символов
+    <div class="section">
+      <label>
+        Пароль:
+        <input type="password" formControlName="password" />
+      </label>
+      <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
+        Минимум 6 символов
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="apiError" style="color: red; margin-top: 10px;">
-    {{ apiError }}
-  </div>
+    <div *ngIf="apiError" style="color: red; margin-top: 10px;">
+      {{ apiError }}
+    </div>
 
-  <button type="submit" [disabled]="form.invalid">Войти</button>
-</form>
+    <button type="submit" [disabled]="form.invalid">Войти</button>
+
+    <div style="margin-top: 12px; font-size: 0.9rem; color: #555;">
+      Нет аккаунта?
+      <a routerLink="/auth/register" style="color: #4a90e2; text-decoration: none; border-bottom: 1px solid transparent; cursor: pointer;">
+        Зарегистрируйтесь
+      </a>
+    </div>
+  </form>
+</div>
