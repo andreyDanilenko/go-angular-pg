@@ -44,3 +44,7 @@ docker builder prune
 docker volume prune
 5. Удаляем конкретный image
 docker rmi <IMAGE_ID>
+
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_github_deploy
+cat ~/.ssh/id_rsa_github_deploy.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/id_rsa_github_deploy.pub | ssh user@server_ip 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
