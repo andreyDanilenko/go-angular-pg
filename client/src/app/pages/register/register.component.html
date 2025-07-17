@@ -7,60 +7,59 @@
       {{ apiError }}
     </div>
 
-    <div class="section">
-      <label>
-        Никнейм
-        <input formControlName="username" />
-      </label>
-      <div *ngIf="form.controls['username'].invalid && form.controls['username'].touched" class="error">
-        Никнейм обязателен
-      </div>
-    </div>
+      <!-- Никнейм -->
+    <app-input
+      label="Никнейм"
+      [control]="form.controls['username']"
+      placeholder="Введите никнейм"
+      size="md"
+      errorText="Никнейм обязателен"
+    ></app-input>
 
-    <div class="section">
-      <label>
-        Email:
-        <input type="email" formControlName="email" />
-      </label>
-      <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
-        Корректный email обязателен
-      </div>
-    </div>
+    <app-input
+      label="Email"
+      [control]="form.controls['email']"
+      type="email"
+      placeholder="example@mail.com"
+      size="md"
+      errorText="Корректный email обязателен"
+    ></app-input>
 
-    <div class="section">
-      <label>
-        Пароль:
-        <input type="password" formControlName="password" />
-      </label>
-      <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
-        Минимум 6 символов
-      </div>
-    </div>
+    <app-input
+      label="Пароль"
+      [control]="form.controls['password']"
+      type="password"
+      placeholder="Введите пароль"
+      size="md"
+      errorText="Минимум 8 символов"
+    ></app-input>
 
+    <!-- Фамилия -->
+    <app-input
+      label="Фамилия"
+      [control]="form.controls['lastName']"
+      placeholder="Введите фамилию"
+      size="md"
+    ></app-input>
 
-    <div class="section">
-      <label>
-        Фамилия:
-        <input formControlName="lastName" />
-      </label>
-    </div>
+    <!-- Имя -->
+    <app-input
+      label="Имя"
+      [control]="form.controls['firstName']"
+      placeholder="Введите имя"
+      size="md"
+    ></app-input>
 
-    <div class="section">
-      <label>
-        Имя:
-        <input formControlName="firstName" />
-      </label>
-    </div>
+    <!-- Отчество -->
+    <app-input
+      label="Отчество"
+      [control]="form.controls['middleName']"
+      placeholder="Введите отчество"
+      size="md"
+    ></app-input>
 
-    <div class="section">
-      <label>
-        Отчество:
-        <input formControlName="middleName" />
-      </label>
-    </div>
 
     <button type="submit" [disabled]="form.invalid">Зарегистрироваться</button>
-
 
     <div style="margin-top: 12px; font-size: 0.9rem; color: #555;">
       Нет аккаунта?

@@ -5,14 +5,21 @@ import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { BaseApiService } from '../../core/services/base-api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { InputComponent } from '../../components/uikit/input/input.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    InputComponent
+  ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
+
 export class AuthComponent {
   private fb = inject(FormBuilder);
   private api = inject(BaseApiService);
@@ -21,7 +28,7 @@ export class AuthComponent {
 
   form: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   apiError: string | null = null;

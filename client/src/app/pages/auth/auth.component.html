@@ -2,29 +2,27 @@
   <h1  class="title">Вход</h1>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="section">
-      <label>
-        Email:
-        <input type="email" formControlName="email" />
-      </label>
-      <div *ngIf="form.controls['email'].invalid && form.controls['email'].touched" class="error">
-        Корректный email обязателен
-      </div>
-    </div>
-
-    <div class="section">
-      <label>
-        Пароль:
-        <input type="password" formControlName="password" />
-      </label>
-      <div *ngIf="form.controls['password'].invalid && form.controls['password'].touched" class="error">
-        Минимум 6 символов
-      </div>
-    </div>
-
-    <div *ngIf="apiError" style="color: red; margin-top: 10px;">
+    <div *ngIf="apiError" class="api-error">
       {{ apiError }}
     </div>
+
+    <app-input
+      label="Email"
+      [control]="form.controls['email']"
+      type="email"
+      placeholder="example@mail.com"
+      size="md"
+      errorText="Корректный email обязателен"
+    ></app-input>
+
+    <app-input
+      label="Пароль"
+      [control]="form.controls['password']"
+      type="password"
+      placeholder="Введите пароль"
+      size="md"
+      errorText="Минимум 8 символов"
+    ></app-input>
 
     <button type="submit" [disabled]="form.invalid">Войти</button>
 

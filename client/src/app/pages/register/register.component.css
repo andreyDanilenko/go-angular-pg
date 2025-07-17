@@ -21,40 +21,9 @@
 form {
   background: #f9faff;
   padding: 1.5rem 2rem;
-  max-width: 400px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(100, 100, 150, 0.1);
   border: 1px solid #e0e6f2;
-}
-
-.section {
-  margin-bottom: 16px;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.1rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #555;
-}
-
-input {
-  margin-top: 4px;
-  width: 100%;
-  padding: 0.5rem 0.8rem;
-  margin-bottom: 0.1rem;
-  border: 1.5px solid #cbd3e6;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-  background-color: #fff;
-}
-
-input:focus {
-  outline: none;
-  border-color: #7c90f3;
-  box-shadow: 0 0 6px rgba(124, 144, 243, 0.5);
 }
 
 button {
