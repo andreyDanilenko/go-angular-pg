@@ -7,6 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserShort struct {
+	ID        string `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"firstName,omitempty"`
+	LastName  string `json:"lastName,omitempty"`
+	Email     string `json:"email"`
+}
+
 type User struct {
 	ID         string    `gorm:"primaryKey;size:36" json:"id"` // NanoID (12 символов)
 	Username   string    `gorm:"uniqueIndex;size:50;not null" json:"username" validate:"required,min=3,max=50"`
@@ -15,8 +23,17 @@ type User struct {
 	MiddleName string    `gorm:"size:50" json:"middleName,omitempty"`                                  // Необязательное
 	Email      string    `gorm:"uniqueIndex;size:255;not null" json:"email" validate:"required,email"`
 	Password   string    `gorm:"size:255;not null" json:"-"` // Пароль исключён
+	Role       UserRole  `gorm:"size:20;default:'guest'" json:"role"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+}
+
+type UpdateUserInput struct {
+	Username   string `gorm:"uniqueIndex;size:50;not null" json:"username" validate:"required,min=3,max=50"`
+	FirstName  string `gorm:"size:50" json:"firstName,omitempty" validate:"omitempty,min=2,max=50"` // Необязательное
+	LastName   string `gorm:"size:50" json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`  // Необязательное
+	MiddleName string `gorm:"size:50" json:"middleName,omitempty"`                                  // Необязательное
+	Role       string `json:"role,omitempty"`                                                       // роль меняется только админом
 }
 
 // BeforeCreate — хук для генерации NanoID

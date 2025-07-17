@@ -40,13 +40,44 @@ func (r *UserRepository) Create(ctx context.Context, input model.SignUpInput) (*
 	return user, nil
 }
 
+func (r *UserRepository) GetAll(ctx context.Context) ([]model.User, error) {
+	var users []model.User
+	err := r.db.WithContext(ctx).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+// Получить пользователя по ID
 func (r *UserRepository) GetByID(ctx context.Context, id string) (*model.User, error) {
 	var user model.User
-	err := r.db.WithContext(ctx).First(&user, id).Error
+	err := r.db.WithContext(ctx).First(&user, "id = ?", id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		return nil, nil // пользователь не найден
 	}
-	return &user, err
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error) {
+	var user model.User
+	if err := r.db.WithContext(ctx).First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+
+	// Обновляем нужные поля
+	user.Username = input.Username
+	user.FirstName = input.FirstName
+	user.LastName = input.LastName
+
+	if err := r.db.WithContext(ctx).Save(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {

@@ -54,6 +54,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+	r.Use(middleware.Logger)
 
 	// Публичные маршруты
 	r.Route("/api", func(r chi.Router) {
@@ -68,6 +69,10 @@ func main() {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(cfg.JWTSecret))
 
+			r.Get("/users", authHandler.GetUsers)
+			r.Get("/users/{id}", authHandler.GetUserByID)
+			r.Put("/users/{id}", authHandler.UpdateUser)
+
 			r.Get("/articles", articleHandler.GetUserArticles)
 			r.Post("/articles", articleHandler.CreateArticle)
 			r.Put("/articles/{id}", articleHandler.UpdateArticle)
@@ -75,8 +80,8 @@ func main() {
 		})
 	})
 	// Запуск сервера
-	log.Println("Server is running on port 8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	log.Println("Server is running on port 8081")
+	if err := http.ListenAndServe(":8081", r); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

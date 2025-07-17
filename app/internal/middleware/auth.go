@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"admin/panel/internal/model"
 	"context"
 	"encoding/json"
 	"errors"
@@ -15,12 +16,19 @@ type contextKey string
 
 const (
 	UserIDKey contextKey = "userID"
+	RoleKey   contextKey = "role"
 )
 
 func JWTAuth(secret string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			authHeader := r.Header.Get("Authorization")
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				respondError(w, http.StatusUnauthorized, "Missing or invalid Authorization header")
+				return
+			}
+
+			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenString == "" {
 				respondError(w, http.StatusUnauthorized, "Authorization token required")
 				return
@@ -38,7 +46,15 @@ func JWTAuth(secret string) func(http.Handler) http.Handler {
 				return
 			}
 
+			roleStr, _ := claims["role"].(string)
+			role := model.UserRole(roleStr)
+			if !role.IsValid() {
+				role = model.RoleGuest
+			}
+
 			ctx := context.WithValue(r.Context(), UserIDKey, userID)
+			ctx = context.WithValue(ctx, RoleKey, role)
+
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -65,5 +81,5 @@ func parseToken(tokenString, secret string) (jwt.MapClaims, error) {
 func respondError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(map[string]string{"error": message})
+	_ = json.NewEncoder(w).Encode(map[string]string{"error": message})
 }

@@ -48,7 +48,7 @@ func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, 
 }
 
 func (s *ArticleService) UpdateArticle(ctx context.Context, id string, input model.ArticleInput) (*model.Article, error) {
-	return s.repo.UpdateArticle(ctx, id, input.Title, input.Content)
+	return s.repo.UpdateArticle(ctx, id, input.Title, input.Content, input.Category)
 }
 
 func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {

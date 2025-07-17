@@ -60,7 +60,11 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) GetUserArticles(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	articles, err := h.service.GetArticlesByAuthor(r.Context(), userID)
 	if err != nil {
