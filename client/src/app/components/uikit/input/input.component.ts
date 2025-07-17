@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-input',
@@ -25,6 +25,10 @@ export class InputComponent {
 
   get showError() {
     return this.control.invalid && this.control.touched;
+  }
+
+  get formControl(): FormControl {
+    return this.control as FormControl;
   }
 
   clear() {
