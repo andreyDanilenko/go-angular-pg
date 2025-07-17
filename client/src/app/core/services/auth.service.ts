@@ -1,27 +1,44 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, catchError, map, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
 
-  // Проверка, есть ли токен в localStorage (примитивно — можно усложнить)
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
-  }
+  constructor(private http: HttpClient) {}
 
-  // Сохраняем токен после успешного входа или регистрации
-  setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-  }
-
-  // Получить токен (например, для отправки в заголовках)
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  // Очистить токен при выходе из системы
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+    return !this.isTokenExpired(token);
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Math.floor(Date.now() / 1000);
+      return now >= payload.exp;
+    } catch {
+      return true;
+    }
+  }
+
+  // checkTokenOnServer(): Observable<boolean> {
+  //   return this.http.get('/api/auth/check').pipe(
+  //     map(() => true),
+  //     catchError(() => of(false))
+  //   );
+  // }
+
+  setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
   }
