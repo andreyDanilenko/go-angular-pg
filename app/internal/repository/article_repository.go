@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"admin/panel/app/internal/model"
+	"admin/panel/internal/model"
 	"context"
 	"errors"
 	"fmt"

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"admin/panel/app/internal/model"
-	"admin/panel/app/internal/repository"
+	"admin/panel/internal/model"
+	"admin/panel/internal/repository"
 	"fmt"
 
 	"context"

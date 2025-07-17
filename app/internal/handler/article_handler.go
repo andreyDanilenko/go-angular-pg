@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"admin/panel/app/internal/middleware"
-	"admin/panel/app/internal/model"
-	"admin/panel/app/internal/service"
+	"admin/panel/internal/middleware"
+	"admin/panel/internal/model"
+	"admin/panel/internal/service"
 	"encoding/json"
 	"net/http"
 

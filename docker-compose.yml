@@ -16,7 +16,9 @@ services:
 
   app:
     container_name: auth_service_app
-    build: .
+    build:
+      context: ./app 
+      dockerfile: Dockerfile
     ports:
       - "8081:8080"
     depends_on:

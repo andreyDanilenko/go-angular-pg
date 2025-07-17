@@ -1,11 +1,11 @@
 package main
 
 import (
-	"admin/panel/app/internal/config"
-	"admin/panel/app/internal/handler"
-	"admin/panel/app/internal/middleware"
-	"admin/panel/app/internal/repository"
-	"admin/panel/app/internal/service"
+	"admin/panel/internal/config"
+	"admin/panel/internal/handler"
+	"admin/panel/internal/middleware"
+	"admin/panel/internal/repository"
+	"admin/panel/internal/service"
 	"fmt"
 	"log"
 	"net/http"
@@ -47,7 +47,7 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:4200"}, // Разрешаем Angular UI
+		AllowedOrigins:   []string{"http://localhost:4200", "https://lifedream.tech"}, // Разрешаем Angular UI
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
