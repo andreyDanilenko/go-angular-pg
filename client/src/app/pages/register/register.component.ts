@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { BaseApiService } from '../../core/services/base-api.service';
 import { InputComponent } from '../../components/uikit/input/input.component';
+import { ButtonComponent } from '../../components/uikit/button/button.component';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +14,8 @@ import { InputComponent } from '../../components/uikit/input/input.component';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    InputComponent
+    InputComponent,
+    ButtonComponent
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']

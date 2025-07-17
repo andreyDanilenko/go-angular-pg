@@ -24,7 +24,14 @@
       errorText="Минимум 8 символов"
     ></app-input>
 
-    <button type="submit" [disabled]="form.invalid">Войти</button>
+
+    <app-button
+        type="primary"
+        [disabled]="form.invalid"
+        typeButton="submit"
+      >
+        Войти
+    </app-button>
 
     <div style="margin-top: 12px; font-size: 0.9rem; color: #555;">
       Нет аккаунта?

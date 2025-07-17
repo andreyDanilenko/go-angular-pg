@@ -1,0 +1,14 @@
+<button
+  [type]="typeButton"
+  [disabled]="disabled"
+  [ngClass]="['btn', 'btn-' + type, 'btn-size-' + size]"
+  (click)="onClick($event)"
+>
+  <span *ngIf="iconLeft" class="icon icon-left">
+    <img [src]="iconLeft" alt="icon-left" />
+  </span>
+  <ng-content></ng-content>
+  <span *ngIf="iconRight" class="icon icon-right">
+    <img [src]="iconRight" alt="icon-right" />
+  </span>
+</button>

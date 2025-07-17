@@ -57,8 +57,13 @@
       size="md"
     ></app-input>
 
-
-    <button type="submit" [disabled]="form.invalid">Зарегистрироваться</button>
+    <app-button
+        type="primary"
+        [disabled]="form.invalid"
+        typeButton="submit"
+      >
+        Зарегистрироваться
+    </app-button>
 
     <div style="margin-top: 12px; font-size: 0.9rem; color: #555;">
       Нет аккаунта?

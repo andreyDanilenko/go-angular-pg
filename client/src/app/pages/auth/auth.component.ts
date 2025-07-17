@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { BaseApiService } from '../../core/services/base-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { InputComponent } from '../../components/uikit/input/input.component';
+import { ButtonComponent } from '../../components/uikit/button/button.component';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,8 @@ import { InputComponent } from '../../components/uikit/input/input.component';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    InputComponent
+    InputComponent,
+    ButtonComponent
   ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
