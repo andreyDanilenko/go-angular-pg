@@ -37,7 +37,7 @@ func NewUserHandler(
 func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var input model.SignUpInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		h.errorWriter.WriteError(w, http.StatusBadRequest, "Invalid request body")
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Некорректный формат данных", nil)
 		return
 	}
 
