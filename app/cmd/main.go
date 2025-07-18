@@ -2,6 +2,7 @@ package main
 
 import (
 	"admin/panel/internal/apierror"
+	"admin/panel/internal/apiresponse"
 	"admin/panel/internal/config"
 	"admin/panel/internal/handler"
 	"admin/panel/internal/middleware"
@@ -38,18 +39,22 @@ func main() {
 
 	// Инициализация зависимостей
 	errorWriter := apierror.New()
+	responseWriter := apiresponse.New()
+
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
+
 	authService := service.NewUserService(userRepo, cfg.JWTSecret)
 	articleService := service.NewArticleService(articleRepo)
-	authHandler := handler.NewUserHandler(authService, errorWriter)
+
+	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
 
 	// Настройка роутера
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:4200", "https://lifedream.tech", "https://www.lifedream.tech"}, // Разрешаем Angular UI
+		AllowedOrigins:   []string{"http://localhost:4200", "https://lifedream.tech", "https://www.lifedream.tech"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -57,7 +62,6 @@ func main() {
 		MaxAge:           300,
 	}))
 	r.Use(middleware.Logger)
-
 	// Публичные маршруты
 	r.Route("/api", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
