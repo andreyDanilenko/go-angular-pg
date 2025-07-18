@@ -134,9 +134,8 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, 
 		Email:      user.Email,
 		CreatedAt:  user.CreatedAt,
 		UpdatedAt:  user.UpdatedAt,
-
-		Articles: user.Articles,
 	}
+
 	return fullUser, nil
 }
 
