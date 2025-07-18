@@ -1,10 +1,11 @@
 package middleware
 
 import (
+	"admin/panel/internal/contract"
 	"admin/panel/internal/model"
 	"context"
-	"encoding/json"
 	"errors"
+
 	"fmt"
 	"net/http"
 	"strings"
@@ -19,30 +20,30 @@ const (
 	RoleKey   contextKey = "role"
 )
 
-func JWTAuth(secret string) func(http.Handler) http.Handler {
+func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if !strings.HasPrefix(authHeader, "Bearer ") {
-				respondError(w, http.StatusUnauthorized, "Missing or invalid Authorization header")
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Missing or invalid Authorization header")
 				return
 			}
 
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenString == "" {
-				respondError(w, http.StatusUnauthorized, "Authorization token required")
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Authorization token required")
 				return
 			}
 
 			claims, err := parseToken(tokenString, secret)
 			if err != nil {
-				respondError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
+				errorWriter.WriteError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
 				return
 			}
 
 			userID, ok := claims["sub"].(string)
 			if !ok || userID == "" {
-				respondError(w, http.StatusUnauthorized, "Invalid user ID in token")
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid user ID in token")
 				return
 			}
 
@@ -76,10 +77,4 @@ func parseToken(tokenString, secret string) (jwt.MapClaims, error) {
 	}
 
 	return nil, errors.New("invalid token")
-}
-
-func respondError(w http.ResponseWriter, code int, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(map[string]string{"error": message})
 }

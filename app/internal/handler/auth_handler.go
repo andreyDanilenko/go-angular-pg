@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/service"
@@ -16,24 +17,26 @@ import (
 type UserHandler struct {
 	authService *service.UserService
 	validate    *validator.Validate
+	errorWriter contract.ErrorWriter
 }
 
-func NewUserHandler(authService *service.UserService) *UserHandler {
+func NewUserHandler(authService *service.UserService, ew contract.ErrorWriter) *UserHandler {
 	return &UserHandler{
 		authService: authService,
 		validate:    validator.New(),
+		errorWriter: ew,
 	}
 }
 
 func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var input model.SignUpInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		h.errorWriter.WriteError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	if err := h.validate.Struct(input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "validation_failed", "Ошибка валидации", err)
 		return
 	}
 
@@ -41,12 +44,16 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var conflictErr *model.ConflictError
 		if errors.As(err, &conflictErr) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusConflict)
-			json.NewEncoder(w).Encode(conflictErr)
+			h.errorWriter.WriteWithCode(
+				w,
+				http.StatusConflict,
+				"conflict",
+				"Указанные поля уже заняты",
+				conflictErr.Fields,
+			)
 			return
 		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Внутренняя ошибка сервера")
 		return
 	}
 
@@ -117,7 +124,8 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	role, _ := r.Context().Value(middleware.RoleKey).(model.UserRole)
 
 	if authUserID != userID && role != model.RoleAdmin {
-		http.Error(w, "Другого пользователя может редактировать только Админ", http.StatusForbidden)
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Другого пользователя может редактировать только Админ")
+		// http.Error(w, "Другого пользователя может редактировать только Админ", http.StatusForbidden)
 		return
 	}
 

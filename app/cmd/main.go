@@ -1,6 +1,7 @@
 package main
 
 import (
+	"admin/panel/internal/apierror"
 	"admin/panel/internal/config"
 	"admin/panel/internal/handler"
 	"admin/panel/internal/middleware"
@@ -36,11 +37,12 @@ func main() {
 	defer db.Close()
 
 	// Инициализация зависимостей
+	errorWriter := apierror.New()
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
 	authService := service.NewUserService(userRepo, cfg.JWTSecret)
 	articleService := service.NewArticleService(articleRepo)
-	authHandler := handler.NewUserHandler(authService)
+	authHandler := handler.NewUserHandler(authService, errorWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
 
 	// Настройка роутера
@@ -67,7 +69,7 @@ func main() {
 
 		// Защищенные маршруты (требуют JWT)
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTAuth(cfg.JWTSecret))
+			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
 
 			r.Get("/users", authHandler.GetUsers)
 			r.Get("/users/{id}", authHandler.GetUserByID)
