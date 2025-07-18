@@ -62,7 +62,7 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, s.jwtSecret)
+	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
 	if err != nil {
 		return nil, "", err
 	}
@@ -86,7 +86,7 @@ func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*mode
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, s.jwtSecret)
+	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
 	if err != nil {
 		return nil, "", err
 	}
@@ -130,9 +130,12 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, 
 		FirstName:  user.FirstName,
 		LastName:   user.LastName,
 		MiddleName: user.MiddleName,
+		Role:       user.Role,
 		Email:      user.Email,
 		CreatedAt:  user.CreatedAt,
 		UpdatedAt:  user.UpdatedAt,
+
+		Articles: user.Articles,
 	}
 	return fullUser, nil
 }
