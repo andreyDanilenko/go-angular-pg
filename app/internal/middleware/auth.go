@@ -35,7 +35,7 @@ func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler)
 				return
 			}
 
-			claims, err := parseToken(tokenString, secret)
+			claims, err := ParseToken(tokenString, secret)
 			if err != nil {
 				errorWriter.WriteError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
 				return
@@ -61,7 +61,7 @@ func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler)
 	}
 }
 
-func parseToken(tokenString, secret string) (jwt.MapClaims, error) {
+func ParseToken(tokenString, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

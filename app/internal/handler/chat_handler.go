@@ -4,6 +4,8 @@ import (
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/service"
 	"admin/panel/internal/ws"
+	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -40,9 +42,33 @@ func (h *ChatHandler) ServeWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := ws.NewClient(conn, userID, h.Hub)
-	h.Hub.RegisterClient(client)
+	// Создаем клиента с сервисом
+	client := ws.NewClient(conn, userID, h.Hub, h.Service)
 
+	// Регистрируем клиента, отправляя его в канал Hub.Register
+	h.Hub.Register <- client
+
+	// Запускаем горутины для чтения и записи сообщений
 	go client.Read(r.Context())
 	go client.Write()
+}
+
+func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
+	fromID := r.URL.Query().Get("from")
+	toID := r.URL.Query().Get("to")
+
+	if fromID == "" || toID == "" {
+		http.Error(w, "missing parameters", http.StatusBadRequest)
+		return
+	}
+
+	messages, err := h.Service.GetMessagesBetween(r.Context(), fromID, toID)
+	if err != nil {
+		log.Printf("GetMessagesBetween error: %v", err)
+		http.Error(w, "failed to get messages", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(messages)
 }

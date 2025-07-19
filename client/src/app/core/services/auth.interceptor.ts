@@ -22,7 +22,6 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
   return next(authReq).pipe(
     catchError((err: HttpErrorResponse) => {
-      console.log('123123');
 
       if (err.status === 401) {
         auth.logout();

@@ -27,13 +27,6 @@ export class AuthService {
     }
   }
 
-  // checkTokenOnServer(): Observable<boolean> {
-  //   return this.http.get('/api/auth/check').pipe(
-  //     map(() => true),
-  //     catchError(() => of(false))
-  //   );
-  // }
-
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
   }

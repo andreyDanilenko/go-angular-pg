@@ -3,59 +3,49 @@ package ws
 import (
 	"admin/panel/internal/model"
 	"log"
-	"sync"
 )
 
 type Hub struct {
-	clients    map[string]*Client
-	register   chan *Client
-	unregister chan *Client
-	broadcast  chan model.ChatMessage
-	mu         sync.RWMutex
+	Clients    map[string]*Client
+	Register   chan *Client
+	Unregister chan *Client
+	Broadcast  chan model.ChatMessage
 }
 
 func NewHub() *Hub {
 	return &Hub{
-		clients:    make(map[string]*Client),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		broadcast:  make(chan model.ChatMessage),
+		Clients:    make(map[string]*Client),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Broadcast:  make(chan model.ChatMessage),
 	}
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
-			h.mu.Lock()
-			h.clients[client.UserID] = client
-			h.mu.Unlock()
+		case client := <-h.Register:
+			h.Clients[client.UserID] = client
 			log.Println("User connected:", client.UserID)
 
-		case client := <-h.unregister:
-			h.mu.Lock()
-			if _, ok := h.clients[client.UserID]; ok {
-				delete(h.clients, client.UserID)
+		case client := <-h.Unregister:
+			if _, ok := h.Clients[client.UserID]; ok {
+				delete(h.Clients, client.UserID)
 				close(client.Send)
+				log.Println("User disconnected:", client.UserID)
 			}
-			h.mu.Unlock()
-			log.Println("User disconnected:", client.UserID)
 
-		case msg := <-h.broadcast:
-			h.mu.RLock()
-			if receiver, ok := h.clients[msg.ToID]; ok {
+		case msg := <-h.Broadcast:
+			if receiver, ok := h.Clients[msg.ToID]; ok {
+				// Отправляем сообщение получателю, если он подключен
 				select {
 				case receiver.Send <- msg:
 				default:
+					// Если канал переполнен — закрываем соединение с получателем
 					close(receiver.Send)
-					delete(h.clients, receiver.UserID)
+					delete(h.Clients, receiver.UserID)
 				}
 			}
-			h.mu.RUnlock()
 		}
 	}
-}
-
-func (h *Hub) RegisterClient(client *Client) {
-	h.register <- client
 }

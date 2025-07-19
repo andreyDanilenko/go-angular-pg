@@ -1,0 +1,9 @@
+{
+  "/api/ws": {
+    "target": "ws://localhost:8081",
+    "ws": true,
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

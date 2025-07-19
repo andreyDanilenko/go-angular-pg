@@ -2,6 +2,7 @@ package ws
 
 import (
 	"admin/panel/internal/model"
+	"admin/panel/internal/service"
 	"context"
 	"encoding/json"
 	"log"
@@ -10,42 +11,51 @@ import (
 )
 
 type Client struct {
-	UserID string
-	Conn   ConnInterface
-	Send   chan model.ChatMessage
-	Hub    *Hub
+	Conn    *websocket.Conn
+	UserID  string
+	Send    chan model.ChatMessage
+	Hub     *Hub
+	Service *service.ChatService
 }
 
-func NewClient(conn ConnInterface, userID string, hub *Hub) *Client {
+func NewClient(conn *websocket.Conn, userID string, hub *Hub, service *service.ChatService) *Client {
 	return &Client{
-		UserID: userID,
-		Conn:   conn,
-		Send:   make(chan model.ChatMessage, 256),
-		Hub:    hub,
+		Conn:    conn,
+		UserID:  userID,
+		Send:    make(chan model.ChatMessage, 256),
+		Hub:     hub,
+		Service: service,
 	}
 }
 
 func (c *Client) Read(ctx context.Context) {
 	defer func() {
-		c.Hub.unregister <- c
-		_ = c.Conn.Close()
+		c.Hub.Unregister <- c
+		c.Conn.Close()
 	}()
 
 	for {
-		_, messageBytes, err := c.Conn.ReadMessage()
+		_, msgBytes, err := c.Conn.ReadMessage()
 		if err != nil {
-			log.Println("read error:", err)
+			log.Println("Read error:", err)
 			break
 		}
 
 		var msg model.ChatMessage
-		if err := json.Unmarshal(messageBytes, &msg); err != nil {
-			log.Println("invalid message format:", err)
+		if err := json.Unmarshal(msgBytes, &msg); err != nil {
+			log.Println("Invalid message format:", err)
 			continue
 		}
 
-		msg.FromID = c.UserID
-		c.Hub.broadcast <- msg
+		msg.FromID = c.UserID // Всегда ставим корректного отправителя
+
+		// Сохраняем сообщение в БД через сервис
+		if err := c.Service.SaveMessage(ctx, &msg); err != nil {
+			log.Println("Failed to save message:", err)
+		}
+
+		// Отправляем сообщение через хаб всем нужным клиентам
+		c.Hub.Broadcast <- msg
 	}
 }
 
@@ -57,20 +67,13 @@ func (c *Client) Write() {
 	for msg := range c.Send {
 		msgBytes, err := json.Marshal(msg)
 		if err != nil {
-			log.Println("marshal error:", err)
+			log.Println("Marshal error:", err)
 			continue
 		}
 
-		err = c.Conn.WriteMessage(websocket.TextMessage, msgBytes)
-		if err != nil {
-			log.Println("write error:", err)
+		if err := c.Conn.WriteMessage(websocket.TextMessage, msgBytes); err != nil {
+			log.Println("Write error:", err)
 			break
 		}
 	}
-}
-
-type ConnInterface interface {
-	ReadMessage() (messageType int, p []byte, err error)
-	WriteMessage(messageType int, data []byte) error
-	Close() error
 }
