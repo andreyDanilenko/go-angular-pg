@@ -6,8 +6,10 @@ import (
 	"admin/panel/internal/config"
 	"admin/panel/internal/handler"
 	"admin/panel/internal/middleware"
+	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
+	"admin/panel/internal/ws"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,7 +23,6 @@ import (
 func main() {
 	cfg := config.LoadConfig()
 
-	// Инициализация GORMls
 	gormDB, err := gorm.Open(postgres.Open(fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
@@ -30,27 +31,35 @@ func main() {
 		log.Fatalf("Failed to initialize GORM: %v", err)
 	}
 
-	// Получаем *sql.DB из GORM для обратной совместимости
-	db, err := gormDB.DB()
+	sqlDB, err := gormDB.DB()
 	if err != nil {
 		log.Fatalf("Failed to get underlying DB connection: %v", err)
 	}
-	defer db.Close()
+	defer sqlDB.Close()
 
-	// Инициализация зависимостей
+	// Авто-миграция модели чата
+	if err := gormDB.AutoMigrate(&model.ChatMessage{}); err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+	}
+
 	errorWriter := apierror.New()
 	responseWriter := apiresponse.New()
 
+	// Существующие репозитории, сервисы и хендлеры...
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
-
 	authService := service.NewUserService(userRepo, cfg.JWTSecret)
 	articleService := service.NewArticleService(articleRepo)
-
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
 
-	// Настройка роутера
+	// Новый чат
+	chatRepo := repository.NewChatRepository(gormDB)
+	chatService := service.NewChatService(chatRepo)
+	chatHub := ws.NewHub()
+	go chatHub.Run()
+	chatHandler := handler.NewChatHandler(chatService, chatHub)
+
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
@@ -62,8 +71,9 @@ func main() {
 		MaxAge:           300,
 	}))
 	r.Use(middleware.Logger)
-	// Публичные маршруты
+
 	r.Route("/api", func(r chi.Router) {
+		// Публичные маршруты
 		r.Group(func(r chi.Router) {
 			r.Post("/signup", authHandler.SignUp)
 			r.Post("/signin", authHandler.SignIn)
@@ -71,7 +81,7 @@ func main() {
 			r.Get("/articles/{id}", articleHandler.GetArticle)
 		})
 
-		// Защищенные маршруты (требуют JWT)
+		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
 
@@ -83,9 +93,12 @@ func main() {
 			r.Post("/articles", articleHandler.CreateArticle)
 			r.Put("/articles/{id}", articleHandler.UpdateArticle)
 			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+
+			// WebSocket для чата
+			r.Get("/ws", chatHandler.ServeWS)
 		})
 	})
-	// Запуск сервера
+
 	log.Println("Server is running on port 8081")
 	if err := http.ListenAndServe(":8081", r); err != nil {
 		log.Fatalf("Server failed: %v", err)
