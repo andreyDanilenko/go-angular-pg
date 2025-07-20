@@ -7,20 +7,45 @@ import (
 	"gorm.io/gorm"
 )
 
-type ChatMessage struct {
-	ID        string    `gorm:"primaryKey;size:12" json:"id"`
-	FromID    string    `gorm:"size:36;not null" json:"fromId"`
-	ToID      string    `gorm:"size:36;not null" json:"toId"`
-	Message   string    `gorm:"type:text;not null" json:"message"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
+type ChatRoom struct {
+	ID           string    `gorm:"primaryKey;size:36" json:"id"`
+	Name         string    `gorm:"size:100" json:"name"`
+	IsGroup      bool      `gorm:"default:false" json:"isGroup"`
+	CreatedAt    time.Time `gorm:"autoCreateTime" json:"createdAt"`
+	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+	Participants []User    `gorm:"many2many:chat_participants;" json:"participants"`
 }
 
-// BeforeCreate генерирует NanoID для ID
-func (m *ChatMessage) BeforeCreate(tx *gorm.DB) error {
+type ChatParticipant struct {
+	UserID   string    `gorm:"primaryKey;size:36" json:"userId"`
+	ChatID   string    `gorm:"primaryKey;size:36" json:"chatId"`
+	JoinedAt time.Time `gorm:"autoCreateTime" json:"joinedAt"`
+}
+
+type ChatMessage struct {
+	ID       string    `gorm:"primaryKey;size:36" json:"id"`
+	ChatID   string    `gorm:"size:36;not null;index" json:"chatId"`
+	SenderID string    `gorm:"size:36;not null;index" json:"senderId"`
+	Text     string    `gorm:"type:text;not null" json:"text"`
+	SentAt   time.Time `gorm:"autoCreateTime;index" json:"sentAt"`
+	Sender   User      `gorm:"foreignKey:SenderID" json:"sender"`
+}
+
+type ChatEvent struct {
+	Type    string      `json:"type"` // "message", "join", "leave"
+	Payload interface{} `json:"payload"`
+}
+
+type WsChatMessage struct {
+	ChatID string `json:"chatId"`
+	Text   string `json:"text"`
+}
+
+func (u *ChatMessage) BeforeCreate(tx *gorm.DB) error {
 	genID, err := nanoid.Standard(12)
 	if err != nil {
 		return err
 	}
-	m.ID = genID()
+	u.ID = genID()
 	return nil
 }

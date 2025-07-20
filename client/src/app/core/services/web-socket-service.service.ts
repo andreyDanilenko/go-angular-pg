@@ -1,35 +1,69 @@
+// websocket.service.ts
 import { Injectable } from '@angular/core';
-import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
-import { Observable } from 'rxjs';
-
-export interface ChatMessage {
-  type: string;
-  data: string;
-  toID: string;
-  fromID?: string;
-}
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
-  private socket$: WebSocketSubject<ChatMessage>;
-  private readonly url = 'ws://localhost:8081/api/ws';
+  private socket!: WebSocket;
+  private messageSubject = new Subject<any>();
+  private connectionSubject = new Subject<boolean>();
+  private token: string;
 
   constructor() {
-    // Использование proxy: '/api/ws' (без хоста)
-    this.socket$ = webSocket<ChatMessage>('ws://localhost:8081/api/ws');
+    this.token = localStorage.getItem('authToken') || '';
   }
 
-  sendMessage(message: ChatMessage) {
-    this.socket$.next(message);
+  connect(): void {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      return;
+    }
+
+    const wsUrl = `ws://localhost:8081/ws?token=${this.token}`;
+    this.socket = new WebSocket(wsUrl);
+
+    this.socket.onopen = () => {
+      this.connectionSubject.next(true);
+    };
+
+    this.socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        this.messageSubject.next(message);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
+    };
+
+    this.socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      this.connectionSubject.next(false);
+    };
+
+    this.socket.onclose = () => {
+      this.connectionSubject.next(false);
+      setTimeout(() => this.connect(), 5000);
+    };
   }
 
-  getMessages(): Observable<ChatMessage> {
-    return this.socket$.asObservable();
+  sendMessage(chatId: string, text: string): void {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ chatId, text }));
+    }
   }
 
-  closeConnection() {
-    this.socket$.complete();
+  getMessages(): Observable<any> {
+    return this.messageSubject.asObservable();
+  }
+
+  getConnectionStatus(): Observable<boolean> {
+    return this.connectionSubject.asObservable();
+  }
+
+  disconnect(): void {
+    if (this.socket) {
+      this.socket.close();
+    }
   }
 }

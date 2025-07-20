@@ -37,8 +37,15 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	// Авто-миграция модели чата
-	if err := gormDB.AutoMigrate(&model.ChatMessage{}); err != nil {
+	if err := gormDB.Migrator().DropTable(&model.ChatMessage{}); err != nil {
+		log.Printf("Warning: failed to drop chat_messages table: %v", err)
+	}
+
+	if err := gormDB.AutoMigrate(
+		&model.ChatRoom{},
+		&model.ChatParticipant{},
+		&model.ChatMessage{},
+	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
 
@@ -54,6 +61,7 @@ func main() {
 	articleHandler := handler.NewArticleHandler(articleService)
 
 	// Новый чат
+	// После инициализации репозиториев и сервисов:
 	chatRepo := repository.NewChatRepository(gormDB)
 	chatService := service.NewChatService(chatRepo)
 	chatHub := ws.NewHub()
@@ -96,6 +104,7 @@ func main() {
 
 			// WebSocket для чата
 			r.Get("/ws", chatHandler.ServeWS)
+			r.Get("/chat/messages", chatHandler.GetMessages)
 		})
 	})
 

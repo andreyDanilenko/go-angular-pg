@@ -1,83 +1,83 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebSocketService, ChatMessage } from '../../core/services/web-socket-service.service';
+import { WebSocketService } from '../../core/services/web-socket-service.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service'; // Добавлен импорт AuthService
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div style="max-width: 600px; margin: auto; padding: 1rem;">
-      <h2>WebSocket Chat</h2>
-
-      <div>
-        <label>
-          To User ID:
-          <input [(ngModel)]="toUserID" placeholder="UserID to send message" />
-        </label>
-      </div>
-
-      <div>
-        <input [(ngModel)]="inputMessage" placeholder="Type a message" (keydown.enter)="sendMessage()" />
-        <button (click)="sendMessage()">Send</button>
-      </div>
-
-      <div style="margin-top: 1rem; border: 1px solid #ccc; padding: 0.5rem; height: 300px; overflow-y: auto;">
-        <div *ngFor="let msg of messages" [style.textAlign]="msg.fromID === myUserID ? 'right' : 'left'">
-          <small>{{ msg.fromID === myUserID ? 'You' : msg.fromID }}:</small>
-          <div>{{ msg.data }}</div>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  messages: ChatMessage[] = [];
-  inputMessage = '';
-  toUserID = ''; // куда отправлять
-  myUserID = ''; // твой UserID, должен прийти из backend или JWT токена
+  messages: any[] = [];
+  newMessage = '';
+  currentChatId = '1'; // ID текущего чата
+  currentUserId: string | null = null; // Добавлено свойство для ID текущего пользователя
+  isConnected = false;
+  private messageSubscription!: Subscription;
+  private connectionSubscription!: Subscription;
 
-  private messageSubscription: Subscription | null = null;
+  constructor(
+    private wsService: WebSocketService,
+    private authService: AuthService // Добавлен AuthService
+  ) {}
 
-  constructor(private webSocketService: WebSocketService) {}
+  ngOnInit(): void {
+    // Получаем ID текущего пользователя из токена
+    this.currentUserId = this.getUserIdFromToken();
 
-  ngOnInit() {
-    // TODO: получить myUserID из какого-то сервиса / контекста / токена
-    this.myUserID = 'kDPnOhD5tUE3'; // заглушка, например
+    this.wsService.connect();
 
-    this.messageSubscription = this.webSocketService.getMessages().subscribe(
-      (msg) => {
-        this.messages.push(msg);
+    this.connectionSubscription = this.wsService.getConnectionStatus().subscribe(
+      (connected: boolean) => {
+        this.isConnected = connected;
+        if (connected) {
+          this.loadChatHistory();
+        }
+      }
+    );
+
+    this.messageSubscription = this.wsService.getMessages().subscribe(
+      (message: any) => {
+        this.messages.push(message);
       },
-      (error) => {
-        console.error('WebSocket error:', error);
+      (error: any) => {
+        console.error('Error receiving message:', error);
       }
     );
   }
 
-  sendMessage() {
-    if (!this.inputMessage.trim() || !this.toUserID.trim()) return;
-
-    const message: ChatMessage = {
-      type: 'message',
-      data: this.inputMessage.trim(),
-      toID: this.toUserID.trim(),
-      fromID: this.myUserID, // отправитель (хотя сервер добавит сам)
-    };
-
-    // Добавляем сообщение локально, чтобы сразу видеть его в UI
-    this.messages.push(message);
-
-    this.webSocketService.sendMessage(message);
-    this.inputMessage = '';
+  ngOnDestroy(): void {
+    this.messageSubscription.unsubscribe();
+    this.connectionSubscription.unsubscribe();
+    this.wsService.disconnect();
   }
 
-  ngOnDestroy() {
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
+  sendMessage(): void {
+    if (this.newMessage.trim() && this.isConnected) {
+      this.wsService.sendMessage(this.currentChatId, this.newMessage);
+      this.newMessage = '';
     }
-    this.webSocketService.closeConnection();
+  }
+
+  loadChatHistory(): void {
+    console.log('Loading chat history...');
+  }
+
+  private getUserIdFromToken(): string | null {
+    const token = this.authService.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub || payload.userId || null;
+    } catch (e) {
+      console.error('Error parsing token:', e);
+      return null;
+    }
   }
 }
