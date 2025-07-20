@@ -93,6 +93,7 @@ func (h *ChatHandler) ServeWS(w http.ResponseWriter, r *http.Request) {
 
 	go h.writeMessages(client)
 }
+
 func (h *ChatHandler) readMessages(client *ws.Client) {
 	defer func() {
 		h.hub.Unregister <- client
@@ -116,10 +117,16 @@ func (h *ChatHandler) readMessages(client *ws.Client) {
 			continue
 		}
 
+		// Загружаем информацию об отправителе
+		fullMessage, err := h.chatService.GetMessageWithSender(context.Background(), chatMessage.ID)
+		if err != nil {
+			continue
+		}
+
 		// Отправляем сообщение всем участникам чата
 		h.hub.Broadcast <- model.ChatEvent{
 			Type:    "message",
-			Payload: *chatMessage,
+			Payload: *fullMessage,
 		}
 	}
 }

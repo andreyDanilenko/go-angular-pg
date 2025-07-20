@@ -3,7 +3,6 @@ package repository
 import (
 	"admin/panel/internal/model"
 	"context"
-	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,33 +14,6 @@ type ChatRepository struct {
 
 func NewChatRepository(db *gorm.DB) *ChatRepository {
 	return &ChatRepository{db: db}
-}
-
-func (r *ChatRepository) CreateRoom(ctx context.Context, name string, isGroup bool, creatorID string) (*model.ChatRoom, error) {
-	room := &model.ChatRoom{
-		Name:    name,
-		IsGroup: isGroup,
-	}
-
-	if err := r.db.WithContext(ctx).Create(room).Error; err != nil {
-		return nil, fmt.Errorf("failed to create chat room: %w", err)
-	}
-
-	// Добавляем создателя в участники
-	if err := r.AddParticipant(ctx, room.ID, creatorID); err != nil {
-		return nil, fmt.Errorf("failed to add creator to room: %w", err)
-	}
-
-	return room, nil
-}
-
-func (r *ChatRepository) AddParticipant(ctx context.Context, chatID, userID string) error {
-	participant := model.ChatParticipant{
-		ChatID: chatID,
-		UserID: userID,
-	}
-
-	return r.db.WithContext(ctx).Create(&participant).Error
 }
 
 func (r *ChatRepository) SaveMessage(ctx context.Context, message *model.ChatMessage) error {
@@ -69,16 +41,6 @@ func (r *ChatRepository) GetUserChats(ctx context.Context, userID string) ([]mod
 		Find(&chats).Error
 
 	return chats, err
-}
-
-func (r *ChatRepository) GetRoomParticipants(ctx context.Context, roomID string) ([]model.User, error) {
-	var users []model.User
-	err := r.db.WithContext(ctx).
-		Joins("JOIN chat_participants ON chat_participants.user_id = users.id").
-		Where("chat_participants.chat_id = ?", roomID).
-		Find(&users).Error
-
-	return users, err
 }
 
 func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
@@ -109,4 +71,13 @@ func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.Chat
 	}
 
 	return chat, nil
+}
+
+func (r *ChatRepository) GetMessageWithSender(ctx context.Context, messageID string) (*model.ChatMessage, error) {
+	var message model.ChatMessage
+	err := r.db.WithContext(ctx).
+		Preload("Sender").
+		First(&message, "id = ?", messageID).
+		Error
+	return &message, err
 }
