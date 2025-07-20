@@ -66,7 +66,7 @@ func main() {
 	chatService := service.NewChatService(chatRepo)
 	chatHub := ws.NewHub()
 	go chatHub.Run()
-	chatHandler := handler.NewChatHandler(chatService, chatHub)
+	chatHandler := handler.NewChatHandler(chatService, chatHub, errorWriter, responseWriter)
 
 	r := chi.NewRouter()
 
@@ -105,6 +105,8 @@ func main() {
 			// WebSocket для чата
 			r.Get("/ws", chatHandler.ServeWS)
 			r.Get("/chat/messages", chatHandler.GetMessages)
+			r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
+
 		})
 	})
 

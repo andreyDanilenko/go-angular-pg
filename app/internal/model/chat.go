@@ -16,6 +16,15 @@ type ChatRoom struct {
 	Participants []User    `gorm:"many2many:chat_participants;" json:"participants"`
 }
 
+func (c *ChatRoom) BeforeCreate(tx *gorm.DB) error {
+	genID, err := nanoid.Standard(12)
+	if err != nil {
+		return err
+	}
+	c.ID = genID()
+	return nil
+}
+
 type ChatParticipant struct {
 	UserID   string    `gorm:"primaryKey;size:36" json:"userId"`
 	ChatID   string    `gorm:"primaryKey;size:36" json:"chatId"`

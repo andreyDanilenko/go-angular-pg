@@ -4,6 +4,7 @@ import (
 	"admin/panel/internal/model"
 	"context"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -78,4 +79,34 @@ func (r *ChatRepository) GetRoomParticipants(ctx context.Context, roomID string)
 		Find(&users).Error
 
 	return users, err
+}
+
+func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
+	chat := &model.ChatRoom{
+		// ID будет сгенерирован в BeforeCreate (нужно будет добавить)
+		Name:    "",
+		IsGroup: false,
+	}
+
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(chat).Error; err != nil {
+			return err
+		}
+
+		participants := []model.ChatParticipant{
+			{UserID: user1ID, ChatID: chat.ID, JoinedAt: time.Now()},
+			{UserID: user2ID, ChatID: chat.ID, JoinedAt: time.Now()},
+		}
+
+		if err := tx.Create(&participants).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return chat, nil
 }

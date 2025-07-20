@@ -48,3 +48,7 @@ func (s *ChatService) GetUserChats(ctx context.Context, userID string) ([]model.
 func (s *ChatService) GetRoomParticipants(ctx context.Context, roomID string) ([]model.User, error) {
 	return s.repo.GetRoomParticipants(ctx, roomID)
 }
+
+func (s *ChatService) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
+	return s.repo.CreatePrivateChat(user1ID, user2ID)
+}

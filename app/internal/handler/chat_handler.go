@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/service"
@@ -14,15 +15,23 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type ChatHandler struct {
-	chatService *service.ChatService
-	hub         *ws.Hub
+type createChatRequest struct {
+	OtherUserID string `json:"otherUserId"`
 }
 
-func NewChatHandler(chatService *service.ChatService, hub *ws.Hub) *ChatHandler {
+type ChatHandler struct {
+	chatService  *service.ChatService
+	hub          *ws.Hub
+	errorWriter  contract.ErrorWriter
+	responseJSON contract.ResponseWriter
+}
+
+func NewChatHandler(chatService *service.ChatService, hub *ws.Hub, ew contract.ErrorWriter, rw contract.ResponseWriter) *ChatHandler {
 	return &ChatHandler{
-		chatService: chatService,
-		hub:         hub,
+		chatService:  chatService,
+		hub:          hub,
+		errorWriter:  ew,
+		responseJSON: rw,
 	}
 }
 
@@ -170,4 +179,30 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(messages)
+}
+
+func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "User ID missing in context")
+		return
+	}
+
+	var req createChatRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.errorWriter.WriteError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	if req.OtherUserID == "" {
+		h.errorWriter.WriteError(w, http.StatusBadRequest, "otherUserId is required")
+		return
+	}
+
+	chat, err := h.chatService.CreatePrivateChat(userID, req.OtherUserID)
+	if err != nil {
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to create chat: "+err.Error())
+		return
+	}
+
+	h.responseJSON.WriteJSON(w, http.StatusCreated, chat)
 }
