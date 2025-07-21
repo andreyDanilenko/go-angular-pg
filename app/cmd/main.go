@@ -37,13 +37,14 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	if err := gormDB.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatMessage{}); err != nil {
+	if err := gormDB.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatRoom{}, &model.ChatMessageRead{}); err != nil {
 		log.Printf("Warning: failed to drop chat_messages table: %v", err)
 	}
 
 	if err := gormDB.AutoMigrate(
 		&model.ChatRoom{},
 		&model.ChatParticipant{},
+		&model.ChatMessageRead{},
 		&model.ChatMessage{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
@@ -59,6 +60,7 @@ func main() {
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
+	dumpHandler := handler.NewDumpHandler(gormDB)
 
 	// Новый чат
 	chatRepo := repository.NewChatRepository(gormDB)
@@ -87,6 +89,8 @@ func main() {
 			r.Post("/signin", authHandler.SignIn)
 			r.Get("/articles/all", articleHandler.GetAllArticles)
 			r.Get("/articles/{id}", articleHandler.GetArticle)
+			r.Get("/dump", dumpHandler.ServeHTTP)
+
 		})
 
 		r.With(middleware.JWTFromQuery(cfg.JWTSecret, errorWriter)).

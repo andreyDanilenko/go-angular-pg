@@ -71,28 +71,26 @@ func (s *ChatService) GetOrCreateChat(user1ID, user2ID string) (string, error) {
 func (s *ChatService) GetChatParticipants(ctx context.Context, chatID string) ([]string, error) {
 	return s.repo.GetChatParticipants(ctx, chatID)
 }
-
-func (s *ChatService) GetMessagesWithReadStatus(ctx context.Context, chatID, userID string, limit, offset int) ([]map[string]interface{}, error) {
+func (s *ChatService) GetMessagesWithReadStatus(ctx context.Context, chatID, userID string, limit, offset int) ([]model.ChatMessage, error) {
 	messages, err := s.repo.GetMessages(ctx, chatID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []map[string]interface{}
-	for _, msg := range messages {
-		isRead, _ := s.repo.IsMessageRead(msg.ID, userID)
+	for i := range messages {
+		isRead, err := s.repo.IsMessageRead(messages[i].ID, userID)
+		if err != nil {
+			return nil, err
+		}
+		messages[i].IsRead = isRead
 
-		result = append(result, map[string]interface{}{
-			"id":        msg.ID,
-			"text":      msg.Text,
-			"sent_at":   msg.SentAt,
-			"sender":    msg.Sender,
-			"isRead":    isRead,
-			"sender_id": msg.SenderID,
-		})
+		// Можно пометить сообщение как прочитанное в базе (если нужно)
+		if !isRead && messages[i].SenderID != userID {
+			_ = s.repo.MarkMessageRead(messages[i].ID, userID) // без паники, в фоне
+		}
 	}
 
-	return result, nil
+	return messages, nil
 }
 
 func (s *ChatService) MarkMessageRead(ctx context.Context, messageID, userID string) error {
@@ -140,4 +138,38 @@ func (s *ChatService) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoo
 func (s *ChatService) GetMessageWithSender(ctx context.Context, messageID string) (*model.ChatMessage, error) {
 	return s.repo.GetMessageWithSender(ctx, messageID)
 
+}
+
+type ChatWithLastMessage struct {
+	model.ChatRoom
+	LastMessage *model.ChatMessage `json:"lastMessage,omitempty"`
+}
+
+func (s *ChatService) GetUserChatsWithLastMessage(ctx context.Context, userID string) ([]ChatWithLastMessage, error) {
+	chats, err := s.repo.GetUserChats(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []ChatWithLastMessage
+	for _, chat := range chats {
+		lastMessages, err := s.repo.GetMessages(ctx, chat.ID, 1, 0)
+		if err != nil {
+			continue
+		}
+		var lastMsg *model.ChatMessage
+		if len(lastMessages) > 0 {
+			lastMsg = &lastMessages[0]
+		}
+
+		count, _ := s.repo.CountUnreadMessages(chat.ID, userID)
+		chat.UnreadCount = count
+
+		result = append(result, ChatWithLastMessage{
+			ChatRoom:    chat,
+			LastMessage: lastMsg,
+		})
+	}
+
+	return result, nil
 }

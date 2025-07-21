@@ -19,7 +19,7 @@ type ChatRoom struct {
 	IsGroup      bool      `gorm:"default:false" json:"isGroup"`
 	CreatedAt    time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
-	Participants []User    `gorm:"many2many:chat_participants;" json:"participants"`
+	Participants []User    `gorm:"many2many:chat_participants;joinForeignKey:ChatID;JoinReferences:UserID" json:"participants"`
 	UnreadCount  int       `json:"unreadCount" gorm:"-"`
 }
 
@@ -36,6 +36,8 @@ type ChatMessage struct {
 	Text     string    `gorm:"type:text;not null" json:"text"`
 	SentAt   time.Time `gorm:"autoCreateTime;index" json:"sentAt"`
 	Sender   User      `gorm:"foreignKey:SenderID" json:"sender"`
+
+	IsRead bool `gorm:"-" json:"isRead"` // поле для статуса прочтения, не сохраняется в базу
 }
 
 type ChatEvent struct {

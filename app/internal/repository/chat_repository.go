@@ -77,6 +77,7 @@ func (r *ChatRepository) GetUserChats(ctx context.Context, userID string) ([]mod
 	err := r.db.WithContext(ctx).
 		Joins("JOIN chat_participants ON chat_participants.chat_id = chat_rooms.id").
 		Where("chat_participants.user_id = ?", userID).
+		Preload("Participants").
 		Find(&chats).Error
 
 	return chats, err
@@ -87,6 +88,11 @@ func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.Chat
 		// ID будет сгенерирован в BeforeCreate (нужно будет добавить)
 		Name:    "",
 		IsGroup: false,
+	}
+
+	existingID, _ := r.FindPrivateChat(user1ID, user2ID)
+	if existingID != "" {
+		return nil, fmt.Errorf("chat already exists")
 	}
 
 	err := r.db.Transaction(func(tx *gorm.DB) error {
@@ -146,7 +152,8 @@ func (r *ChatRepository) IsChatParticipant(chatID string, userID string) (bool, 
 // Находит приватный чат между двумя пользователями
 func (r *ChatRepository) FindPrivateChat(user1ID, user2ID string) (string, error) {
 	var chatID string
-	err := r.db.Model(&model.ChatParticipant{}).
+	err := r.db.
+		Table("chat_participants AS cp1").
 		Select("cp1.chat_id").
 		Joins("JOIN chat_participants cp2 ON cp1.chat_id = cp2.chat_id").
 		Where("cp1.user_id = ? AND cp2.user_id = ?", user1ID, user2ID).

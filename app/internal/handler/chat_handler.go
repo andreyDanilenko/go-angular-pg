@@ -196,8 +196,8 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 
 	// Помечаем как прочитанные
 	for _, msg := range messages {
-		if senderID, ok := msg["sender_id"].(string); ok && senderID != userID {
-			_ = h.chatService.MarkMessageRead(r.Context(), msg["id"].(string), userID)
+		if msg.SenderID != userID {
+			_ = h.chatService.MarkMessageRead(r.Context(), msg.ID, userID)
 		}
 	}
 
