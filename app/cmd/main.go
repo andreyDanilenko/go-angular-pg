@@ -37,7 +37,7 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	if err := gormDB.Migrator().DropTable(&model.ChatMessage{}); err != nil {
+	if err := gormDB.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatMessage{}); err != nil {
 		log.Printf("Warning: failed to drop chat_messages table: %v", err)
 	}
 
