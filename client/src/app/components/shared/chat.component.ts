@@ -17,7 +17,7 @@ import { HttpClient } from '@angular/common/http';
 export class ChatComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   newMessage = '';
-  currentChatId = '2sJAN_wQuTDc';
+  currentChatId = '_Yq6cFcxNwpy';
   currentUserId: string | null = null;
   isConnected = false;
 
@@ -32,7 +32,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUserId = this.getUserIdFromToken();
-
     this.wsService.connect();
 
     this.connectionSubscription = this.wsService.getConnectionStatus().subscribe(
@@ -47,8 +46,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messageSubscription = this.wsService.getMessages().subscribe(
       (message: any) => {
         const exists = this.messages.some(m => m.id === message.id);
+
+        console.log('message', message);
+
         if (!exists) {
-          this.messages.push(message);
+          this.messages.push(message.payload);
           this.sortMessages();
         }
       },

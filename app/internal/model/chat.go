@@ -7,6 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type ChatMessageRead struct {
+	MessageID string    `gorm:"primaryKey;size:36"`
+	UserID    string    `gorm:"primaryKey;size:36"`
+	ReadAt    time.Time `gorm:"autoCreateTime"`
+}
+
 type ChatRoom struct {
 	ID           string    `gorm:"primaryKey;size:36" json:"id"`
 	Name         string    `gorm:"size:100" json:"name"`
@@ -14,6 +20,7 @@ type ChatRoom struct {
 	CreatedAt    time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 	Participants []User    `gorm:"many2many:chat_participants;" json:"participants"`
+	UnreadCount  int       `json:"unreadCount" gorm:"-"`
 }
 
 type ChatParticipant struct {

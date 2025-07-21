@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ChatRepository struct {
@@ -29,6 +30,33 @@ func (r *ChatRepository) ChatExists(chatID string) (bool, error) {
 
 func (r *ChatRepository) SaveMessage(ctx context.Context, message *model.ChatMessage) error {
 	return r.db.WithContext(ctx).Create(message).Error
+}
+
+func (r *ChatRepository) IsMessageRead(messageID, userID string) (bool, error) {
+	var count int64
+	err := r.db.Model(&model.ChatMessageRead{}).
+		Where("message_id = ? AND user_id = ?", messageID, userID).
+		Count(&count).Error
+	return count > 0, err
+}
+
+func (r *ChatRepository) MarkMessageRead(messageID, userID string) error {
+	return r.db.Clauses(clause.OnConflict{DoNothing: true}).
+		Create(&model.ChatMessageRead{
+			MessageID: messageID,
+			UserID:    userID,
+		}).Error
+}
+
+func (r *ChatRepository) CountUnreadMessages(chatID, userID string) (int, error) {
+	var count int64
+	err := r.db.Raw(`
+		SELECT COUNT(*) FROM chat_messages m
+		WHERE m.chat_id = ? AND m.sender_id != ? AND NOT EXISTS (
+			SELECT 1 FROM chat_message_reads r WHERE r.message_id = m.id AND r.user_id = ?
+		)
+	`, chatID, userID, userID).Scan(&count).Error
+	return int(count), err
 }
 
 func (r *ChatRepository) GetMessages(ctx context.Context, chatID string, limit, offset int) ([]model.ChatMessage, error) {

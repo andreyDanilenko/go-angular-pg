@@ -72,14 +72,48 @@ func (s *ChatService) GetChatParticipants(ctx context.Context, chatID string) ([
 	return s.repo.GetChatParticipants(ctx, chatID)
 }
 
-// func generateChatID(user1ID, user2ID string) string {
-// 	if user1ID > user2ID {
-// 		user1ID, user2ID = user2ID, user1ID
-// 	}
-// 	return fmt.Sprintf("chat_%s_%s", user1ID, user2ID)
-// }
+func (s *ChatService) GetMessagesWithReadStatus(ctx context.Context, chatID, userID string, limit, offset int) ([]map[string]interface{}, error) {
+	messages, err := s.repo.GetMessages(ctx, chatID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
 
-// Остальные методы остаются без изменений
+	var result []map[string]interface{}
+	for _, msg := range messages {
+		isRead, _ := s.repo.IsMessageRead(msg.ID, userID)
+
+		result = append(result, map[string]interface{}{
+			"id":        msg.ID,
+			"text":      msg.Text,
+			"sent_at":   msg.SentAt,
+			"sender":    msg.Sender,
+			"isRead":    isRead,
+			"sender_id": msg.SenderID,
+		})
+	}
+
+	return result, nil
+}
+
+func (s *ChatService) MarkMessageRead(ctx context.Context, messageID, userID string) error {
+	return s.repo.MarkMessageRead(messageID, userID)
+}
+
+func (s *ChatService) GetUserChats(ctx context.Context, userID string) ([]model.ChatRoom, error) {
+	chats, err := s.repo.GetUserChats(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range chats {
+		count, err := s.repo.CountUnreadMessages(chats[i].ID, userID)
+		if err == nil {
+			chats[i].UnreadCount = count
+		}
+	}
+
+	return chats, nil
+}
 
 func (s *ChatService) SaveMessage(ctx context.Context, chatID, senderID, text string) (*model.ChatMessage, error) {
 	message := &model.ChatMessage{
@@ -97,10 +131,6 @@ func (s *ChatService) SaveMessage(ctx context.Context, chatID, senderID, text st
 
 func (s *ChatService) GetMessages(ctx context.Context, chatID string, limit, offset int) ([]model.ChatMessage, error) {
 	return s.repo.GetMessages(ctx, chatID, limit, offset)
-}
-
-func (s *ChatService) GetUserChats(ctx context.Context, userID string) ([]model.ChatRoom, error) {
-	return s.repo.GetUserChats(ctx, userID)
 }
 
 func (s *ChatService) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {

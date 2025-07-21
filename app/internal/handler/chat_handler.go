@@ -9,7 +9,6 @@ import (
 	"admin/panel/internal/ws"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -170,35 +169,39 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверяем, что пользователь является участником чата
+	// Проверяем, что пользователь участвует в чате
 	chats, err := h.chatService.GetUserChats(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to get user chats", http.StatusInternalServerError)
 		return
 	}
-
 	var hasAccess bool
-	fmt.Println(chats)
 	for _, chat := range chats {
 		if chat.ID == chatID {
 			hasAccess = true
 			break
 		}
 	}
-
 	if !hasAccess {
 		http.Error(w, "Access denied", http.StatusForbidden)
 		return
 	}
 
-	messages, err := h.chatService.GetMessages(r.Context(), chatID, 50, 0)
+	// Получаем сообщения
+	messages, err := h.chatService.GetMessagesWithReadStatus(r.Context(), chatID, userID, 50, 0)
 	if err != nil {
 		http.Error(w, "Failed to get messages", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(messages)
+	// Помечаем как прочитанные
+	for _, msg := range messages {
+		if senderID, ok := msg["sender_id"].(string); ok && senderID != userID {
+			_ = h.chatService.MarkMessageRead(r.Context(), msg["id"].(string), userID)
+		}
+	}
+
+	h.responseJSON.WriteJSON(w, http.StatusOK, messages)
 }
 
 func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {
