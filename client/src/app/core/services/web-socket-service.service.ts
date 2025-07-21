@@ -1,4 +1,4 @@
-// websocket.service.ts
+// src/app/core/services/web-socket-service.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
@@ -16,9 +16,7 @@ export class WebSocketService {
   }
 
   connect(): void {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      return;
-    }
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
 
     const wsUrl = `ws://localhost:8081/api/ws?token=${this.token}`;
     this.socket = new WebSocket(wsUrl);
@@ -30,6 +28,7 @@ export class WebSocketService {
     this.socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        console.log(message);
         this.messageSubject.next(message);
       } catch (error) {
         console.error('Error parsing message:', error);
@@ -49,9 +48,11 @@ export class WebSocketService {
 
   sendMessage(chatId: string, text: string): void {
     if (this.socket.readyState === WebSocket.OPEN) {
-      console.log({ "chatId": "jxpzcw8xfABH", "text": text});
-
-      this.socket.send(JSON.stringify({ "chatId": "jxpzcw8xfABH", "text": text}));
+      const message = { chatId, text };
+      console.log('Sending message:', message);
+      this.socket.send(JSON.stringify(message));
+    } else {
+      console.warn('WebSocket is not open.');
     }
   }
 

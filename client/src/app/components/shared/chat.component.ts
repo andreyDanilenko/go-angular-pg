@@ -1,9 +1,11 @@
+// src/app/features/chat/chat.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from '../../core/services/web-socket-service.service';
+import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../core/services/auth.service'; // Добавлен импорт AuthService
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-chat',
@@ -15,19 +17,20 @@ import { AuthService } from '../../core/services/auth.service'; // Добавл�
 export class ChatComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   newMessage = '';
-  currentChatId = '1'; // ID текущего чата
-  currentUserId: string | null = null; // Добавлено свойство для ID текущего пользователя
+  currentChatId = '2sJAN_wQuTDc';
+  currentUserId: string | null = null;
   isConnected = false;
+
   private messageSubscription!: Subscription;
   private connectionSubscription!: Subscription;
 
   constructor(
     private wsService: WebSocketService,
-    private authService: AuthService // Добавлен AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
-    // Получаем ID текущего пользователя из токена
     this.currentUserId = this.getUserIdFromToken();
 
     this.wsService.connect();
@@ -43,7 +46,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.messageSubscription = this.wsService.getMessages().subscribe(
       (message: any) => {
-        this.messages.push(message);
+        const exists = this.messages.some(m => m.id === message.id);
+        if (!exists) {
+          this.messages.push(message);
+          this.sortMessages();
+        }
       },
       (error: any) => {
         console.error('Error receiving message:', error);
@@ -65,7 +72,23 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   loadChatHistory(): void {
-    console.log('Loading chat history...');
+    const chatId = this.currentChatId;
+    this.http.get<any[]>(`http://localhost:8081/api/chat/messages?chatId=${chatId}`)
+      .subscribe(
+        (history: any[]) => {
+          this.messages = history;
+          this.sortMessages();
+        },
+        (error) => {
+          console.error('Failed to load chat history', error);
+        }
+      );
+  }
+
+  private sortMessages(): void {
+    this.messages.sort((a, b) =>
+      new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
+    );
   }
 
   private getUserIdFromToken(): string | null {
