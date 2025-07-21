@@ -92,6 +92,9 @@ func main() {
 			r.Get("/articles/{id}", articleHandler.GetArticle)
 		})
 
+		r.With(middleware.JWTFromQuery(cfg.JWTSecret, errorWriter)).
+			Get("/ws", chatHandler.ServeWS)
+
 		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
@@ -106,7 +109,7 @@ func main() {
 			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
 
 			// WebSocket для чата
-			r.Get("/ws", chatHandler.ServeWS)
+			// r.Get("/ws", chatHandler.ServeWS)
 			r.Get("/chat/messages", chatHandler.GetMessages)
 			r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
 			r.Get("/chat/user-chats", chatHandler.GetUserChats)

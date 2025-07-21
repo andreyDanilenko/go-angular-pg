@@ -12,7 +12,7 @@ export class WebSocketService {
   private token: string;
 
   constructor() {
-    this.token = localStorage.getItem('authToken') || '';
+    this.token = localStorage.getItem('auth_token') || '';
   }
 
   connect(): void {
@@ -20,7 +20,7 @@ export class WebSocketService {
       return;
     }
 
-    const wsUrl = `ws://localhost:8081/ws?token=${this.token}`;
+    const wsUrl = `ws://localhost:8081/api/ws?token=${this.token}`;
     this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {
@@ -49,7 +49,9 @@ export class WebSocketService {
 
   sendMessage(chatId: string, text: string): void {
     if (this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify({ chatId, text }));
+      console.log({ "chatId": "jxpzcw8xfABH", "text": text});
+
+      this.socket.send(JSON.stringify({ "chatId": "jxpzcw8xfABH", "text": text}));
     }
   }
 

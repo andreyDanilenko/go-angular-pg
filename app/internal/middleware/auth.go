@@ -20,6 +20,41 @@ const (
 	RoleKey   contextKey = "role"
 )
 
+func JWTFromQuery(secret string, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			tokenString := r.URL.Query().Get("token")
+			if tokenString == "" {
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Missing token in query")
+				return
+			}
+
+			claims, err := ParseToken(tokenString, secret)
+			if err != nil {
+				errorWriter.WriteError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
+				return
+			}
+
+			userID, ok := claims["sub"].(string)
+			if !ok || userID == "" {
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid user ID in token")
+				return
+			}
+
+			roleStr, _ := claims["role"].(string)
+			role := model.UserRole(roleStr)
+			if !role.IsValid() {
+				role = model.RoleGuest
+			}
+
+			ctx := context.WithValue(r.Context(), UserIDKey, userID)
+			ctx = context.WithValue(ctx, RoleKey, role)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
 func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
