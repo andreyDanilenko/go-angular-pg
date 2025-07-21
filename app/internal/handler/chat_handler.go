@@ -213,3 +213,15 @@ func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) 
 
 	h.responseJSON.WriteJSON(w, http.StatusCreated, chat)
 }
+
+func (h *ChatHandler) GetUserChats(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(middleware.UserIDKey).(string)
+
+	chats, err := h.chatService.GetUserChats(r.Context(), userID)
+	if err != nil {
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to get chats")
+		return
+	}
+
+	h.responseJSON.WriteJSON(w, http.StatusOK, chats)
+}

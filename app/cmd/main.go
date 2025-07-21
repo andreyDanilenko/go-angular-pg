@@ -106,7 +106,7 @@ func main() {
 			r.Get("/ws", chatHandler.ServeWS)
 			r.Get("/chat/messages", chatHandler.GetMessages)
 			r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
-
+			r.Get("/chat/user-chats", chatHandler.GetUserChats)
 		})
 	})
 
