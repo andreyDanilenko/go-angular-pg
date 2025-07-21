@@ -64,9 +64,12 @@ func main() {
 	// После инициализации репозиториев и сервисов:
 	chatRepo := repository.NewChatRepository(gormDB)
 	chatService := service.NewChatService(chatRepo)
-	chatHub := ws.NewHub()
-	go chatHub.Run()
-	chatHandler := handler.NewChatHandler(chatService, chatHub, errorWriter, responseWriter)
+	hub := ws.NewHub(chatService) // Передаем сервис в хаб
+
+	// Запускаем хаб в отдельной горутине
+	go hub.Run()
+
+	chatHandler := handler.NewChatHandler(chatService, hub, errorWriter, responseWriter)
 
 	r := chi.NewRouter()
 

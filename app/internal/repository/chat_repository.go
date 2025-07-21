@@ -1,8 +1,10 @@
+// repository/chat.go
 package repository
 
 import (
 	"admin/panel/internal/model"
 	"context"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,6 +16,15 @@ type ChatRepository struct {
 
 func NewChatRepository(db *gorm.DB) *ChatRepository {
 	return &ChatRepository{db: db}
+}
+
+func (r *ChatRepository) ChatExists(chatID string) (bool, error) {
+	var count int64
+	err := r.db.Model(&model.ChatRoom{}).
+		Where("id = ?", chatID).
+		Count(&count).
+		Error
+	return count > 0, err
 }
 
 func (r *ChatRepository) SaveMessage(ctx context.Context, message *model.ChatMessage) error {
@@ -80,4 +91,44 @@ func (r *ChatRepository) GetMessageWithSender(ctx context.Context, messageID str
 		First(&message, "id = ?", messageID).
 		Error
 	return &message, err
+}
+
+func (r *ChatRepository) GetChatParticipants(ctx context.Context, chatID string) ([]string, error) {
+	var participants []string
+	err := r.db.WithContext(ctx).
+		Model(&model.ChatParticipant{}).
+		Where("chat_id = ?", chatID).
+		Pluck("user_id", &participants).
+		Error
+	return participants, err
+}
+
+// service/chat.go
+
+// Проверяет, является ли пользователь участником чата
+func (r *ChatRepository) IsChatParticipant(chatID string, userID string) (bool, error) {
+	var count int64
+	err := r.db.Model(&model.ChatParticipant{}).
+		Where("chat_id = ? AND user_id = ?", chatID, userID).
+		Count(&count).
+		Error
+	return count > 0, err
+}
+
+// Находит приватный чат между двумя пользователями
+func (r *ChatRepository) FindPrivateChat(user1ID, user2ID string) (string, error) {
+	var chatID string
+	err := r.db.Model(&model.ChatParticipant{}).
+		Select("cp1.chat_id").
+		Joins("JOIN chat_participants cp2 ON cp1.chat_id = cp2.chat_id").
+		Where("cp1.user_id = ? AND cp2.user_id = ?", user1ID, user2ID).
+		Where("EXISTS (SELECT 1 FROM chat_rooms WHERE id = cp1.chat_id AND is_group = false)").
+		Limit(1).
+		Row().
+		Scan(&chatID)
+
+	if err != nil {
+		return "", fmt.Errorf("chat not found")
+	}
+	return chatID, nil
 }

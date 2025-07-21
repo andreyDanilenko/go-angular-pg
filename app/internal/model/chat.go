@@ -16,15 +16,6 @@ type ChatRoom struct {
 	Participants []User    `gorm:"many2many:chat_participants;" json:"participants"`
 }
 
-func (c *ChatRoom) BeforeCreate(tx *gorm.DB) error {
-	genID, err := nanoid.Standard(12)
-	if err != nil {
-		return err
-	}
-	c.ID = genID()
-	return nil
-}
-
 type ChatParticipant struct {
 	UserID   string    `gorm:"primaryKey;size:36" json:"userId"`
 	ChatID   string    `gorm:"primaryKey;size:36" json:"chatId"`
@@ -48,6 +39,21 @@ type ChatEvent struct {
 type WsChatMessage struct {
 	ChatID string `json:"chatId"`
 	Text   string `json:"text"`
+}
+
+// Добавляем новую структуру для входящих сообщений
+type WsDirectMessage struct {
+	RecipientID string `json:"recipientId"`
+	Text        string `json:"text"`
+}
+
+func (c *ChatRoom) BeforeCreate(tx *gorm.DB) error {
+	genID, err := nanoid.Standard(12)
+	if err != nil {
+		return err
+	}
+	c.ID = genID()
+	return nil
 }
 
 func (u *ChatMessage) BeforeCreate(tx *gorm.DB) error {

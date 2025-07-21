@@ -2,6 +2,8 @@ package ws
 
 import (
 	"admin/panel/internal/model"
+	"admin/panel/internal/service"
+	"context"
 	"encoding/json"
 	"log"
 	"sync"
@@ -17,21 +19,21 @@ type Client struct {
 }
 
 type Hub struct {
-	Clients    map[*Client]bool
-	Rooms      map[string]map[*Client]bool // roomID -> clients
-	Broadcast  chan model.ChatEvent
-	Register   chan *Client
-	Unregister chan *Client
-	mu         sync.RWMutex
+	Clients     map[string]*Client // userID -> client
+	Broadcast   chan model.ChatEvent
+	Register    chan *Client
+	Unregister  chan *Client
+	chatService *service.ChatService // Добавляем зависимость
+	mu          sync.RWMutex
 }
 
-func NewHub() *Hub {
+func NewHub(chatService *service.ChatService) *Hub {
 	return &Hub{
-		Clients:    make(map[*Client]bool),
-		Rooms:      make(map[string]map[*Client]bool),
-		Broadcast:  make(chan model.ChatEvent),
-		Register:   make(chan *Client),
-		Unregister: make(chan *Client),
+		Clients:     make(map[string]*Client),
+		Broadcast:   make(chan model.ChatEvent),
+		Register:    make(chan *Client),
+		Unregister:  make(chan *Client),
+		chatService: chatService,
 	}
 }
 
@@ -43,27 +45,21 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			log.Printf("New client connected: UserID=%s", client.UserID)
 			h.mu.Lock()
-			h.Clients[client] = true
+			if oldClient, exists := h.Clients[client.UserID]; exists {
+				close(oldClient.Send)
+				oldClient.Conn.Close()
+			}
+			h.Clients[client.UserID] = client
 			h.mu.Unlock()
+			log.Printf("User connected: %s", client.UserID)
 
 		case client := <-h.Unregister:
-			log.Printf("Client disconnected: UserID=%s", client.UserID)
 			h.mu.Lock()
-			if _, ok := h.Clients[client]; ok {
-				delete(h.Clients, client)
+			if _, exists := h.Clients[client.UserID]; exists {
 				close(client.Send)
-			}
-			// Удаляем клиента из всех комнат
-			for roomID, clients := range h.Rooms {
-				if _, ok := clients[client]; ok {
-					delete(clients, client)
-					if len(clients) == 0 {
-						delete(h.Rooms, roomID)
-						log.Printf("Room emptied and removed: RoomID=%s", roomID)
-					}
-				}
+				delete(h.Clients, client.UserID)
+				log.Printf("User disconnected: %s", client.UserID)
 			}
 			h.mu.Unlock()
 
@@ -80,82 +76,69 @@ func (h *Hub) Run() {
 			case "message":
 				msg, ok := event.Payload.(model.ChatMessage)
 				if !ok {
-					log.Println("Received invalid message format in broadcast")
+					log.Println("Invalid message format in broadcast")
 					h.mu.RUnlock()
 					continue
 				}
 
-				log.Printf("Broadcasting message: ChatID=%s, SenderID=%s, MessageLength=%d",
-					msg.ChatID, msg.SenderID, len(msg.Text))
+				// Получаем участников чата
+				participants, err := h.getChatParticipants(msg.ChatID) // Нужно реализовать эту функцию
+				if err != nil {
+					log.Printf("Failed to get chat participants: %v", err)
+					h.mu.RUnlock()
+					continue
+				}
 
-				if clients, ok := h.Rooms[msg.ChatID]; ok {
-					for client := range clients {
+				// Отправляем сообщение всем участникам чата, кроме отправителя
+				for _, participantID := range participants {
+					if participantID == msg.SenderID {
+						continue
+					}
+
+					if recipient, exists := h.Clients[participantID]; exists {
 						select {
-						case client.Send <- data:
-							log.Printf("Message sent to client: UserID=%s", client.UserID)
+						case recipient.Send <- data:
+							log.Printf("Message sent to %s", participantID)
 						default:
-							log.Printf("Client buffer full, disconnecting: UserID=%s", client.UserID)
-							close(client.Send)
-							delete(clients, client)
+							close(recipient.Send)
+							delete(h.Clients, participantID)
 						}
 					}
-				} else {
-					log.Printf("No clients in room: ChatID=%s", msg.ChatID)
 				}
 
 			default:
-				log.Printf("Broadcasting system event: Type=%s", event.Type)
-				for client := range h.Clients {
-					select {
-					case client.Send <- data:
-						// Message sent successfully
-					default:
-						log.Printf("Client buffer full, disconnecting: UserID=%s", client.UserID)
-						close(client.Send)
-						delete(h.Clients, client)
-					}
-				}
+				log.Printf("Unknown event type: %s", event.Type)
 			}
 			h.mu.RUnlock()
 
 		case <-ticker.C:
 			h.mu.RLock()
-			log.Printf("Hub status: TotalClients=%d, ActiveRooms=%d",
-				len(h.Clients), len(h.Rooms))
+			log.Printf("Active connections: %d", len(h.Clients))
 			h.mu.RUnlock()
 		}
 	}
 }
 
-func (h *Hub) JoinRoom(client *Client, roomID string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
-	// Создаем комнату если ее нет
-	if _, ok := h.Rooms[roomID]; !ok {
-		h.Rooms[roomID] = make(map[*Client]bool)
-		log.Printf("New room created: %s", roomID)
+func (h *Hub) getChatParticipants(chatID string) ([]string, error) {
+	participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
+	if err != nil {
+		return nil, err
 	}
-
-	// Добавляем клиента
-	h.Rooms[roomID][client] = true
-	h.Clients[client] = true
-
-	log.Printf("User %s added to room %s (total: %d)",
-		client.UserID, roomID, len(h.Rooms[roomID]))
+	return participants, nil
 }
 
-func (h *Hub) LeaveRoom(client *Client, roomID string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+func (h *Hub) BroadcastToChat(chatID string, senderID string, message []byte) error {
+	// 1. Получаем всех участников чата
+	participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
+	if err != nil {
+		return err
+	}
 
-	log.Printf("Client leaving room: UserID=%s, RoomID=%s", client.UserID, roomID)
-
-	if clients, ok := h.Rooms[roomID]; ok {
-		delete(clients, client)
-		if len(clients) == 0 {
-			delete(h.Rooms, roomID)
-			log.Printf("Room emptied and removed: RoomID=%s", roomID)
+	// 2. Отправляем всем, включая отправителя (для синхронизации chatId)
+	for _, userID := range participants {
+		if client, ok := h.Clients[userID]; ok {
+			client.Send <- message
 		}
 	}
+	return nil
 }

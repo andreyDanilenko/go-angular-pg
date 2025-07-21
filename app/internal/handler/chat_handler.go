@@ -1,3 +1,4 @@
+// handler/chat.go
 package handler
 
 import (
@@ -18,7 +19,6 @@ import (
 type createChatRequest struct {
 	OtherUserID string `json:"otherUserId"`
 }
-
 type ChatHandler struct {
 	chatService  *service.ChatService
 	hub          *ws.Hub
@@ -39,99 +39,110 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return true // В продакшене нужно ограничить допустимые origin
+		return true
 	},
 }
 
 func (h *ChatHandler) ServeWS(w http.ResponseWriter, r *http.Request) {
-	// 1. Извлекаем обязательные параметры
 	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
 	if !ok || userID == "" {
-		log.Println("WebSocket: missing userID in context")
-		w.WriteHeader(http.StatusUnauthorized)
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "missing user ID")
 		return
 	}
 
-	chatID := r.URL.Query().Get("chatId")
-	if chatID == "" {
-		log.Println("WebSocket: chatId parameter is required")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// 2. Устанавливаем соединение
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("WebSocket upgrade failed: %v", err)
 		return
 	}
 
-	// 3. Создаем и регистрируем клиента
 	client := &ws.Client{
 		UserID: userID,
 		Conn:   conn,
 		Send:   make(chan []byte, 256),
 	}
 
-	// 4. Добавляем клиента в хаб и комнату
 	h.hub.Register <- client
-	h.hub.JoinRoom(client, chatID)
 
-	log.Printf("New WebSocket connection: user=%s, chat=%s", userID, chatID)
+	log.Printf("New WebSocket connection: user=%s", userID)
 
-	// 5. Запускаем обработчики
-	go func() {
-		defer func() {
-			h.hub.Unregister <- client
-			h.hub.LeaveRoom(client, chatID)
-			conn.Close()
-			log.Printf("WebSocket closed: user=%s, chat=%s", userID, chatID)
-		}()
-
-		h.readMessages(client)
-	}()
-
-	go h.writeMessages(client)
+	go h.readPump(client)
+	go h.writePump(client)
 }
 
-func (h *ChatHandler) readMessages(client *ws.Client) {
+func (h *ChatHandler) readPump(client *ws.Client) {
 	defer func() {
 		h.hub.Unregister <- client
 		client.Conn.Close()
 	}()
 
 	for {
-		_, message, err := client.Conn.ReadMessage()
+		_, msgBytes, err := client.Conn.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		var msg model.WsChatMessage
-		if err := json.Unmarshal(message, &msg); err != nil {
+		var input struct {
+			ChatID      string `json:"chatId"`
+			RecipientID string `json:"recipientId"`
+			Text        string `json:"text"`
+		}
+
+		if err := json.Unmarshal(msgBytes, &input); err != nil {
+			log.Printf("Failed to unmarshal message: %v", err)
 			continue
 		}
 
-		// Сохраняем сообщение в БД
-		chatMessage, err := h.chatService.SaveMessage(context.Background(), msg.ChatID, client.UserID, msg.Text)
+		// Определяем chatID
+		chatID, err := h.chatService.ResolveChatID(client.UserID, input.RecipientID, input.ChatID)
 		if err != nil {
+			log.Printf("Chat resolution failed: %v", err)
 			continue
 		}
 
-		// Загружаем информацию об отправителе
-		fullMessage, err := h.chatService.GetMessageWithSender(context.Background(), chatMessage.ID)
+		// Сохраняем сообщение
+		msg, err := h.chatService.SaveMessage(context.Background(), chatID, client.UserID, input.Text)
 		if err != nil {
+			log.Printf("Failed to save message: %v", err)
 			continue
 		}
 
-		// Отправляем сообщение всем участникам чата
-		h.hub.Broadcast <- model.ChatEvent{
+		// Получаем полные данные сообщения
+		fullMsg, err := h.chatService.GetMessageWithSender(context.Background(), msg.ID)
+		if err != nil {
+			log.Printf("Failed to get message details: %v", err)
+			continue
+		}
+
+		// Отправляем сообщение ВСЕМ участникам чата
+		participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
+		if err != nil {
+			log.Printf("Failed to get chat participants: %v", err)
+			continue
+		}
+
+		event := model.ChatEvent{
 			Type:    "message",
-			Payload: *fullMessage,
+			Payload: *fullMsg,
+		}
+
+		eventBytes, _ := json.Marshal(event)
+
+		for _, participantID := range participants {
+			if recipient, exists := h.hub.Clients[participantID]; exists {
+				select {
+				case recipient.Send <- eventBytes:
+					// Сообщение отправлено
+				default:
+					close(recipient.Send)
+					delete(h.hub.Clients, participantID)
+				}
+			}
 		}
 	}
 }
 
-func (h *ChatHandler) writeMessages(client *ws.Client) {
+func (h *ChatHandler) writePump(client *ws.Client) {
 	defer client.Conn.Close()
 
 	for {
@@ -148,6 +159,8 @@ func (h *ChatHandler) writeMessages(client *ws.Client) {
 		}
 	}
 }
+
+// Остальные методы (GetMessages, CreatePrivateChat и т.д.) остаются без изменений
 
 func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(middleware.UserIDKey).(string)
