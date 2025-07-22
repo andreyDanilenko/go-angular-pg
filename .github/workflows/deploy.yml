@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
-            cd /project/api-admin-marketplace
+            cd /root/project/api-admin-marketplace
             git pull origin implement-work-chat-2
             docker-compose down
             docker-compose up -d --build
