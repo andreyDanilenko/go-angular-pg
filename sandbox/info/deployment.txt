@@ -53,4 +53,4 @@ cat ~/.ssh/id_rsa_github_deploy.pub | ssh user@server_ip 'mkdir -p ~/.ssh && cat
 Посмотреть образы
 docker images
 Зайти в контейнер
-docker run -it api-admin-marketplace-app /bin/bash
+docker exec -it api-admin-marketplace-app bash
