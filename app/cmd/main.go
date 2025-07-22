@@ -47,6 +47,7 @@ func main() {
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
+	dumpHandler := handler.NewDumpHandler(gormDB)
 
 	// Настройка роутера
 	r := chi.NewRouter()
@@ -68,6 +69,7 @@ func main() {
 			r.Post("/signin", authHandler.SignIn)
 			r.Get("/articles/all", articleHandler.GetAllArticles)
 			r.Get("/articles/{id}", articleHandler.GetArticle)
+			r.Get("/dump", dumpHandler.ServeHTTP)
 		})
 
 		// Защищённые маршруты
