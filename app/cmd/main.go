@@ -8,6 +8,7 @@ import (
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
+	"admin/panel/internal/ws"
 	"fmt"
 	"log"
 	"net/http"
@@ -49,6 +50,13 @@ func main() {
 	articleHandler := handler.NewArticleHandler(articleService)
 	dumpHandler := handler.NewDumpHandler(gormDB)
 
+	// web sockets
+	chatRepo := repository.NewChatRepository(gormDB)
+	chatService := service.NewChatService(chatRepo)
+	hub := ws.NewHub(chatService)
+	go hub.Run()
+	chatHandler := handler.NewChatHandler(chatService, hub, errorWriter, responseWriter)
+
 	// Настройка роутера
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
@@ -72,6 +80,13 @@ func main() {
 			r.Get("/dump", dumpHandler.ServeHTTP)
 		})
 
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.JWTFromQuery(cfg.JWTSecret, errorWriter))
+
+			// WebSocket для чата
+			r.Get("/ws", chatHandler.ServeWS)
+		})
+
 		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
@@ -86,10 +101,9 @@ func main() {
 			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
 
 			// WebSocket для чата
-			// r.Get("/ws", chatHandler.ServeWS)
-			// r.Get("/chat/messages", chatHandler.GetMessages)
-			// r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
-			// r.Get("/chat/user-chats", chatHandler.GetUserChats)
+			r.Get("/chat/messages", chatHandler.GetMessages)
+			r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
+			r.Get("/chat/user-chats", chatHandler.GetUserChats)
 		})
 	})
 
