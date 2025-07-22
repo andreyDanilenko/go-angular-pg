@@ -13,9 +13,10 @@ import { ChatComponent } from '../../components/shared/chat.component';
     <!-- Вставляем чат -->
     <app-chat></app-chat>
 
+    <p>Вы успешно вошли в систему.</p>
+    <p>Вы успешно вошли в систему.</p>
+    <p>Вы успешно вошли в сисsadasdasdsadтему.</p>
 
-    проввфыватфловтлфдывтыфждв
-    адцавьлдывьалдвыьа
   `,
   styles: [`
     h2 {
