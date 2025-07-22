@@ -25,11 +25,11 @@ services:
       - postgres
     restart: unless-stopped
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_PORT: ${DB_PORT}
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: my_pass
+      DB_NAME: auth_service
+      DB_PORT: 5432
 
   nginx:
     build:

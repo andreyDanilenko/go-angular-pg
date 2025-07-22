@@ -25,6 +25,10 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
+	if err := db.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatRoom{}, &model.ChatMessageRead{}, &model.User{}, &model.Article{}); err != nil {
+		log.Printf("Warning: failed to drop chat_messages table: %v", err)
+	}
+
 	if err := db.AutoMigrate(
 		&model.ChatRoom{},
 		&model.ChatParticipant{},
