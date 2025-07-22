@@ -21,6 +21,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
             cd /root/project/api-admin-marketplace
+            git checkout implement-work-chat-2
             git reset --hard
             git clean -fd
             git pull origin implement-work-chat-2
