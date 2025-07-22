@@ -159,11 +159,10 @@ func (h *ChatHandler) writePump(client *ws.Client) {
 	}
 }
 
-// Остальные методы (GetMessages, CreatePrivateChat и т.д.) остаются без изменений
-
 func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(middleware.UserIDKey).(string)
 	chatID := r.URL.Query().Get("chatId")
+
 	if chatID == "" {
 		http.Error(w, "chatId is required", http.StatusBadRequest)
 		return

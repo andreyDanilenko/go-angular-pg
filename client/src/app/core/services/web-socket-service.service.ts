@@ -1,6 +1,6 @@
-// src/app/core/services/web-socket-service.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +17,9 @@ export class WebSocketService {
 
   connect(): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
+  console.log('Current environment:', environment);
 
-    const wsUrl = `ws://localhost:8081/api/ws?token=${this.token}`;
+    const wsUrl = `${environment.socketUrl}/ws?token=${this.token}`;
     this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {

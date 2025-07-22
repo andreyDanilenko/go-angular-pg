@@ -5,27 +5,10 @@ import { ChatComponent } from '../../components/shared/chat.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ChatComponent], // <-- добавляем ChatComponent сюда
+  imports: [CommonModule, ChatComponent],
   template: `
-    <h2>Добро пожаловать на главную страницу!</h2>
-    <p>Вы успешно вошли в систему.</p>
-
     <!-- Вставляем чат -->
     <app-chat></app-chat>
-
-    <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в сисsadasdasdsadтему.</p>
-        <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в сисsadasdasdsadтему.</p>
-        <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в систему.</p>
-    <p>Вы успешно вошли в сисsadasdasdsadтему.</p>
-
-    <h1>Привет из мастера</h1>
-
-
   `,
   styles: [`
     h2 {

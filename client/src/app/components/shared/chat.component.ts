@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-chat',
@@ -17,7 +18,7 @@ import { HttpClient } from '@angular/common/http';
 export class ChatComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   newMessage = '';
-  currentChatId = '_Yq6cFcxNwpy';
+  currentChatId = 'GELpvhL37eTT';
   currentUserId: string | null = null;
   isConnected = false;
 
@@ -75,7 +76,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   loadChatHistory(): void {
     const chatId = this.currentChatId;
-    this.http.get<any[]>(`http://localhost:8081/api/chat/messages?chatId=${chatId}`)
+    const baseUrl = `${environment.apiUrl}/chat/messages?chatId=${this.currentChatId}&offsets=2`;
+
+    this.http.get<any[]>(baseUrl)
       .subscribe(
         (history: any[]) => {
           this.messages = history;
@@ -86,6 +89,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       );
   }
+
 
   private sortMessages(): void {
     this.messages.sort((a, b) =>
