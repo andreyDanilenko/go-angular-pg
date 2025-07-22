@@ -1,12 +1,12 @@
 // src/app/features/chat/chat.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebSocketService } from '../../core/services/web-socket-service.service';
-import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment.prod';
+import { AuthService } from '../../../core/services/auth.service';
+import { WebSocketService } from '../../../core/services/web-socket-service.service';
+import { environment } from '../../../../environments/environment.prod';
 
 @Component({
   selector: 'app-chat',

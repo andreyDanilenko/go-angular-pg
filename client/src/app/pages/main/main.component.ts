@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatComponent } from '../../components/shared/chat.component';
+import { ChatComponent } from '../../components/shared/chat/chat.component';
 
 @Component({
   selector: 'app-home',
