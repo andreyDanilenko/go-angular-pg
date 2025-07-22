@@ -1,0 +1,27 @@
+.auth-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  padding: 24px;
+  align-items: center;
+  background-color: #f0f2f5;
+}
+
+.auth-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.auth-header {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.auth-footer {
+  margin-top: 30px;
+  font-size: 12px;
+  color: #888;
+}

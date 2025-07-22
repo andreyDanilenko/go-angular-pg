@@ -1,0 +1,27 @@
+<div class="input-wrapper" [ngClass]="size">
+  <label *ngIf="label">{{ label }}</label>
+
+  <div class="input-container">
+    <input
+      [type]="inputType"
+      [formControl]="formControl"
+      [placeholder]="placeholder"
+      [ngClass]="{ 'has-error': showError }"
+    />
+
+    <!-- Кнопка очистки -->
+    <button *ngIf="control.value" type="button" class="icon-btn clear" (click)="clear()">×</button>
+
+    <!-- Глаз -->
+    <button *ngIf="type === 'password'" type="button" class="icon-btn eye" (click)="togglePassword()">
+      {{ isPasswordVisible ? '👁️' : '🙈' }}
+    </button>
+  </div>
+
+  <!-- Ошибка -->
+  <div class="error-placeholder">
+    <div *ngIf="showError" class="error-message">
+      {{ errorText }}
+    </div>
+  </div>
+</div>

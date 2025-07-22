@@ -1,0 +1,73 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+}
+
+.input-wrapper label {
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 0 40px 0 12px;
+  border: 1.5px solid #cbd3e6;
+  box-shadow: 0 0 5px rgba(124, 144, 243, 0.5);
+  background-color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-container input.has-error {
+  border-color: #ff4d4f;
+}
+
+.icon-btn {
+  position: absolute;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  color: #888;
+}
+
+.icon-btn.clear {
+  right: 8px;
+}
+
+.icon-btn.eye {
+  right: 32px;
+}
+
+.error-placeholder {
+  min-height: 18px;
+  margin-top: 4px;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 12px;
+}
+
+/* Размерности */
+.input-wrapper.sm input {
+  height: 32px;
+}
+
+.input-wrapper.md input {
+  height: 40px;
+}
+
+.input-wrapper.lg input {
+  height: 48px;
+}
