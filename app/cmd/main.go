@@ -39,6 +39,8 @@ func main() {
 	}
 	defer db.Close()
 
+	/// sdasdasdasdas
+
 	if err := gormDB.AutoMigrate(
 		&model.ChatRoom{},
 		&model.ChatParticipant{},
