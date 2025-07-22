@@ -21,7 +21,7 @@ ufw enable
 Смотрим id нужного контейнера 
 docker ps
 Для обращения к докер контейнеру и запуска скриптов в проекте
-sudo docker exec -it 1a2a19cbc99f bash
+sudo docker exec -it api-admin-marketplace-app bash
 
 Обрати внимание если какая то команда не работает убедись что ты в нужной директории сервера
 ssh root@62.113.103.222
@@ -44,3 +44,13 @@ docker builder prune
 docker volume prune
 5. Удаляем конкретный image
 docker rmi <IMAGE_ID>
+
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_github_deploy
+cat ~/.ssh/id_rsa_github_deploy.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/id_rsa_github_deploy.pub | ssh user@server_ip 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+
+
+Посмотреть образы
+docker images
+Зайти в контейнер
+docker run -it api-admin-marketplace-app /bin/bash
