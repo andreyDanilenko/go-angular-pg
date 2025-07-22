@@ -90,29 +90,4 @@ export class ChatsComponent {
     if (chat.name) return chat.name;
     return chat.participants.map(p => p.firstName || p.username).join(' & ');
   }
-
-  // constructor() {
-  //   this.search.valueChanges
-  //     .pipe(
-  //       debounceTime(300), // Задержка 300мс перед обработкой
-  //       distinctUntilChanged() // Игнорировать повторяющиеся значения
-  //     )
-  //     .subscribe(searchTerm => {
-  //       this.filterChats(searchTerm || '');
-  //     });
-  // }
-
-  // private filterChats(searchTerm: string) {
-  //   if (!searchTerm.trim()) {
-  //     this.filteredChats.set(this.allChats());
-  //     return;
-  //   }
-
-  //   const filtered = this.allChats().filter(chat =>
-  //     chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     chat.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-
-  //   this.filteredChats.set(filtered);
-  // }
 }
