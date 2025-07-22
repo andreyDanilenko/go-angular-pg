@@ -23,7 +23,6 @@ jobs:
             cd /root/project/api-admin-marketplace
             git fetch --all
             git checkout implement-work-chat-2
-            git reset --hard origin/implement-work-chat-2
-            git clean -fd
+            git pull origin implement-work-chat-2
             docker-compose down
             docker-compose up -d --build
