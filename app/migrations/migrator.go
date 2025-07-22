@@ -34,7 +34,10 @@ func main() {
 	err = db.AutoMigrate(
 		&model.User{},
 		&model.Article{},
-		// Добавьте другие модели по мере необходимости
+		&model.ChatRoom{},
+		&model.ChatParticipant{},
+		&model.ChatMessageRead{},
+		&model.ChatMessage{},
 	)
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
