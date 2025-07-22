@@ -13,6 +13,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -49,9 +50,19 @@ func main() {
 
 	// Настройка роутера
 	r := chi.NewRouter()
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:4200", "https://lifedream.tech", "https://www.lifedream.tech"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+	r.Use(middleware.Logger)
 
 	// Публичные маршруты
 	r.Route("/api", func(r chi.Router) {
+		// Публичные маршруты
 		r.Group(func(r chi.Router) {
 			r.Post("/signup", authHandler.SignUp)
 			r.Post("/signin", authHandler.SignIn)
@@ -59,16 +70,27 @@ func main() {
 			r.Get("/articles/{id}", articleHandler.GetArticle)
 		})
 
-		// Защищенные маршруты (требуют JWT)
+		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
+
+			r.Get("/users", authHandler.GetUsers)
+			r.Get("/users/{id}", authHandler.GetUserByID)
+			r.Put("/users/{id}", authHandler.UpdateUser)
 
 			r.Get("/articles", articleHandler.GetUserArticles)
 			r.Post("/articles", articleHandler.CreateArticle)
 			r.Put("/articles/{id}", articleHandler.UpdateArticle)
 			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+
+			// WebSocket для чата
+			// r.Get("/ws", chatHandler.ServeWS)
+			// r.Get("/chat/messages", chatHandler.GetMessages)
+			// r.Post("/chat/create-private", chatHandler.CreatePrivateChat)
+			// r.Get("/chat/user-chats", chatHandler.GetUserChats)
 		})
 	})
+
 	// Запуск сервера
 	log.Println("Server is running on port 8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {
