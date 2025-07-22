@@ -22,9 +22,9 @@ interface Chat {
   updatedAt: string;
   participants: Participant[];
   unreadCount: number;
-  lastMessage?: string; // Добавил как опциональное поле
-  time?: string;        // Добавил как опциональное поле
-  avatar?: string;      // Добавил как опциональное поле
+  lastMessage?: string;
+  time?: string;
+  avatar?: string;
 }
 
 
@@ -84,7 +84,6 @@ export class ChatsComponent {
     }
   ]);
 
-  // Метод для генерации имени чата, если name пустое
   getChatName(chat: Chat): string {
     if (chat.name) return chat.name;
     return chat.participants.map(p => p.firstName || p.username).join(' & ');
