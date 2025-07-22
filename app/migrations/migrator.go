@@ -1,8 +1,8 @@
 package main
 
 import (
-	"admin/panel/app/internal/config"
-	"admin/panel/app/internal/model"
+	"admin/panel/internal/config"
+	"admin/panel/internal/model"
 	"log"
 
 	"gorm.io/driver/postgres"

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"admin/panel/app/internal/model"
-	"admin/panel/app/internal/service"
+	"admin/panel/internal/model"
+	"admin/panel/internal/service"
 
 	"github.com/go-playground/validator/v10"
 )

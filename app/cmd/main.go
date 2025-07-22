@@ -1,11 +1,11 @@
 package main
 
 import (
-	"admin/panel/app/internal/config"
-	"admin/panel/app/internal/handler"
-	"admin/panel/app/internal/middleware"
-	"admin/panel/app/internal/repository"
-	"admin/panel/app/internal/service"
+	"admin/panel/internal/config"
+	"admin/panel/internal/handler"
+	"admin/panel/internal/middleware"
+	"admin/panel/internal/repository"
+	"admin/panel/internal/service"
 	"fmt"
 	"log"
 	"net/http"
