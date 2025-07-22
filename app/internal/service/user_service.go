@@ -1,6 +1,7 @@
 package service
 
 import (
+	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/utils"
@@ -61,7 +62,7 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, s.jwtSecret)
+	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
 	if err != nil {
 		return nil, "", err
 	}
@@ -85,7 +86,7 @@ func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*mode
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, s.jwtSecret)
+	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
 	if err != nil {
 		return nil, "", err
 	}
@@ -93,6 +94,70 @@ func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*mode
 	return user, token, nil
 }
 
-func (s *UserService) GetProfile(ctx context.Context, userID string) (*model.User, error) {
-	return s.repo.GetByID(ctx, userID)
+// Получение списка пользователей
+func (s *UserService) GetUsers(ctx context.Context) ([]model.UserShort, error) {
+	users, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	shortUsers := make([]model.UserShort, 0, len(users))
+	for _, u := range users {
+		shortUsers = append(shortUsers, model.UserShort{
+			ID:        u.ID,
+			Username:  u.Username,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
+		})
+	}
+	return shortUsers, nil
+}
+
+// Получение полного пользователя по ID
+func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
+	user, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	fullUser := &model.User{
+		ID:         user.ID,
+		Username:   user.Username,
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		MiddleName: user.MiddleName,
+		Role:       user.Role,
+		Email:      user.Email,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+	}
+
+	return fullUser, nil
+}
+
+func (s *UserService) UpdateUser(ctx context.Context, userID string, input model.UpdateUserInput) (*model.User, error) {
+	authUserID := ctx.Value(middleware.UserIDKey).(string)
+	role := ctx.Value(middleware.RoleKey).(model.UserRole)
+
+	if authUserID != userID && role != model.RoleAdmin {
+		return nil, errors.New("нельзя редактировать другого пользователя")
+	}
+
+	// Если админ, разрешаем менять роль
+	if role == model.RoleAdmin {
+		if input.Role != "" {
+			if !model.UserRole(input.Role).IsValid() {
+				return nil, errors.New("недопустимая роль")
+			}
+		}
+	} else {
+		// Обычный пользователь не может менять роль
+		input.Role = "" // или игнорируем роль из input
+	}
+
+	return s.repo.UpdateUser(ctx, userID, input)
 }
