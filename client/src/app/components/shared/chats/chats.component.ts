@@ -11,7 +11,7 @@ interface Participant {
   username: string;
   firstName: string;
   email: string;
-  role: string;
+  role: 'guest' | 'admin' | 'user';
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +24,7 @@ interface Chat {
   updatedAt: string;
   participants: Participant[];
   unreadCount: number;
+  // Дополнительные необязательные поля из вашего примера
   lastMessage?: string;
   time?: string;
   avatar?: string;
