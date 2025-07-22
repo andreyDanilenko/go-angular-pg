@@ -6,10 +6,7 @@ import { ChatComponent } from '../../components/shared/chat.component';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, ChatComponent],
-  template: `
-    <!-- Вставляем чат -->
-    <app-chat></app-chat>
-  `,
+  templateUrl: './main.component.html',
   styles: [`
     h2 {
       color: #4a90e2;
