@@ -1,0 +1,72 @@
+<div class="chat-list">
+  <h2 class="chat-list__title">Сообщения</h2>
+
+  <div class="chat-list__search">
+    <div class="input-wrapper">
+      <div class="input-container">
+        <input type="text" placeholder="Поиск чатов...">
+        <button class="icon-btn search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667ZM14 14l-2.9-2.9"
+                  stroke="var(--text-secondary)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-list__items">
+    <!-- Пример одного чата -->
+    <a href="/messages/1" class="chat-item">
+      <div class="chat-item__avatar">
+        <img src="assets/avatars/1.jpg" alt="Алексей Иванов">
+        <span class="unread-badge">2</span>
+      </div>
+
+      <div class="chat-item__content">
+        <div class="chat-item__header">
+          <h3 class="chat-item__name">Алексей Иванов</h3>
+          <span class="chat-item__time">12:30</span>
+        </div>
+
+        <p class="chat-item__message">Привет, как дела?</p>
+      </div>
+    </a>
+
+    <!-- Второй чат без непрочитанных -->
+    <a href="/messages/2" class="chat-item">
+      <div class="chat-item__avatar">
+        <img src="assets/avatars/2.jpg" alt="Мария Петрова">
+      </div>
+
+      <div class="chat-item__content">
+        <div class="chat-item__header">
+          <h3 class="chat-item__name">Мария Петрова</h3>
+          <span class="chat-item__time">10:45</span>
+        </div>
+
+        <p class="chat-item__message">Отправила тебе документы</p>
+      </div>
+    </a>
+
+    <!-- Третий чат -->
+    <a href="/messages/3" class="chat-item active">
+      <div class="chat-item__avatar">
+        <img src="assets/avatars/3.jpg" alt="Иван Сидоров">
+        <span class="unread-badge">5</span>
+      </div>
+
+      <div class="chat-item__content">
+        <div class="chat-item__header">
+          <h3 class="chat-item__name">Иван Сидоров</h3>
+          <span class="chat-item__time">Вчера</span>
+        </div>
+
+        <p class="chat-item__message">Давай встретимся завтра</p>
+      </div>
+    </a>
+  </div>
+</div>

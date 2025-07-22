@@ -6,6 +6,7 @@ import { AuthGuard } from './pages/guard/auth-guard';
 import { AuthComponent } from './pages/auth/auth.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HomeComponent } from './pages/main/main.component';
+import { ChatsPage } from './pages/chats/chats-page.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,14 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: HomeComponent },
+    ]
+  },
+  {
+    path: 'messages',
+    component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: ChatsPage },
     ]
   },
   { path: '**', redirectTo: '' }
