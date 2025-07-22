@@ -26,13 +26,13 @@ func main() {
 	}
 
 	// // Очищаем таблицы перед миграцией (опционально)
-	if err := resetDatabase(db); err != nil {
-		log.Fatalf("Failed to reset database: %v", err)
-	}
-
-	// if err := db.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatRoom{}, &model.ChatMessageRead{}); err != nil {
-	// 	log.Printf("Warning: failed to drop chat_messages table: %v", err)
+	// if err := resetDatabase(db); err != nil {
+	// 	log.Fatalf("Failed to reset database: %v", err)
 	// }
+
+	if err := db.Migrator().DropTable(&model.ChatMessage{}, &model.ChatParticipant{}, &model.ChatRoom{}, &model.ChatMessageRead{}, &model.User{}, &model.Article{}); err != nil {
+		log.Printf("Warning: failed to drop chat_messages table: %v", err)
+	}
 
 	if err := db.AutoMigrate(
 		&model.ChatRoom{},
