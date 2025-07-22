@@ -53,44 +53,18 @@
   background-color: rgba(124, 144, 243, 0.05);
 }
 
-:root {
-  /* Основные цвета */
-  --primary-color: #7c90f3;
-  --primary-hover: #5a6fcf;
-  --primary-disabled: #b3b9d7;
-
-  /* Фоны */
-  --bg-main: #f0f2f5;
-  --bg-form: #f9faff;
-  --bg-error: #ffe3e3;
-
-  /* Текст */
-  --text-primary: #444;
-  --text-secondary: #888;
-  --text-error: #a70000;
-  --text-light: #fff;
-
-  /* Границы */
-  --border-light: #e0e6f2;
-  --border-medium: #cbd3e6;
-  --border-error: #ff4d4f;
-
-  /* Тени */
-  --shadow-light: 0 4px 10px rgba(100, 100, 150, 0.1);
-  --shadow-medium: 0 4px 10px rgba(100, 100, 150, 0.2);
-}
-
-
 .chat-item.active {
   background-color: rgba(124, 144, 243, 0.1);
   border-left-color: var(--primary-color, #7c90f3);
 }
 
 .chat-item__avatar {
+  background: #888;
   position: relative;
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  border-radius: 500%;
 }
 
 .chat-item__avatar img {

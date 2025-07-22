@@ -20,7 +20,7 @@
 
       <div class="chat-item__avatar">
         <img [src]="chat.avatar || 'assets/avatars/default-user.jpg'"
-             [alt]="getChatName(chat)">
+             [alt]="">
         <span *ngIf="chat.unreadCount > 0" class="unread-badge">
           {{ chat.unreadCount }}
         </span>
