@@ -6,6 +6,7 @@ import (
 	"admin/panel/internal/config"
 	"admin/panel/internal/handler"
 	"admin/panel/internal/middleware"
+	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
 	"admin/panel/internal/ws"
@@ -35,6 +36,17 @@ func main() {
 		log.Fatalf("Failed to get underlying DB connection: %v", err)
 	}
 	defer sqlDB.Close()
+
+	if err := gormDB.AutoMigrate(
+		&model.ChatRoom{},
+		&model.ChatParticipant{},
+		&model.ChatMessageRead{},
+		&model.ChatMessage{},
+		&model.User{},
+		&model.Article{},
+	); err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+	}
 
 	errorWriter := apierror.New()
 	responseWriter := apiresponse.New()
