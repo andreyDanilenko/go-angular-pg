@@ -10,7 +10,10 @@
     ></app-input>
    </div>
 
-  <div class="chat-list__items">
+  <div *ngIf="loading()">Loading chats...</div>
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+
+  <div *ngIf="!loading() && !error()" class="chat-list__items">
     <a *ngFor="let chat of allChats()"
        [href]="'/messages/' + chat.id"
        class="chat-item">

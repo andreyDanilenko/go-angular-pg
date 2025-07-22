@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { InputComponent } from '../../uikit/input/input.component';
+import { catchError, of } from 'rxjs';
+import { BaseApiService } from '../../../core/services/base-api.service';
 
 interface Participant {
   id: string;
@@ -27,7 +29,6 @@ interface Chat {
   avatar?: string;
 }
 
-
 @Component({
   selector: 'app-chats',
   standalone: true,
@@ -35,54 +36,51 @@ interface Chat {
   templateUrl: './chats.component.html',
   styleUrls: ['./chats.component.css']
 })
-export class ChatsComponent {
+export class ChatsComponent implements OnInit {
   search = new FormControl('');
 
-  protected readonly allChats = signal<Chat[]>([
-    {
-      id: 'GELpvhL37eTT',
-      name: 'Andrey1 & Andrey2',
-      isGroup: false,
-      createdAt: '2025-07-22T18:17:11.29512Z',
-      updatedAt: '2025-07-22T18:17:11.29512Z',
-      participants: [
-        {
-          id: '8nVwiNQ8pI84',
-          username: 'Andrey1',
-          firstName: 'Andrey',
-          email: 'danilenko1@mail.ru',
-          role: 'guest',
-          createdAt: '2025-07-22T18:16:06.459126Z',
-          updatedAt: '2025-07-22T18:16:06.459126Z'
-        },
-        {
-          id: 'aRjJGSivRWXL',
-          username: 'Andrey2',
-          firstName: 'Andrey',
-          email: 'danilenko2@mail.ru',
-          role: 'guest',
-          createdAt: '2025-07-22T18:16:27.785264Z',
-          updatedAt: '2025-07-22T18:16:27.785264Z'
-        }
-      ],
-      unreadCount: 4,
-      lastMessage: 'Привет! Как насчет встречи завтра?',
-      time: '18:17',
-      avatar: 'assets/avatars/default-user.jpg'
-    },
-    {
-      id: '2',
-      name: 'Мария Петрова',
-      isGroup: false,
-      createdAt: '2025-07-22T10:00:00.000Z',
-      updatedAt: '2025-07-22T10:00:00.000Z',
-      participants: [],
-      unreadCount: 0,
-      lastMessage: 'Я отправила тебе документы по проекту',
-      time: '15:30',
-      avatar: 'assets/avatars/2.jpg'
-    }
-  ]);
+  protected readonly allChats = signal<Chat[]>([]);
+  protected loading = signal(true);
+  protected error = signal<string | null>(null);
+
+  constructor(private apiService: BaseApiService) {}
+
+  ngOnInit(): void {
+    this.loadChats();
+  }
+
+  loadChats(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.apiService.get<Chat[]>('chat/user-chats') // предполагается, что endpoint называется 'chats'
+      .pipe(
+        catchError(err => {
+          console.error('Failed to load chats', err);
+          this.error.set('Failed to load chats. Please try again later.');
+          return of([]); // возвращаем пустой массив в случае ошибки
+        })
+      )
+      .subscribe(chats => {
+        this.allChats.set(this.processChats(chats));
+        this.loading.set(false);
+      });
+  }
+
+  private processChats(chats: Chat[]): Chat[] {
+    return chats.map(chat => ({
+      ...chat,
+      // Добавляем недостающие поля, если их нет в ответе API
+      lastMessage: chat.lastMessage || '',
+      time: chat.time || this.formatTime(chat.updatedAt),
+      avatar: chat.avatar || 'assets/avatars/default-user.jpg'
+    }));
+  }
+
+  private formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 
   getChatName(chat: Chat): string {
     if (chat.name) return chat.name;
