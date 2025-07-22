@@ -3,3 +3,10 @@ go mod tidy
 
 Обновление всех зависимостей:
 go get package@version
+
+
+Если ветку надо полностью перезаписать другой веткой
+Использовать только в случае если твоя ветка была последняя и не было параллельных вливаний 
+git checkout new-branch
+git branch -m master  # переименовать new-branch в master локально
+git push -f origin master
