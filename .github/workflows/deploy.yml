@@ -3,7 +3,7 @@ name: deploy_for_chat
 on:
   push:
     branches:
-      - implement-work-chat-2
+      - master
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
           script: |
             cd /root/project/api-admin-marketplace
             git fetch --all
-            git checkout implement-work-chat-2
-            git pull origin implement-work-chat-2
+            git checkout master
+            git pull origin master
             docker-compose down
             docker-compose up -d --build
