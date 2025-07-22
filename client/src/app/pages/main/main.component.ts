@@ -12,6 +12,10 @@ import { ChatComponent } from '../../components/shared/chat.component';
 
     <!-- Вставляем чат -->
     <app-chat></app-chat>
+
+
+    проввфыватфловтлфдывтыфждв
+    адцавьлдывьалдвыьа
   `,
   styles: [`
     h2 {
