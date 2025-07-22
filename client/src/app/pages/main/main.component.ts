@@ -23,6 +23,9 @@ import { ChatComponent } from '../../components/shared/chat.component';
     <p>Вы успешно вошли в систему.</p>
     <p>Вы успешно вошли в сисsadasdasdsadтему.</p>
 
+    <h1>Привет из мастера</h1>
+
+
   `,
   styles: [`
     h2 {
