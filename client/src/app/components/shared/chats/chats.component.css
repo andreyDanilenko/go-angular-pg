@@ -11,7 +11,7 @@
 .chat-list__title {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);
-  color: var(--text-primary);
+  color: var(--primary-color, #7c90f3);
   padding: 1.5rem 1.5rem 1rem;
   margin: 0;
 }
@@ -26,7 +26,7 @@
 }
 
 .chat-list__search .input-container input:focus {
-  box-shadow: 0 0 0 2px var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color, #7c90f3);
 }
 
 .chat-list__search .input-container .icon-btn.search {
@@ -53,9 +53,37 @@
   background-color: rgba(124, 144, 243, 0.05);
 }
 
+:root {
+  /* Основные цвета */
+  --primary-color: #7c90f3;
+  --primary-hover: #5a6fcf;
+  --primary-disabled: #b3b9d7;
+
+  /* Фоны */
+  --bg-main: #f0f2f5;
+  --bg-form: #f9faff;
+  --bg-error: #ffe3e3;
+
+  /* Текст */
+  --text-primary: #444;
+  --text-secondary: #888;
+  --text-error: #a70000;
+  --text-light: #fff;
+
+  /* Границы */
+  --border-light: #e0e6f2;
+  --border-medium: #cbd3e6;
+  --border-error: #ff4d4f;
+
+  /* Тени */
+  --shadow-light: 0 4px 10px rgba(100, 100, 150, 0.1);
+  --shadow-medium: 0 4px 10px rgba(100, 100, 150, 0.2);
+}
+
+
 .chat-item.active {
   background-color: rgba(124, 144, 243, 0.1);
-  border-left-color: var(--primary-color);
+  border-left-color: var(--primary-color, #7c90f3);
 }
 
 .chat-item__avatar {
@@ -76,7 +104,7 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background-color: var(--primary-color);
+  background-color: var(--primary-color, #7c90f3);
   color: white;
   border-radius: 50%;
   width: 20px;
@@ -103,7 +131,7 @@
 .chat-item__name {
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
-  color: var(--text-primary);
+  color: var(--text-primary, #444);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -112,14 +140,14 @@
 
 .chat-item__time {
   font-size: var(--text-xs);
-  color: var(--text-secondary);
+  color: var(--text-secondary, #888);
   flex-shrink: 0;
   margin-left: 0.5rem;
 }
 
 .chat-item__message {
   font-size: var(--text-sm);
-  color: var(--text-secondary);
+  color: var(--text-secondary, #888);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
