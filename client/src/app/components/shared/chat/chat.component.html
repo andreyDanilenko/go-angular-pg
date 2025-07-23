@@ -1,6 +1,6 @@
 <div class="chat-container">
-  <div class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
-    {{ isConnected ? 'Connected' : 'Disconnected' }}
+  <div *ngIf="!isConnected" class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
+      Disconnected
   </div>
 
   <div class="messages-container">
@@ -14,7 +14,6 @@
   </div>
 
   <div class="message-input">
-
     <app-input
       label=""
       [control]="newMessage"
@@ -32,6 +31,5 @@
       >
         Send
     </app-button>
-
   </div>
 </div>
