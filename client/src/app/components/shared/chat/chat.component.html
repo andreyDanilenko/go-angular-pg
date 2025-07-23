@@ -1,0 +1,39 @@
+<div class="chat-container">
+  <div *ngIf="!isConnected" class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
+      Disconnected
+  </div>
+
+  <div class="messages-container">
+    <div *ngFor="let msg of messages" class="message"
+        [class.owner]="msg.senderId === currentUserId"
+        [class.other]="msg.senderId !== currentUserId">
+
+      <div class="message-header">
+        <span class="sender">{{ msg.sender?.username || msg.sender?.firstName || 'Unknown' }}</span>
+        <span class="time">{{ msg.sentAt | date:'shortTime' }}</span>
+      </div>
+
+      <div class="message-text">{{ msg.text }}</div>
+    </div>
+  </div>
+
+  <div class="message-input">
+    <app-input
+      label=""
+      [control]="newMessage"
+      type="text"
+      placeholder="Сообщение"
+      size="lg"
+      class="message-input__text"
+    ></app-input>
+
+      <app-button
+        type="primary"
+        size="48"
+        [disabled]="!newMessage.value?.trim() || !isConnected"
+        (click)="sendMessage()"
+      >
+        Send
+    </app-button>
+  </div>
+</div>

@@ -1,15 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatComponent } from '../../components/shared/chat.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ChatComponent],
-  template: `
-    <!-- Вставляем чат -->
-    <app-chat></app-chat>
-  `,
+  imports: [CommonModule],
+  templateUrl: './main.component.html',
   styles: [`
     h2 {
       color: #4a90e2;
