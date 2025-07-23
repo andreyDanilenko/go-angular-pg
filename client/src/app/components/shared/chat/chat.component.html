@@ -14,12 +14,24 @@
   </div>
 
   <div class="message-input">
-    <input
-      [(ngModel)]="newMessage"
-      placeholder="Type your message..."
-      (keyup.enter)="sendMessage()"
-      [disabled]="!isConnected"
-    >
-    <button (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">Send</button>
+
+    <app-input
+      label=""
+      [control]="newMessage"
+      type="text"
+      placeholder="Сообщение"
+      size="lg"
+      class="message-input__text"
+    ></app-input>
+
+      <app-button
+        type="primary"
+        size="48"
+        [disabled]="!newMessage.value?.trim() || !isConnected"
+        (click)="sendMessage()"
+      >
+        Send
+    </app-button>
+
   </div>
 </div>

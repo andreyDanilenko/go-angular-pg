@@ -1,11 +1,5 @@
 .chat-container {
-  display: flex;
-  flex-direction: column;
   height: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -66,17 +60,16 @@
 
 .message-input {
   display: flex;
-  padding: 8px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
   border-top: 1px solid #ddd;
   background-color: white;
 }
 
-.message-input input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
+.message-input__text {
+  width: 100%;
   border-radius: 4px;
-  margin-right: 8px;
 }
 
 .message-input button {

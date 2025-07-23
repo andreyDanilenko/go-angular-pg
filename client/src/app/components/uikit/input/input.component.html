@@ -19,7 +19,7 @@
   </div>
 
   <!-- Ошибка -->
-  <div class="error-placeholder">
+  <div *ngIf="showError" class="error-placeholder">
     <div *ngIf="showError" class="error-message">
       {{ errorText }}
     </div>

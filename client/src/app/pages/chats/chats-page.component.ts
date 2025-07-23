@@ -8,6 +8,6 @@ import { ChatsComponent } from '../../components/shared/chats/chats.component';
   templateUrl: './chats-page.component.html',
   styleUrl: './chats-page.component.css'
 })
-export class ChatsPage {
+export class ChatsPageComponent {
 
 }

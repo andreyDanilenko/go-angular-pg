@@ -2,22 +2,29 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
 import { environment } from '../../../../environments/environment.prod';
+import { InputComponent } from '../../uikit/input/input.component';
+import { ButtonComponent } from '../../uikit/button/button.component';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputComponent,
+    ButtonComponent
+  ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
   messages: any[] = [];
-  newMessage = '';
+  newMessage = new FormControl('');
   currentChatId = 'GELpvhL37eTT';
   currentUserId: string | null = null;
   isConnected = false;
@@ -48,8 +55,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       (message: any) => {
         const exists = this.messages.some(m => m.id === message.id);
 
-        console.log('message', message);
-
         if (!exists) {
           this.messages.push(message.payload);
           this.sortMessages();
@@ -68,9 +73,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(): void {
-    if (this.newMessage.trim() && this.isConnected) {
-      this.wsService.sendMessage(this.currentChatId, this.newMessage);
-      this.newMessage = '';
+    const messageText = this.newMessage.value?.trim();
+    if (messageText && this.isConnected) {
+      this.wsService.sendMessage(this.currentChatId, messageText);
+      this.newMessage.reset(''); // сбрасываем значение
     }
   }
 
