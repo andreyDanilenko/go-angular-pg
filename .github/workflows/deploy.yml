@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.PAT_TOKEN }}
 
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -23,6 +25,6 @@ jobs:
             cd /root/project/api-admin-marketplace
             git fetch --all
             git checkout master
-            git pull origin master
+            git pull https://${{ secrets.PAT_TOKEN }}@github.com/andreyDanilenko/admin-panel-golang.git master
             docker-compose down
             docker-compose up -d --build
