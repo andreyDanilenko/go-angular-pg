@@ -6,6 +6,7 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet],
   template: `<router-outlet></router-outlet>`,
+  styles: `:host { display: block; height: 100%; }`
 })
 export class App {
   protected readonly title = signal('client');

@@ -1,5 +1,7 @@
 .chat-container {
-  height: 100%;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -22,7 +24,6 @@
   flex: 1;
   padding: 16px;
   overflow-y: auto;
-  max-height: 500px;
   background-color: #f9f9f9;
 }
 

@@ -1,9 +1,10 @@
 .main-layout {
-  height: 100vh;
+  height: 100%;
   background-color: #f0f2f5;
 }
 
 .main-content {
+  height: 100%;
   background-color: #f0f2f5;
 }
 
