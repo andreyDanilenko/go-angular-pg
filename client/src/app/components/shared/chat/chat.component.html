@@ -4,11 +4,15 @@
   </div>
 
   <div class="messages-container">
-    <div *ngFor="let msg of messages" class="message" [class.sent]="msg.sender_id === currentUserId">
+    <div *ngFor="let msg of messages" class="message"
+        [class.owner]="msg.senderId === currentUserId"
+        [class.other]="msg.senderId !== currentUserId">
+
       <div class="message-header">
-        <span class="sender">{{ msg.sender?.username || 'Unknown' }}</span>
-        <span class="time">{{ msg.sent_at | date:'shortTime' }}</span>
+        <span class="sender">{{ msg.sender?.username || msg.sender?.firstName || 'Unknown' }}</span>
+        <span class="time">{{ msg.sentAt | date:'shortTime' }}</span>
       </div>
+
       <div class="message-text">{{ msg.text }}</div>
     </div>
   </div>
