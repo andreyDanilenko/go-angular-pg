@@ -23,8 +23,12 @@ jobs:
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
             cd /root/project/api-admin-marketplace
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/github_keys
+            ssh -T git@github.com
+            git remote set-url origin git@github.com:andreyDanilenko/admin-panel-golang.git
             git fetch --all
             git checkout master
-            git pull https://${{ secrets.PAT_TOKEN }}@github.com/andreyDanilenko/admin-panel-golang.git master
+            git pull origin master
             docker-compose down
             docker-compose up -d --build
