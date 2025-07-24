@@ -52,5 +52,5 @@ cat ~/.ssh/id_rsa_github_deploy.pub | ssh user@server_ip 'mkdir -p ~/.ssh && cat
 Посмотреть образы
 docker images
 Зайти в контейнер
-docker exec -it 3f2da74f4991 bash  # через ID
+docker exec -it 559bb51b67c3  bash  
 docker exec -it my-nginx sh        # через имя (sh для Alpine-based образов)
