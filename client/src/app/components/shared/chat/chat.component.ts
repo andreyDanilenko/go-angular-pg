@@ -1,5 +1,5 @@
 // src/app/features/chat/chat.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule } from '@angular/forms';
@@ -40,6 +40,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  private shouldScroll = false;
+
   ngOnInit(): void {
     this.route.paramMap.subscribe({
       next: (params) => {
@@ -71,6 +74,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             if (!exists) {
               this.messages.push(message.payload);
               this.sortMessages();
+              this.shouldScroll = true;
+
             }
           },
           error: (error: any) => {
@@ -81,6 +86,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       error: (error) => console.error('Route param error:', error)
     });
   }
+
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScroll) {
+      this.scrollToBottom();
+      this.shouldScroll = false;
+    }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.messagesContainer.nativeElement.scrollTop =
+        this.messagesContainer.nativeElement.scrollHeight;
+    } catch(err) {
+      console.error('Scroll error:', err);
+    }
+  }
+
 
   ngOnDestroy(): void {
     this.messageSubscription?.unsubscribe();
@@ -105,8 +128,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.http.get<any[]>(baseUrl).subscribe({
       next: (history: any[]) => {
-        this.messages = history;
+        this.messages = history.reverse();
         this.sortMessages();
+        this.shouldScroll = true;
+
       },
       error: (error) => {
         console.error('Failed to load chat history', error);
@@ -118,6 +143,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messages.sort((a, b) =>
       new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
     );
+    this.shouldScroll = true;
   }
 
   private getUserIdFromToken(): string | null {

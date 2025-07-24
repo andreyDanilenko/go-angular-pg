@@ -1,4 +1,4 @@
-<div class="chat-container">
+<div class="chat-container" #messagesContainer>
   <div *ngIf="!isConnected" class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
       Disconnected
   </div>
@@ -25,6 +25,7 @@
       placeholder="Сообщение"
       size="lg"
       class="message-input__text"
+      (keydown.enter)="sendMessage()"
     ></app-input>
 
       <app-button
@@ -32,6 +33,7 @@
         size="48"
         [disabled]="!newMessage.value?.trim() || !isConnected"
         (click)="sendMessage()"
+
       >
         Send
     </app-button>

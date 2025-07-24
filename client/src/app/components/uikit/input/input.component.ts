@@ -15,7 +15,7 @@ export class InputComponent {
   @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() placeholder: string = '';
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() errorText: string = 'Поле заполнено некорректно';
+  @Input() errorText: string = '';
 
   isPasswordVisible = false;
 
