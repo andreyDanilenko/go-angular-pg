@@ -1,12 +1,10 @@
 .chat-container {
-  /* Убираем дублирование height и используем min-height */
-  min-height: calc(100vh - 64px);
-  min-height: -webkit-fill-available;
+  height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Добавляем учет безопасной зоны */
-  padding-bottom: env(safe-area-inset-bottom);
+  /* Добавляем для iOS */
+  /* height: -webkit-fill-available; */
 }
 
 .messages-container {
@@ -17,9 +15,8 @@
   gap: 12px;
   flex: 1;
   padding: 16px;
+  /* Важно для iOS скролла */
   -webkit-overflow-scrolling: touch;
-  /* Добавляем отступ снизу для iOS */
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
 .message-input {
@@ -32,11 +29,9 @@
   padding: 12px;
   border-top: 1px solid #ddd;
   background-color: white;
-  /* Корректируем отступ с учетом безопасной зоны */
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  /* Добавляем резервный фон на случай, если env не поддерживается */
-  background: #fff;
-  /* Фикс для iOS при появлении клавиатуры */
+  /* Только это изменение для iOS панели */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  /* Фикс для позиционирования */
   transform: translateZ(0);
 }
 
@@ -62,8 +57,6 @@
   min-width: 60%;
 }
 
-
-
 .message-header {
   display: flex;
   justify-content: space-between;
@@ -79,6 +72,7 @@
   width: 100%;
   border-radius: 4px;
 }
+
 
 .message.owner {
   align-self: flex-end;
