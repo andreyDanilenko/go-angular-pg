@@ -1,6 +1,5 @@
-// src/app/features/chat/chat.component.ts
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +22,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: any[] = [];
   newMessage = new FormControl('');
   currentChatId: string | null = null;
@@ -32,6 +31,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private messageSubscription!: Subscription;
   private connectionSubscription!: Subscription;
+  private routeSubscription!: Subscription;
+
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  private shouldScroll = false;
 
   constructor(
     private wsService: WebSocketService,
@@ -40,14 +43,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-  private shouldScroll = false;
-
   ngOnInit(): void {
-    this.route.paramMap.subscribe({
+    this.routeSubscription = this.route.paramMap.subscribe({
       next: (params) => {
-        //@ts-ignore
-        this.currentChatId = params['params'].id;
+        this.currentChatId = params.get('id');
 
         if (!this.currentChatId) {
           console.error('Chat ID not found in URL');
@@ -67,15 +66,14 @@ export class ChatComponent implements OnInit, OnDestroy {
           error: (error) => console.error('Connection error:', error)
         });
 
-        this.messageSubscription = this.wsService.getMessages().subscribe({
+        this.messageSubscription = this.wsService.getChatMessages(this.currentChatId).subscribe({
           next: (message: any) => {
-            const exists = this.messages.some(m => m.id === message.id);
+            const exists = this.messages.some(m => m.id === message.payload.id);
 
             if (!exists) {
               this.messages.push(message.payload);
               this.sortMessages();
               this.shouldScroll = true;
-
             }
           },
           error: (error: any) => {
@@ -87,9 +85,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-
   ngAfterViewChecked(): void {
-    if (this.shouldScroll) {
+    if (this.shouldScroll && this.messagesContainer?.nativeElement) {
       this.scrollToBottom();
       this.shouldScroll = false;
     }
@@ -97,17 +94,17 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private scrollToBottom(): void {
     try {
-      this.messagesContainer.nativeElement.scrollTop =
-        this.messagesContainer.nativeElement.scrollHeight;
+      const container = this.messagesContainer.nativeElement;
+      container.scrollTop = container.scrollHeight;
     } catch(err) {
       console.error('Scroll error:', err);
     }
   }
 
-
   ngOnDestroy(): void {
     this.messageSubscription?.unsubscribe();
     this.connectionSubscription?.unsubscribe();
+    this.routeSubscription?.unsubscribe();
     this.wsService.disconnect();
   }
 
@@ -131,7 +128,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.messages = history.reverse();
         this.sortMessages();
         this.shouldScroll = true;
-
       },
       error: (error) => {
         console.error('Failed to load chat history', error);

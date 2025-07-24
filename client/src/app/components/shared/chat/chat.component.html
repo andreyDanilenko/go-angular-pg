@@ -1,9 +1,10 @@
-<div class="chat-container" #messagesContainer>
+<div class="chat-container">
   <div *ngIf="!isConnected" class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
       Disconnected
   </div>
 
-  <div class="messages-container">
+  <!-- Переносим #messagesContainer сюда -->
+  <div class="messages-container" #messagesContainer>
     <div *ngFor="let msg of messages" class="message"
         [class.owner]="msg.senderId === currentUserId"
         [class.other]="msg.senderId !== currentUserId">
@@ -28,14 +29,13 @@
       (keydown.enter)="sendMessage()"
     ></app-input>
 
-      <app-button
-        type="primary"
-        size="48"
-        [disabled]="!newMessage.value?.trim() || !isConnected"
-        (click)="sendMessage()"
-
-      >
-        Send
+    <app-button
+      type="primary"
+      size="48"
+      [disabled]="!newMessage.value?.trim() || !isConnected"
+      (click)="sendMessage()"
+    >
+      Send
     </app-button>
   </div>
 </div>

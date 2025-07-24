@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { filter, Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
@@ -59,6 +59,12 @@ export class WebSocketService {
 
   getMessages(): Observable<any> {
     return this.messageSubject.asObservable();
+  }
+
+  getChatMessages(chatId: string): Observable<any> {
+    return this.messageSubject.asObservable().pipe(
+      filter(message => message.payload?.chatId === chatId)
+    );
   }
 
   getConnectionStatus(): Observable<boolean> {
