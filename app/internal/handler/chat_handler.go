@@ -43,44 +43,67 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *ChatHandler) ServeWS(w http.ResponseWriter, r *http.Request) {
+	// ======================
+	// 1. Аутентификация пользователя
+	// ======================
 	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
 	if !ok || userID == "" {
 		h.errorWriter.WriteError(w, http.StatusUnauthorized, "missing user ID")
 		return
 	}
 
+	// ======================
+	// 2. Установка WebSocket соединения
+	// ======================
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("WebSocket upgrade failed: %v", err)
 		return
 	}
 
+	// ======================
+	// 3. Создание клиентской структуры
+	// ======================
 	client := &ws.Client{
 		UserID: userID,
 		Conn:   conn,
-		Send:   make(chan []byte, 256),
+		Send:   make(chan []byte, 256), // буферизированный канал
 	}
 
+	// ======================
+	// 4. Регистрация клиента в хабе
+	// ======================
 	h.hub.Register <- client
-
 	log.Printf("New WebSocket connection: user=%s", userID)
 
-	go h.readPump(client)
-	go h.writePump(client)
+	// ======================
+	// 5. Запуск горутин для чтения/записи
+	// ======================
+	go h.readPump(client)  // обработка входящих сообщений
+	go h.writePump(client) // отправка исходящих сообщений
 }
 
 func (h *ChatHandler) readPump(client *ws.Client) {
+	// ======================
+	// 1. Очистка при завершении
+	// ======================
 	defer func() {
 		h.hub.Unregister <- client
 		client.Conn.Close()
 	}()
 
 	for {
+		// ======================
+		// 2. Чтение входящего сообщения
+		// ======================
 		_, msgBytes, err := client.Conn.ReadMessage()
 		if err != nil {
 			break
 		}
 
+		// ======================
+		// 3. Парсинг входных данных
+		// ======================
 		var input struct {
 			ChatID      string `json:"chatId"`
 			RecipientID string `json:"recipientId"`
@@ -92,41 +115,54 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 			continue
 		}
 
-		// Определяем chatID
+		// ======================
+		// 4. Разрешение идентификатора чата
+		// ======================
 		chatID, err := h.chatService.ResolveChatID(client.UserID, input.RecipientID, input.ChatID)
 		if err != nil {
 			log.Printf("Chat resolution failed: %v", err)
 			continue
 		}
 
-		// Сохраняем сообщение
+		// ======================
+		// 5. Сохранение сообщения в БД
+		// ======================
 		msg, err := h.chatService.SaveMessage(context.Background(), chatID, client.UserID, input.Text)
 		if err != nil {
 			log.Printf("Failed to save message: %v", err)
 			continue
 		}
 
-		// Получаем полные данные сообщения
+		// ======================
+		// 6. Получение полных данных сообщения
+		// ======================
 		fullMsg, err := h.chatService.GetMessageWithSender(context.Background(), msg.ID)
 		if err != nil {
 			log.Printf("Failed to get message details: %v", err)
 			continue
 		}
 
-		// Отправляем сообщение ВСЕМ участникам чата
+		// ======================
+		// 7. Получение участников чата
+		// ======================
 		participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
 		if err != nil {
 			log.Printf("Failed to get chat participants: %v", err)
 			continue
 		}
 
+		// ======================
+		// 8. Формирование события
+		// ======================
 		event := model.ChatEvent{
 			Type:    "message",
 			Payload: *fullMsg,
 		}
-
 		eventBytes, _ := json.Marshal(event)
 
+		// ======================
+		// 9. Рассылка сообщения участникам
+		// ======================
 		for _, participantID := range participants {
 			if recipient, exists := h.hub.Clients[participantID]; exists {
 				select {
@@ -142,16 +178,25 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 }
 
 func (h *ChatHandler) writePump(client *ws.Client) {
+	// ======================
+	// 1. Очистка при завершении
+	// ======================
 	defer client.Conn.Close()
 
 	for {
 		select {
 		case message, ok := <-client.Send:
+			// ======================
+			// 2. Проверка состояния канала
+			// ======================
 			if !ok {
 				client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
+			// ======================
+			// 3. Отправка сообщения через WebSocket
+			// ======================
 			if err := client.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
 				return
 			}

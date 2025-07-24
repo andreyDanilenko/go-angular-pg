@@ -34,8 +34,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: ChatsPageComponent },
-      { path: ':id', component: ChatPageComponent },
     ]
+  },
+  {
+    path: 'messages/:id',
+    component: ChatPageComponent,
+    canActivate: [AuthGuard]
   },
   { path: '**', redirectTo: '' }
 ];
