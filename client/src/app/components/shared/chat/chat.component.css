@@ -1,10 +1,9 @@
 .chat-container {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px); /* Сохраняем ваш отступ для header */
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Добавляем для iOS */
-  /* height: -webkit-fill-available; */
+  position: relative; /* Добавляем для корректного позиционирования */
 }
 
 .messages-container {
@@ -15,26 +14,30 @@
   gap: 12px;
   flex: 1;
   padding: 16px;
-  /* Важно для iOS скролла */
-  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px; /* Добавляем отступ снизу для input */
 }
 
 .message-input {
   width: 100%;
-  position: sticky;
+  position: fixed; /* Меняем sticky на fixed */
   bottom: 0;
+  left: 0;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Учитываем безопасную зону */
   border-top: 1px solid #ddd;
   background-color: white;
-  /* Только это изменение для iOS панели */
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  /* Фикс для позиционирования */
-  transform: translateZ(0);
+  box-sizing: border-box;
 }
 
+/* Для старых версий iOS */
+@supports (padding-bottom: constant(safe-area-inset-bottom)) {
+  .message-input {
+    padding-bottom: calc(12px + constant(safe-area-inset-bottom));
+  }
+}
 .connection-status {
   padding: 8px;
   text-align: center;
