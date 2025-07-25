@@ -103,8 +103,9 @@ func ParseToken(tokenString, secret string) (jwt.MapClaims, error) {
 		}
 		return []byte(secret), nil
 	})
-	if err != nil {
-		return nil, err
+
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid or expired token")
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
