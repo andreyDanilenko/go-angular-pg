@@ -16,16 +16,16 @@ type Client struct {
 	UserID string
 	Conn   *websocket.Conn
 	Send   chan []byte
-	closed bool       // Добавляем флаг закрытия
-	mu     sync.Mutex // Мьютекс для безопасного доступа
+	closed bool
+	mu     sync.Mutex
 }
 
 type Hub struct {
-	Clients     map[string]*Client // userID -> client
+	Clients     map[string]*Client
 	Broadcast   chan model.ChatEvent
 	Register    chan *Client
 	Unregister  chan *Client
-	chatService *service.ChatService // Добавляем зависимость
+	chatService *service.ChatService
 	mu          sync.RWMutex
 }
 
@@ -47,77 +47,103 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			h.mu.Lock()
-			if oldClient, exists := h.Clients[client.UserID]; exists {
-				oldClient.Close() // Используем безопасное закрытие
-			}
-			h.Clients[client.UserID] = client
-			h.mu.Unlock()
-			log.Printf("User connected: %s", client.UserID)
-
+			log.Printf("client := <-h.Register: %s", client.UserID)
+			h.handleRegister(client)
 		case client := <-h.Unregister:
-			h.mu.Lock()
-			if _, exists := h.Clients[client.UserID]; exists {
-				client.Close() // Используем безопасное закрытие
-				delete(h.Clients, client.UserID)
-				log.Printf("User disconnected: %s", client.UserID)
-			}
-			h.mu.Unlock()
-
+			log.Printf("client := <-h.Unregister: %s", client.UserID)
+			h.handleUnregister(client)
 		case event := <-h.Broadcast:
-			h.mu.RLock()
-			data, err := json.Marshal(event)
-			if err != nil {
-				log.Printf("Failed to marshal event: %v", err)
-				h.mu.RUnlock()
-				continue
-			}
-
-			switch event.Type {
-			case "message":
-				msg, ok := event.Payload.(model.ChatMessage)
-				if !ok {
-					log.Println("Invalid message format in broadcast")
-					h.mu.RUnlock()
-					continue
-				}
-
-				// Получаем участников чата
-				participants, err := h.getChatParticipants(msg.ChatID) // Нужно реализовать эту функцию
-				if err != nil {
-					log.Printf("Failed to get chat participants: %v", err)
-					h.mu.RUnlock()
-					continue
-				}
-
-				// Отправляем сообщение всем участникам чата, кроме отправителя
-				for _, participantID := range participants {
-					if participantID == msg.SenderID {
-						continue
-					}
-
-					if recipient, exists := h.Clients[participantID]; exists {
-						select {
-						case recipient.Send <- data:
-							log.Printf("Message sent to %s", participantID)
-						default:
-							close(recipient.Send)
-							delete(h.Clients, participantID)
-						}
-					}
-				}
-
-			default:
-				log.Printf("Unknown event type: %s", event.Type)
-			}
-			h.mu.RUnlock()
-
+			log.Printf("event := <-h.Broadcast: %s", event.Type)
+			h.handleBroadcast(event)
 		case <-ticker.C:
-			h.mu.RLock()
-			log.Printf("Active connections: %d", len(h.Clients))
-			h.mu.RUnlock()
+			log.Printf("<-ticker.C:")
+			h.logStats()
 		}
 	}
+}
+
+func (h *Hub) handleRegister(client *Client) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if oldClient, exists := h.Clients[client.UserID]; exists {
+		oldClient.Close()
+	}
+	h.Clients[client.UserID] = client
+	log.Printf("User connected: %s", client.UserID)
+}
+
+func (h *Hub) handleUnregister(client *Client) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if _, exists := h.Clients[client.UserID]; exists {
+		client.Close()
+		delete(h.Clients, client.UserID)
+		log.Printf("User disconnected: %s", client.UserID)
+	}
+}
+
+func (h *Hub) handleBroadcast(event model.ChatEvent) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	data, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Failed to marshal event: %v", err)
+		return
+	}
+
+	switch event.Type {
+	case "message":
+		h.broadcastMessage(event, data)
+	default:
+		log.Printf("Unknown event type: %s", event.Type)
+	}
+}
+
+func (h *Hub) broadcastMessage(event model.ChatEvent, data []byte) {
+	msg, ok := event.Payload.(model.ChatMessage)
+	if !ok {
+		log.Println("Invalid message format in broadcast")
+		return
+	}
+
+	participants, err := h.getChatParticipants(msg.ChatID)
+	log.Printf("Message sent to broadcastMessage and etChatParticipants%s", msg.SenderID) // Воеменно
+
+	if err != nil {
+		log.Printf("Failed to get chat participants: %v", err)
+		return
+	}
+
+	for _, participantID := range participants {
+		if participantID == msg.SenderID {
+			continue
+		}
+
+		if recipient, exists := h.Clients[participantID]; exists {
+			log.Printf("Message sent to if recipient, exists := h.Clients[participantID]%s", msg.SenderID) // Воеменно
+			h.sendToClient(recipient, data)
+		}
+	}
+}
+
+func (h *Hub) sendToClient(client *Client, data []byte) {
+	log.Printf("Message sent to sendToClient%s", client.UserID) // Воеменно
+
+	select {
+	case client.Send <- data:
+		log.Printf("Message sent to %s", client.UserID)
+	default:
+		h.Unregister <- client
+	}
+}
+
+func (h *Hub) logStats() {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	log.Printf("Active connections: %d", len(h.Clients))
 }
 
 func (c *Client) Close() {
@@ -132,25 +158,5 @@ func (c *Client) Close() {
 }
 
 func (h *Hub) getChatParticipants(chatID string) ([]string, error) {
-	participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
-	if err != nil {
-		return nil, err
-	}
-	return participants, nil
-}
-
-func (h *Hub) BroadcastToChat(chatID string, senderID string, message []byte) error {
-	// 1. Получаем всех участников чата
-	participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
-	if err != nil {
-		return err
-	}
-
-	// 2. Отправляем всем, включая отправителя (для синхронизации chatId)
-	for _, userID := range participants {
-		if client, ok := h.Clients[userID]; ok {
-			client.Send <- message
-		}
-	}
-	return nil
+	return h.chatService.GetChatParticipants(context.Background(), chatID)
 }
