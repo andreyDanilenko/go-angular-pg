@@ -61,7 +61,7 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 		ID:        uuid.NewString(),
 		UserID:    user.ID,
 		Code:      code,
-		ExpiresAt: time.Now().Add(5 * time.Minute),
+		ExpiresAt: time.Now().Add(2 * time.Minute),
 	})
 	if err != nil {
 		return nil, err

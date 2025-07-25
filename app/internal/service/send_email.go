@@ -53,7 +53,7 @@ func (s *EmailService) SendEmail(email, code string) error {
 
 	// Формируем заголовки письма
 	headers := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	subject := "Subject: Email Verification\n"
+	subject := "Subject: Код подтверждения lifedream.tech\n"
 
 	// Собираем полное сообщение (тема + заголовки + тело)
 	msg := []byte(subject + headers + body.String())
