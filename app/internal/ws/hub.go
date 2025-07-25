@@ -16,6 +16,8 @@ type Client struct {
 	UserID string
 	Conn   *websocket.Conn
 	Send   chan []byte
+	closed bool       // Добавляем флаг закрытия
+	mu     sync.Mutex // Мьютекс для безопасного доступа
 }
 
 type Hub struct {
@@ -47,8 +49,7 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.mu.Lock()
 			if oldClient, exists := h.Clients[client.UserID]; exists {
-				close(oldClient.Send)
-				oldClient.Conn.Close()
+				oldClient.Close() // Используем безопасное закрытие
 			}
 			h.Clients[client.UserID] = client
 			h.mu.Unlock()
@@ -57,7 +58,7 @@ func (h *Hub) Run() {
 		case client := <-h.Unregister:
 			h.mu.Lock()
 			if _, exists := h.Clients[client.UserID]; exists {
-				close(client.Send)
+				client.Close() // Используем безопасное закрытие
 				delete(h.Clients, client.UserID)
 				log.Printf("User disconnected: %s", client.UserID)
 			}
@@ -116,6 +117,17 @@ func (h *Hub) Run() {
 			log.Printf("Active connections: %d", len(h.Clients))
 			h.mu.RUnlock()
 		}
+	}
+}
+
+func (c *Client) Close() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if !c.closed {
+		close(c.Send)
+		c.Conn.Close()
+		c.closed = true
 	}
 }
 

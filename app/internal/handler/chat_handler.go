@@ -131,10 +131,8 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 			if recipient, exists := h.hub.Clients[participantID]; exists {
 				select {
 				case recipient.Send <- eventBytes:
-					// Сообщение отправлено
 				default:
-					close(recipient.Send)
-					delete(h.hub.Clients, participantID)
+					h.hub.Unregister <- recipient
 				}
 			}
 		}
@@ -142,7 +140,9 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 }
 
 func (h *ChatHandler) writePump(client *ws.Client) {
-	defer client.Conn.Close()
+	defer func() {
+		client.Close() // Используем безопасное закрытие
+	}()
 
 	for {
 		select {
