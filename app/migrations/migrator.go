@@ -38,6 +38,7 @@ func main() {
 		&model.ChatParticipant{},
 		&model.ChatMessageRead{},
 		&model.ChatMessage{},
+		&model.EmailConfirmation{},
 	)
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)

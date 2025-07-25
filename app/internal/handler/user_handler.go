@@ -46,7 +46,7 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.authService.Register(r.Context(), input)
+	user, err := h.authService.Register(r.Context(), input)
 	if err != nil {
 		var conflictErr *model.ConflictError
 		if errors.As(err, &conflictErr) {
@@ -64,8 +64,8 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]interface{}{
-		"user":  user,
-		"token": token,
+		"message": "Регистрация прошла успешно. Проверьте email для подтверждения.",
+		"user":    user,
 	})
 }
 
@@ -141,20 +141,20 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	h.responseJSON.WriteJSON(w, http.StatusOK, user)
 }
 
-func (h *UserHandler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
-	token := r.URL.Query().Get("token")
-	if token == "" {
-		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Нет токена", nil)
-		return
-	}
+// func (h *UserHandler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
+// 	token := r.URL.Query().Get("token")
+// 	if token == "" {
+// 		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Нет токена", nil)
+// 		return
+// 	}
 
-	err := h.authService.VerifyEmailToken(r.Context(), token)
-	if err != nil {
-		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "invalid_token", "Токен недействителен", nil)
-		return
-	}
+// 	err := h.authService.VerifyEmailToken(r.Context(), token)
+// 	if err != nil {
+// 		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "invalid_token", "Токен недействителен", nil)
+// 		return
+// 	}
 
-	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]string{
-		"message": "Email успешно подтверждён",
-	})
-}
+// 	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]string{
+// 		"message": "Email успешно подтверждён",
+// 	})
+// }

@@ -16,7 +16,7 @@ type UserShort struct {
 }
 
 type User struct {
-	ID         string    `gorm:"primaryKey;size:36" json:"id"` // NanoID (12 символов)
+	ID         string    `gorm:"primaryKey;size:12" json:"id"` // NanoID (12 символов)
 	Username   string    `gorm:"uniqueIndex;size:50;not null" json:"username" validate:"required,min=3,max=50"`
 	FirstName  string    `gorm:"size:50" json:"firstName,omitempty" validate:"omitempty,min=2,max=50"` // Необязательное
 	LastName   string    `gorm:"size:50" json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`  // Необязательное
@@ -62,10 +62,20 @@ type SignInInput struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-type EmailVerificationToken struct {
-	ID        string `gorm:"primaryKey;size:36"`
+type EmailConfirmation struct {
+	ID        string `gorm:"primaryKey;size:12" json:"id"` // NanoID (12 символов)
 	UserID    string `gorm:"index;not null"`
 	Token     string `gorm:"uniqueIndex;not null"`
+	Purpose   string `gorm:"not null"` // "register"
 	ExpiresAt time.Time
 	CreatedAt time.Time
+}
+
+func (u *EmailConfirmation) BeforeCreate(tx *gorm.DB) error {
+	genID, err := nanoid.Standard(12)
+	if err != nil {
+		return err
+	}
+	u.ID = genID()
+	return nil
 }

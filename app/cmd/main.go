@@ -49,6 +49,7 @@ func main() {
 		&model.ChatMessage{},
 		&model.User{},
 		&model.Article{},
+		&model.EmailConfirmation{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
@@ -56,11 +57,12 @@ func main() {
 	errorWriter := apierror.New()
 	responseWriter := apiresponse.New()
 	tokenManager := utils.NewJWTManager(cfg.JWTSecret)
+	emailService := service.NewEmailService(cfg)
 
 	// Инициализация зависимостей
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
-	authService := service.NewUserService(userRepo, tokenManager)
+	authService := service.NewUserService(userRepo, emailService, tokenManager)
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)

@@ -10,30 +10,33 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
 	repo         *repository.UserRepository
+	emailService *EmailService
 	tokenManager contract.TokenManager
 }
 
-func NewUserService(repo *repository.UserRepository, tokenManager contract.TokenManager) *UserService {
+func NewUserService(repo *repository.UserRepository, emailService *EmailService, tokenManager contract.TokenManager) *UserService {
 	return &UserService{
 		repo:         repo,
+		emailService: emailService,
 		tokenManager: tokenManager,
 	}
 }
 
-func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*model.User, string, error) {
+func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*model.User, error) {
 	// Проверка существования пользователя
 	emailExists, usernameExists, err := s.repo.CheckEmailAndUsername(ctx, input.Email, input.Username)
 	if err != nil {
-		return nil, "", fmt.Errorf("database error: %w", err)
+		return nil, fmt.Errorf("database error: %w", err)
 	}
 
 	if emailExists && usernameExists {
-		return nil, "", &model.ConflictError{
+		return nil, &model.ConflictError{
 			Fields: []model.ConflictField{
 				{Field: "email", Message: "Email already registered"},
 				{Field: "username", Message: "Username already taken"},
@@ -42,7 +45,7 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	}
 
 	if emailExists {
-		return nil, "", &model.ConflictError{
+		return nil, &model.ConflictError{
 			Fields: []model.ConflictField{
 				{Field: "email", Message: "Email already registered"},
 			},
@@ -50,7 +53,7 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	}
 
 	if usernameExists {
-		return nil, "", &model.ConflictError{
+		return nil, &model.ConflictError{
 			Fields: []model.ConflictField{
 				{Field: "username", Message: "Username already taken"},
 			},
@@ -59,16 +62,31 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	// Создание пользователя
 	user, err := s.repo.Create(ctx, input)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
-	// Генерация токена
-	token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
+	confirmationToken := uuid.NewString()
+	confirmation := &model.EmailConfirmation{
+		UserID:    user.ID,
+		Token:     confirmationToken,
+		Purpose:   "register",
+		ExpiresAt: time.Now().Add(15 * time.Minute),
+	}
+
+	err = s.repo.SaveEmailConfirmation(ctx, confirmation)
 	if err != nil {
-		return nil, "", err
+		return nil, fmt.Errorf("failed to save confirmation token: %w", err)
 	}
 
-	return user, token, nil
+	go s.emailService.SendEmail(user.Email, confirmationToken)
+
+	// // Генерация токена
+	// token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
+	// if err != nil {
+	// 	return nil, "", err
+	// }
+	// return user, token, nil
+	return user, nil
 }
 
 func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*model.User, string, error) {
@@ -161,26 +179,4 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 	}
 
 	return s.repo.UpdateUser(ctx, userID, input)
-}
-
-func (s *UserService) VerifyEmailToken(ctx context.Context, token string) error {
-	evToken, err := s.repo.GetEmailVerificationToken(ctx, token)
-	if err != nil {
-		return fmt.Errorf("ошибка при получении токена: %w", err)
-	}
-	if evToken == nil || evToken.ExpiresAt.Before(time.Now()) {
-		return errors.New("токен недействителен или истёк")
-	}
-
-	// Обновляем пользователя
-	if err := s.repo.MarkEmailAsVerified(ctx, evToken.UserID); err != nil {
-		return fmt.Errorf("ошибка при подтверждении email: %w", err)
-	}
-
-	// Удаляем токен
-	if err := s.repo.DeleteEmailVerificationToken(ctx, evToken.ID); err != nil {
-		return fmt.Errorf("ошибка при удалении токена: %w", err)
-	}
-
-	return nil
 }
