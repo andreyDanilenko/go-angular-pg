@@ -10,8 +10,11 @@ import (
 	"fmt"
 	"time"
 
+	"math/rand/v2"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -28,66 +31,132 @@ func NewUserService(repo *repository.UserRepository, emailService *EmailService,
 	}
 }
 
-func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*model.User, error) {
-	// Проверка существования пользователя
-	emailExists, usernameExists, err := s.repo.CheckEmailAndUsername(ctx, input.Email, input.Username)
-	if err != nil {
-		return nil, fmt.Errorf("database error: %w", err)
+func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput) (*model.User, error) {
+	user, err := s.repo.GetByEmail(ctx, input.Email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
 	}
 
-	if emailExists && usernameExists {
-		return nil, &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "email", Message: "Email already registered"},
-				{Field: "username", Message: "Username already taken"},
-			},
+	if user == nil {
+		user, err = s.repo.Create(ctx, model.SignInInput{
+			Email:    input.Email,
+			Password: input.Password,
+		})
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
+			return nil, errors.New("wrong password")
 		}
 	}
 
-	if emailExists {
-		return nil, &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "email", Message: "Email already registered"},
-			},
-		}
-	}
+	// Удаляем старые коды
+	_ = s.repo.DeleteExistingEmailCodes(ctx, user.ID)
+	// Генерируем 6-значный код
+	code := fmt.Sprintf("%06d", rand.IntN(1000000))
 
-	if usernameExists {
-		return nil, &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "username", Message: "Username already taken"},
-			},
-		}
-	}
-	// Создание пользователя
-	user, err := s.repo.Create(ctx, input)
+	// Сохраняем
+	err = s.repo.SaveEmailCode(ctx, &model.EmailCode{
+		ID:        uuid.NewString(),
+		UserID:    user.ID,
+		Code:      code,
+		ExpiresAt: time.Now().Add(5 * time.Minute),
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	confirmationToken := uuid.NewString()
-	confirmation := &model.EmailConfirmation{
-		UserID:    user.ID,
-		Token:     confirmationToken,
-		Purpose:   "register",
-		ExpiresAt: time.Now().Add(15 * time.Minute),
-	}
+	go s.emailService.SendEmail(user.Email, code)
 
-	err = s.repo.SaveEmailConfirmation(ctx, confirmation)
-	if err != nil {
-		return nil, fmt.Errorf("failed to save confirmation token: %w", err)
-	}
-
-	go s.emailService.SendEmail(user.Email, confirmationToken)
-
-	// // Генерация токена
-	// token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
-	// if err != nil {
-	// 	return nil, "", err
-	// }
-	// return user, token, nil
 	return user, nil
 }
+
+func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*model.User, string, error) {
+	user, err := s.repo.GetByEmail(ctx, email)
+	if err != nil || user == nil {
+		return nil, "", errors.New("user not found")
+	}
+
+	storedCode, err := s.repo.GetEmailCode(ctx, user.ID, code)
+	if err != nil || storedCode == nil {
+		return nil, "", errors.New("invalid or expired code")
+	}
+
+	if time.Now().After(storedCode.ExpiresAt) {
+		_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
+		return nil, "", errors.New("code expired")
+	}
+
+	_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, 24*time.Hour)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return user, token, nil
+}
+
+// func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*model.User, error) {
+// 	// Проверка существования пользователя
+// 	emailExists, usernameExists, err := s.repo.CheckEmailAndUsername(ctx, input.Email, input.Username)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("database error: %w", err)
+// 	}
+
+// 	if emailExists && usernameExists {
+// 		return nil, &model.ConflictError{
+// 			Fields: []model.ConflictField{
+// 				{Field: "email", Message: "Email already registered"},
+// 				{Field: "username", Message: "Username already taken"},
+// 			},
+// 		}
+// 	}
+
+// 	if emailExists {
+// 		return nil, &model.ConflictError{
+// 			Fields: []model.ConflictField{
+// 				{Field: "email", Message: "Email already registered"},
+// 			},
+// 		}
+// 	}
+
+// 	if usernameExists {
+// 		return nil, &model.ConflictError{
+// 			Fields: []model.ConflictField{
+// 				{Field: "username", Message: "Username already taken"},
+// 			},
+// 		}
+// 	}
+// 	// Создание пользователя
+// 	// user, err := s.repo.Create(ctx, input)
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
+
+// 	// confirmationToken := uuid.NewString()
+// 	// confirmation := &model.EmailConfirmation{
+// 	// 	UserID:    user.ID,
+// 	// 	Token:     confirmationToken,
+// 	// 	Purpose:   "register",
+// 	// 	ExpiresAt: time.Now().Add(15 * time.Minute),
+// 	// }
+
+// 	// err = s.repo.SaveEmailConfirmation(ctx, confirmation)
+// 	// if err != nil {
+// 	// 	return nil, fmt.Errorf("failed to save confirmation token: %w", err)
+// 	// }
+
+// 	// go s.emailService.SendEmail(user.Email, confirmationToken)
+
+// 	// // Генерация токена
+// 	// token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
+// 	// if err != nil {
+// 	// 	return nil, "", err
+// 	// }
+// 	// return user, token, nil
+// 	return user, nil
+// }
 
 func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*model.User, string, error) {
 	// Получение пользователя

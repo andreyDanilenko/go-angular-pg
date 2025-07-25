@@ -12,6 +12,7 @@ require (
 	github.com/jaevor/go-nanoid v1.4.0
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.23.0
+	golang.org/x/exp v0.0.0-20250718183923-645b1fa84792
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
@@ -29,7 +30,7 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 )

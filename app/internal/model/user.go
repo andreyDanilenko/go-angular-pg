@@ -26,9 +26,6 @@ type User struct {
 	Role       UserRole  `gorm:"size:20;default:'guest'" json:"role"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
-
-	IsEmailVerified bool       `gorm:"default:false" json:"isEmailVerified"`
-	EmailVerifiedAt *time.Time `json:"emailVerifiedAt,omitempty"`
 }
 
 type UpdateUserInput struct {
@@ -61,21 +58,24 @@ type SignInInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
 }
-
-type EmailConfirmation struct {
-	ID        string `gorm:"primaryKey;size:12" json:"id"` // NanoID (12 символов)
+type EmailCode struct {
+	ID        string `gorm:"primaryKey"`
 	UserID    string `gorm:"index;not null"`
-	Token     string `gorm:"uniqueIndex;not null"`
-	Purpose   string `gorm:"not null"` // "register"
+	Code      string `gorm:"not null"` // 6 цифр
 	ExpiresAt time.Time
 	CreatedAt time.Time
 }
 
-func (u *EmailConfirmation) BeforeCreate(tx *gorm.DB) error {
+func (u *EmailCode) BeforeCreate(tx *gorm.DB) error {
 	genID, err := nanoid.Standard(12)
 	if err != nil {
 		return err
 	}
 	u.ID = genID()
 	return nil
+}
+
+type ConfirmCodeInput struct {
+	Email string `json:"email" validate:"required,email"`
+	Code  string `json:"code" validate:"required,len=6"`
 }

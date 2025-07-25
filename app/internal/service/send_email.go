@@ -16,11 +16,11 @@ type EmailService struct {
 
 func NewEmailService(cfg *config.Config) *EmailService {
 	return &EmailService{
-		config: cfg, // Инициализация конфигурации
+		config: cfg,
 	}
 }
 
-func (s *EmailService) SendEmail(email, hash string) error {
+func (s *EmailService) SendEmail(email, code string) error {
 	cfg := s.config.SendEmail
 	auth := smtp.PlainAuth(
 		"Verify",         // identity (обычно пустое или название)
@@ -29,9 +29,8 @@ func (s *EmailService) SendEmail(email, hash string) error {
 		cfg.SmtpHost,     // SMTP хост
 	)
 
-	verificationLink := fmt.Sprintf("%s/verify/%s", s.config.BaseURL, hash)
+	// verificationLink := fmt.Sprintf("%s/verify/%s", s.config.BaseURL, code)
 
-	// Парсим HTML шаблон письма
 	tmpl, err := template.ParseFiles("templates/email_template.html")
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %v", err)
@@ -42,9 +41,9 @@ func (s *EmailService) SendEmail(email, hash string) error {
 
 	// Данные для подстановки в шаблон
 	data := struct {
-		VerificationLink string
+		Code string
 	}{
-		VerificationLink: verificationLink, // Ссылка для верификации
+		Code: code,
 	}
 
 	// Заполняем шаблон данными

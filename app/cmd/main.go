@@ -49,7 +49,7 @@ func main() {
 		&model.ChatMessage{},
 		&model.User{},
 		&model.Article{},
-		&model.EmailConfirmation{},
+		&model.EmailCode{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
@@ -91,8 +91,8 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		// Публичные маршруты
 		r.Group(func(r chi.Router) {
-			r.Post("/signup", authHandler.SignUp)
-			r.Post("/signin", authHandler.SignIn)
+			r.Post("/auth", authHandler.StartAuthFlow)
+			r.Post("/confirm", authHandler.ConfirmCode)
 			r.Get("/articles/all", articleHandler.GetAllArticles)
 			r.Get("/articles/{id}", articleHandler.GetArticle)
 			r.Get("/dump", dumpHandler.ServeHTTP)

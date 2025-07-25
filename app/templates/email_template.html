@@ -2,12 +2,81 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Email Verification</title>
+    <title>Код подтверждения email</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .code-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .verification-code {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #333333;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            border: 1px dashed #dddddd;
+        }
+        .instructions {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #eeeeee;
+        }
+    </style>
 </head>
 <body>
-    <h1>Email Verification</h1>
-    <p>Please click the link below to verify your email address:</p>
-    <a href="{{.VerificationLink}}">Verify Email</a>
-    <p>If you did not request this verification, please ignore this email.</p>
+    <div class="container">
+        <div class="header">
+            <h1>Код подтверждения</h1>
+        </div>
+        
+        <p>Здравствуйте,</p>
+        <p>Для завершения регистрации используйте следующий код подтверждения:</p>
+        
+        <div class="code-container">
+            <div class="verification-code">{{.Code}}</div>
+        </div>
+        
+        <div class="instructions">
+            <p><strong>Важно:</strong> Этот код будет действителен в течение 15 минут. Если вы не запрашивали этот код, пожалуйста, проигнорируйте это письмо.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Life Dream. Все права защищены.</p>
+        </div>
+    </div>
 </body>
 </html>
