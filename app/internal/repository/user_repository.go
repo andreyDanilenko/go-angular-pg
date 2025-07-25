@@ -18,17 +18,13 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) Create(ctx context.Context, input model.SignUpInput) (*model.User, error) {
+func (r *UserRepository) Create(ctx context.Context, input model.SignInInput) (*model.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("password hashing failed: %w", err)
 	}
 
 	user := &model.User{
-		Username:  input.Username,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		// MiddleName: input.MiddleName,
 		Email:    input.Email,
 		Password: string(hashedPassword),
 	}
@@ -93,7 +89,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.U
 	return &user, err
 }
 
-func (r *UserRepository) CheckEmailAndUsername(ctx context.Context, email, username string) (emailExists bool, usernameExists bool, err error) {
+func (r *UserRepository) CheckEmailAndUsername(ctx context.Context, email string) (emailExists bool, err error) {
 	var count int64
 
 	// Проверяем email
@@ -101,19 +97,47 @@ func (r *UserRepository) CheckEmailAndUsername(ctx context.Context, email, usern
 		Model(&model.User{}).
 		Where("email = ?", email).
 		Count(&count).Error; err != nil {
-		return false, false, err
+		return false, err
 	}
 	emailExists = count > 0
 
-	// Проверяем username
-	count = 0
-	if err := r.db.WithContext(ctx).
-		Model(&model.User{}).
-		Where("username = ?", username).
-		Count(&count).Error; err != nil {
-		return false, false, err
-	}
-	usernameExists = count > 0
+	// // Проверяем username
+	// count = 0
+	// if err := r.db.WithContext(ctx).
+	// 	Model(&model.User{}).
+	// 	Where("username = ?", username).
+	// 	Count(&count).Error; err != nil {
+	// 	return false, false, err
+	// }
+	// usernameExists = count > 0
 
-	return emailExists, usernameExists, nil
+	return emailExists, nil
+}
+
+// func (r *UserRepository) SaveEmailConfirmation(ctx context.Context, confirmation *model.EmailConfirmation) error {
+// 	confirmation.ID = uuid.NewString()
+// 	return r.db.WithContext(ctx).Create(confirmation).Error
+// }
+
+func (r *UserRepository) SaveEmailCode(ctx context.Context, code *model.EmailCode) error {
+	return r.db.WithContext(ctx).Create(code).Error
+}
+
+func (r *UserRepository) GetEmailCode(ctx context.Context, userID, code string) (*model.EmailCode, error) {
+	var c model.EmailCode
+	err := r.db.WithContext(ctx).
+		Where("user_id = ? AND code = ?", userID, code).
+		First(&c).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &c, err
+}
+
+func (r *UserRepository) DeleteEmailCode(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Delete(&model.EmailCode{}, "id = ?", id).Error
+}
+
+func (r *UserRepository) DeleteExistingEmailCodes(ctx context.Context, userID string) error {
+	return r.db.WithContext(ctx).Delete(&model.EmailCode{}, "user_id = ?", userID).Error
 }

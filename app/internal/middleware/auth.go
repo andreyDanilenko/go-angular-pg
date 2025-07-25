@@ -2,15 +2,10 @@ package middleware
 
 import (
 	"admin/panel/internal/contract"
-	"admin/panel/internal/model"
 	"context"
-	"errors"
 
-	"fmt"
 	"net/http"
 	"strings"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type contextKey string
@@ -20,31 +15,14 @@ const (
 	RoleKey   contextKey = "role"
 )
 
-func JWTFromQuery(secret string, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
+func JWTFromQuery(tokenManager contract.TokenManager, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			tokenString := r.URL.Query().Get("token")
-			if tokenString == "" {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Missing token in query")
-				return
-			}
-
-			claims, err := ParseToken(tokenString, secret)
+			token := r.URL.Query().Get("token")
+			userID, role, err := tokenManager.Extract(token)
 			if err != nil {
-				errorWriter.WriteError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid token")
 				return
-			}
-
-			userID, ok := claims["sub"].(string)
-			if !ok || userID == "" {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid user ID in token")
-				return
-			}
-
-			roleStr, _ := claims["role"].(string)
-			role := model.UserRole(roleStr)
-			if !role.IsValid() {
-				role = model.RoleGuest
 			}
 
 			ctx := context.WithValue(r.Context(), UserIDKey, userID)
@@ -55,7 +33,7 @@ func JWTFromQuery(secret string, errorWriter contract.ErrorWriter) func(http.Han
 	}
 }
 
-func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
+func JWTAuth(tokenManager contract.TokenManager, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
@@ -64,28 +42,11 @@ func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler)
 				return
 			}
 
-			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-			if tokenString == "" {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Authorization token required")
-				return
-			}
-
-			claims, err := ParseToken(tokenString, secret)
+			token := strings.TrimPrefix(authHeader, "Bearer ")
+			userID, role, err := tokenManager.Extract(token)
 			if err != nil {
-				errorWriter.WriteError(w, http.StatusUnauthorized, fmt.Sprintf("Invalid token: %v", err))
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid token")
 				return
-			}
-
-			userID, ok := claims["sub"].(string)
-			if !ok || userID == "" {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid user ID in token")
-				return
-			}
-
-			roleStr, _ := claims["role"].(string)
-			role := model.UserRole(roleStr)
-			if !role.IsValid() {
-				role = model.RoleGuest
 			}
 
 			ctx := context.WithValue(r.Context(), UserIDKey, userID)
@@ -94,22 +55,4 @@ func JWTAuth(secret string, errorWriter contract.ErrorWriter) func(http.Handler)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
-}
-
-func ParseToken(tokenString, secret string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(secret), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
-	}
-
-	return nil, errors.New("invalid token")
 }

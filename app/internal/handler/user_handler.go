@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"admin/panel/internal/contract"
@@ -34,10 +33,10 @@ func NewUserHandler(
 	}
 }
 
-func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
-	var input model.SignUpInput
+func (h *UserHandler) StartAuthFlow(w http.ResponseWriter, r *http.Request) {
+	var input model.SignInInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Некорректный формат данных", nil)
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Неверный формат", nil)
 		return
 	}
 
@@ -46,33 +45,22 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.authService.Register(r.Context(), input)
+	user, err := h.authService.StartAuthFlow(r.Context(), input)
 	if err != nil {
-		var conflictErr *model.ConflictError
-		if errors.As(err, &conflictErr) {
-			h.errorWriter.WriteWithCode(
-				w,
-				http.StatusConflict,
-				"conflict",
-				"Указанные поля уже заняты",
-				conflictErr.Fields,
-			)
-			return
-		}
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Внутренняя ошибка сервера")
+		h.errorWriter.WriteWithCode(w, http.StatusUnauthorized, "unauthorized", err.Error(), nil)
 		return
 	}
 
 	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]interface{}{
-		"user":  user,
-		"token": token,
+		"message": "Код отправлен на email",
+		"user":    user,
 	})
 }
 
-func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
-	var input model.SignInInput
+func (h *UserHandler) ConfirmCode(w http.ResponseWriter, r *http.Request) {
+	var input *model.ConfirmCodeInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Некорректный формат данных", nil)
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Неверный формат", nil)
 		return
 	}
 
@@ -81,15 +69,15 @@ func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, token, err := h.authService.Login(r.Context(), input)
+	user, token, err := h.authService.ConfirmCode(r.Context(), input.Email, input.Code)
 	if err != nil {
-		h.errorWriter.WriteWithCode(w, http.StatusUnauthorized, "unauthorized", "Неверный email или пароль", nil)
+		h.errorWriter.WriteWithCode(w, http.StatusUnauthorized, "unauthorized", err.Error(), nil)
 		return
 	}
 
 	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]interface{}{
-		"user":  user,
 		"token": token,
+		"user":  user,
 	})
 }
 

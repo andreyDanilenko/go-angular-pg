@@ -1,92 +1,95 @@
 package service
 
 import (
+	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
-	"admin/panel/internal/utils"
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
+	"math/rand/v2"
+
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
-	repo      *repository.UserRepository
-	jwtSecret string
+	repo         *repository.UserRepository
+	emailService *EmailService
+	tokenManager contract.TokenManager
 }
 
-func NewUserService(repo *repository.UserRepository, jwtSecret string) *UserService {
+func NewUserService(repo *repository.UserRepository, emailService *EmailService, tokenManager contract.TokenManager) *UserService {
 	return &UserService{
-		repo:      repo,
-		jwtSecret: jwtSecret,
+		repo:         repo,
+		emailService: emailService,
+		tokenManager: tokenManager,
 	}
 }
 
-func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*model.User, string, error) {
-	// Проверка существования пользователя
-	emailExists, usernameExists, err := s.repo.CheckEmailAndUsername(ctx, input.Email, input.Username)
-	if err != nil {
-		return nil, "", fmt.Errorf("database error: %w", err)
-	}
-
-	if emailExists && usernameExists {
-		return nil, "", &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "email", Message: "Email already registered"},
-				{Field: "username", Message: "Username already taken"},
-			},
-		}
-	}
-
-	if emailExists {
-		return nil, "", &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "email", Message: "Email already registered"},
-			},
-		}
-	}
-
-	if usernameExists {
-		return nil, "", &model.ConflictError{
-			Fields: []model.ConflictField{
-				{Field: "username", Message: "Username already taken"},
-			},
-		}
-	}
-	// Создание пользователя
-	user, err := s.repo.Create(ctx, input)
-	if err != nil {
-		return nil, "", err
-	}
-
-	// Генерация токена
-	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
-	if err != nil {
-		return nil, "", err
-	}
-
-	return user, token, nil
-}
-
-func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*model.User, string, error) {
-	// Получение пользователя
+func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput) (*model.User, error) {
 	user, err := s.repo.GetByEmail(ctx, input.Email)
-	if err != nil {
-		return nil, "", err
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
 	}
+
 	if user == nil {
+		user, err = s.repo.Create(ctx, model.SignInInput{
+			Email:    input.Email,
+			Password: input.Password,
+		})
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
+			return nil, errors.New("wrong password")
+		}
+	}
+
+	// Удаляем старые коды
+	_ = s.repo.DeleteExistingEmailCodes(ctx, user.ID)
+	// Генерируем 6-значный код
+	code := fmt.Sprintf("%06d", rand.IntN(1000000))
+
+	// Сохраняем
+	err = s.repo.SaveEmailCode(ctx, &model.EmailCode{
+		ID:        uuid.NewString(),
+		UserID:    user.ID,
+		Code:      code,
+		ExpiresAt: time.Now().Add(2 * time.Minute),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	go s.emailService.SendEmail(user.Email, code)
+
+	return user, nil
+}
+
+func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*model.User, string, error) {
+	user, err := s.repo.GetByEmail(ctx, email)
+	if err != nil || user == nil {
 		return nil, "", errors.New("user not found")
 	}
 
-	// Проверка пароля
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		return nil, "", errors.New("wrong password")
+	storedCode, err := s.repo.GetEmailCode(ctx, user.ID, code)
+	if err != nil || storedCode == nil {
+		return nil, "", errors.New("invalid or expired code")
 	}
 
-	// Генерация токена
-	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
+	if time.Now().After(storedCode.ExpiresAt) {
+		_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
+		return nil, "", errors.New("code expired")
+	}
+
+	_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, 24*time.Hour)
 	if err != nil {
 		return nil, "", err
 	}

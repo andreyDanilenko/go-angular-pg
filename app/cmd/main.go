@@ -9,6 +9,7 @@ import (
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
+	"admin/panel/internal/utils"
 	"admin/panel/internal/ws"
 	"fmt"
 	"log"
@@ -48,17 +49,20 @@ func main() {
 		&model.ChatMessage{},
 		&model.User{},
 		&model.Article{},
+		&model.EmailCode{},
 	); err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
 
 	errorWriter := apierror.New()
 	responseWriter := apiresponse.New()
+	tokenManager := utils.NewJWTManager(cfg.JWTSecret)
+	emailService := service.NewEmailService(cfg)
 
 	// Инициализация зависимостей
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
-	authService := service.NewUserService(userRepo, cfg.JWTSecret)
+	authService := service.NewUserService(userRepo, emailService, tokenManager)
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
@@ -87,15 +91,15 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		// Публичные маршруты
 		r.Group(func(r chi.Router) {
-			r.Post("/signup", authHandler.SignUp)
-			r.Post("/signin", authHandler.SignIn)
+			r.Post("/auth", authHandler.StartAuthFlow)
+			r.Post("/confirm", authHandler.ConfirmCode)
 			r.Get("/articles/all", articleHandler.GetAllArticles)
 			r.Get("/articles/{id}", articleHandler.GetArticle)
 			r.Get("/dump", dumpHandler.ServeHTTP)
 		})
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTFromQuery(cfg.JWTSecret, errorWriter))
+			r.Use(middleware.JWTFromQuery(tokenManager, errorWriter))
 
 			// WebSocket для чата
 			r.Get("/ws", chatHandler.ServeWS)
@@ -103,7 +107,7 @@ func main() {
 
 		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
+			r.Use(middleware.JWTAuth(tokenManager, errorWriter))
 
 			r.Get("/users", authHandler.GetUsers)
 			r.Get("/users/{id}", authHandler.GetUserByID)

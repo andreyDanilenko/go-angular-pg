@@ -7,6 +7,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type EmailConfig struct {
+	SmtpHost     string
+	SmtpPort     string
+	SmtpUsername string
+	SmtpPassword string
+}
+
 type Config struct {
 	DBHost     string
 	DBPort     string
@@ -14,6 +21,8 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	JWTSecret  string
+	SendEmail  EmailConfig
+	BaseURL    string
 }
 
 func LoadConfig() *Config {
@@ -28,15 +37,15 @@ func LoadConfig() *Config {
 		DBPassword: getEnv("DB_PASSWORD", "my_pass"),
 		DBName:     getEnv("DB_NAME", "auth_service"),
 		JWTSecret:  getEnv("JWT_SECRET", "very-secret-key"),
+		SendEmail: EmailConfig{
+			SmtpHost:     os.Getenv("SMTP_HOST"),
+			SmtpPort:     os.Getenv("SMTP_PORT"),
+			SmtpUsername: os.Getenv("SMTP_USERNAME"),
+			SmtpPassword: os.Getenv("SMTP_PASSWORD"),
+		},
+		BaseURL: "http://localhost:8080/api",
 	}
 }
-
-// docker run -d --name auth_service \
-//   -e POSTGRES_PASSWORD=my_pass \
-//   -e POSTGRES_USER=postgres \
-//   -e POSTGRES_DB=auth_service \
-//   -p 5432:5432 \
-//   postgres:17.4
 
 func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Код подтверждения email</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .code-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .verification-code {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #333333;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            border: 1px dashed #dddddd;
+        }
+        .instructions {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #eeeeee;
+        }
+        .signature {
+            font-style: italic;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+        .project-notice {
+            background-color: #fff8e1;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Код подтверждения</h1>
+        </div>
+        
+        <div class="project-notice">
+            Это тестовый проект разработчика (<a href="https://lifedream.tech" style="color: #4a6ea9;">lifedream.tech</a>). Код нужен только для проверки работы системы регистрации.
+        </div>
+        
+        <p>Здравствуйте,</p>
+        <p>Для завершения регистрации в пет-проекте используйте следующий код подтверждения:</p>
+        
+        <div class="code-container">
+            <div class="verification-code">{{.Code}}</div>
+        </div>
+        
+        <div class="instructions">
+            <p><strong>Важно:</strong> Этот код будет действителен в течение 2 минут.</p>
+            <p>Если вы не регистрировались на <a href="https://lifedream.tech" style="color: #4a6ea9;">lifedream.tech</a>, пожалуйста, проигнорируйте это сообщение. Возможно, письмо пришло по ошибке или из-за опечатки при вводе email.</p>
+        </div>
+        
+        <div class="signature">
+            <p>С уважением,<br>Разработчик пет-проекта Life Dream</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Life Dream. Учебный проект.</p>
+            <p>Это письмо отправлено автоматически, пожалуйста, не отвечайте на него.</p>
+        </div>
+    </div>
+</body>
+</html>
