@@ -5,7 +5,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -116,4 +118,48 @@ func (r *UserRepository) CheckEmailAndUsername(ctx context.Context, email, usern
 	usernameExists = count > 0
 
 	return emailExists, usernameExists, nil
+}
+
+func (r *UserRepository) CreateEmailVerificationToken(ctx context.Context, userID string) (string, error) {
+	token := uuid.New().String()
+	expiry := time.Now().Add(24 * time.Hour)
+
+	evToken := &model.EmailVerificationToken{
+		ID:        uuid.New().String(),
+		UserID:    userID,
+		Token:     token,
+		ExpiresAt: expiry,
+	}
+
+	if err := r.db.WithContext(ctx).Create(evToken).Error; err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (r *UserRepository) GetEmailVerificationToken(ctx context.Context, token string) (*model.EmailVerificationToken, error) {
+	var evToken model.EmailVerificationToken
+	err := r.db.WithContext(ctx).Where("token = ?", token).First(&evToken).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &evToken, err
+}
+
+func (r *UserRepository) MarkEmailAsVerified(ctx context.Context, userID string) error {
+	now := time.Now()
+	return r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("id = ?", userID).
+		Updates(map[string]interface{}{
+			"is_email_verified": true,
+			"email_verified_at": now,
+		}).Error
+}
+
+func (r *UserRepository) DeleteEmailVerificationToken(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).
+		Where("id = ?", id).
+		Delete(&model.EmailVerificationToken{}).
+		Error
 }

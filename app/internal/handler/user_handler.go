@@ -140,3 +140,21 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	h.responseJSON.WriteJSON(w, http.StatusOK, user)
 }
+
+func (h *UserHandler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Нет токена", nil)
+		return
+	}
+
+	err := h.authService.VerifyEmailToken(r.Context(), token)
+	if err != nil {
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "invalid_token", "Токен недействителен", nil)
+		return
+	}
+
+	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "Email успешно подтверждён",
+	})
+}

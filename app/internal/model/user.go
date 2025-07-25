@@ -26,6 +26,9 @@ type User struct {
 	Role       UserRole  `gorm:"size:20;default:'guest'" json:"role"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+
+	IsEmailVerified bool       `gorm:"default:false" json:"isEmailVerified"`
+	EmailVerifiedAt *time.Time `json:"emailVerifiedAt,omitempty"`
 }
 
 type UpdateUserInput struct {
@@ -57,4 +60,12 @@ type SignUpInput struct {
 type SignInInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
+}
+
+type EmailVerificationToken struct {
+	ID        string `gorm:"primaryKey;size:36"`
+	UserID    string `gorm:"index;not null"`
+	Token     string `gorm:"uniqueIndex;not null"`
+	ExpiresAt time.Time
+	CreatedAt time.Time
 }

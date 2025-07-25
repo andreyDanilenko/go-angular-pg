@@ -162,3 +162,25 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 
 	return s.repo.UpdateUser(ctx, userID, input)
 }
+
+func (s *UserService) VerifyEmailToken(ctx context.Context, token string) error {
+	evToken, err := s.repo.GetEmailVerificationToken(ctx, token)
+	if err != nil {
+		return fmt.Errorf("ошибка при получении токена: %w", err)
+	}
+	if evToken == nil || evToken.ExpiresAt.Before(time.Now()) {
+		return errors.New("токен недействителен или истёк")
+	}
+
+	// Обновляем пользователя
+	if err := s.repo.MarkEmailAsVerified(ctx, evToken.UserID); err != nil {
+		return fmt.Errorf("ошибка при подтверждении email: %w", err)
+	}
+
+	// Удаляем токен
+	if err := s.repo.DeleteEmailVerificationToken(ctx, evToken.ID); err != nil {
+		return fmt.Errorf("ошибка при удалении токена: %w", err)
+	}
+
+	return nil
+}
