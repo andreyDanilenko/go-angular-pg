@@ -9,6 +9,7 @@ import (
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
+	"admin/panel/internal/utils"
 	"admin/panel/internal/ws"
 	"fmt"
 	"log"
@@ -54,11 +55,12 @@ func main() {
 
 	errorWriter := apierror.New()
 	responseWriter := apiresponse.New()
+	tokenManager := utils.NewJWTManager(cfg.JWTSecret)
 
 	// Инициализация зависимостей
 	userRepo := repository.NewUserRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
-	authService := service.NewUserService(userRepo, cfg.JWTSecret)
+	authService := service.NewUserService(userRepo, tokenManager)
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
 	articleHandler := handler.NewArticleHandler(articleService)
@@ -95,7 +97,7 @@ func main() {
 		})
 
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTFromQuery(cfg.JWTSecret, errorWriter))
+			r.Use(middleware.JWTFromQuery(tokenManager, errorWriter))
 
 			// WebSocket для чата
 			r.Get("/ws", chatHandler.ServeWS)
@@ -103,7 +105,7 @@ func main() {
 
 		// Защищённые маршруты
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.JWTAuth(cfg.JWTSecret, errorWriter))
+			r.Use(middleware.JWTAuth(tokenManager, errorWriter))
 
 			r.Get("/users", authHandler.GetUsers)
 			r.Get("/users/{id}", authHandler.GetUserByID)

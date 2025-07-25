@@ -1,26 +1,27 @@
 package service
 
 import (
+	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
-	"admin/panel/internal/utils"
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
-	repo      *repository.UserRepository
-	jwtSecret string
+	repo         *repository.UserRepository
+	tokenManager contract.TokenManager
 }
 
-func NewUserService(repo *repository.UserRepository, jwtSecret string) *UserService {
+func NewUserService(repo *repository.UserRepository, tokenManager contract.TokenManager) *UserService {
 	return &UserService{
-		repo:      repo,
-		jwtSecret: jwtSecret,
+		repo:         repo,
+		tokenManager: tokenManager,
 	}
 }
 
@@ -62,7 +63,7 @@ func (s *UserService) Register(ctx context.Context, input model.SignUpInput) (*m
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
 	if err != nil {
 		return nil, "", err
 	}
@@ -86,7 +87,7 @@ func (s *UserService) Login(ctx context.Context, input model.SignInInput) (*mode
 	}
 
 	// Генерация токена
-	token, err := utils.Generate(user.ID, user.Role, s.jwtSecret)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, time.Hour*24)
 	if err != nil {
 		return nil, "", err
 	}
