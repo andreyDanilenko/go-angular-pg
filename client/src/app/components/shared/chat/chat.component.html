@@ -10,7 +10,7 @@
         [class.other]="msg.senderId !== currentUserId">
 
       <div class="message-header">
-        <span class="sender">{{ msg.sender?.username || msg.sender?.firstName || 'Unknown' }}</span>
+        <span class="sender">{{ msg.sender?.username || msg.sender?.firstName || msg.sender.email }}</span>
         <span class="time">{{ msg.sentAt | date:'shortTime' }}</span>
       </div>
 
