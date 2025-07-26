@@ -46,7 +46,6 @@ func (r *ArticleRepository) CreateArticle(
 func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*model.Article, error) {
 	var article model.Article
 
-	// Явно указываем условие WHERE для строкового ID
 	err := r.db.WithContext(ctx).
 		Where("id = ?", id).
 		First(&article).
@@ -55,6 +54,7 @@ func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*mod
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
+
 	if err != nil {
 		return nil, err
 	}

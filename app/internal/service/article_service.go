@@ -53,7 +53,7 @@ func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, us
 	}
 
 	if article.AuthorID != userID {
-		return nil, err
+		return nil, fmt.Errorf("article not found")
 	}
 
 	return s.repo.UpdateArticle(ctx, articleID, input.Title, input.Content)
