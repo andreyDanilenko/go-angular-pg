@@ -46,14 +46,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-type SignUpInput struct {
-	Username  string `json:"username" validate:"required,min=3,max=50"`
-	FirstName string `json:"firstName,omitempty" validate:"omitempty,min=2,max=50"`
-	LastName  string `json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`
-	Email     string `json:"email" validate:"required,email"`
-	Password  string `json:"password" validate:"required,min=8"`
-}
-
 type SignInInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
