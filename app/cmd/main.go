@@ -36,7 +36,7 @@ func main() {
 	// Получаем *sql.DB из GORM для обратной совместимости
 	db, err := gormDB.DB()
 	if err != nil {
-		log.Fatalf("Failed to get underlying DB connection: %v", err)
+		log.Fatalf("Failed to get underlying DB connectio: %v", err)
 	}
 	defer db.Close()
 
