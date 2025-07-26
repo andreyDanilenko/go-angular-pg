@@ -5,7 +5,6 @@ import { ArticleService } from '../../core/services/article.service';
 import { Article } from '../../core/types/article.model';
 import { TruncatePipe } from '../../core/services/truncate.pipe';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @Component({
   selector: 'app-posts-page',

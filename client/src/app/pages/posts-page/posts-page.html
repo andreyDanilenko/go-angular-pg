@@ -14,7 +14,6 @@
   <div *ngIf="!isLoading && !error" class="PostsPage__Content" @listAnimation>
     <div class="PostsPage__ArticlesList">
       <div *ngFor="let article of articles" class="PostsPage__ArticleCard">
-        <!-- Остальное содержимое карточки без изменений -->
         <div class="PostsPage__ArticleHeader">
           <h2 class="PostsPage__ArticleTitle">{{ article.title }}</h2>
           <span class="PostsPage__ArticleCategory">{{ article.category }}</span>

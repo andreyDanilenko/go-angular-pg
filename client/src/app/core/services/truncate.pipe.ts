@@ -5,7 +5,12 @@ export class TruncatePipe implements PipeTransform {
   transform(value: string, limit = 100, completeWords = true, ellipsis = '...'): string {
     if (!value) return '';
     if (value.length <= limit) return value;
-    if (completeWords) limit = value.substr(0, limit).lastIndexOf(' ');
-    return `${value.substr(0, limit)}${ellipsis}`;
+
+    if (completeWords) {
+      const lastSpaceIndex = value.substring(0, limit).lastIndexOf(' ');
+      limit = lastSpaceIndex > 0 ? lastSpaceIndex : limit;
+    }
+
+    return `${value.substring(0, limit)}${ellipsis}`;
   }
 }
