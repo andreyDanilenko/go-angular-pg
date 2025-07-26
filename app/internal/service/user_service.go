@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"math/rand/v2"
@@ -32,31 +33,39 @@ func NewUserService(repo *repository.UserRepository, emailService *EmailService,
 }
 
 func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput) (*model.User, error) {
+	// 1. Проверяем существование пользователя
 	user, err := s.repo.GetByEmail(ctx, input.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
+		return nil, fmt.Errorf("failed to check user existence: %w", err)
 	}
 
 	if user == nil {
 		user, err = s.repo.Create(ctx, model.SignInInput{
 			Email:    input.Email,
 			Password: input.Password,
+			// Не передаём username вообще!
 		})
 		if err != nil {
-			return nil, err
+			// Обрабатываем возможные ошибки уникальности
+			if strings.Contains(err.Error(), "duplicate key") {
+				return nil, fmt.Errorf("user with this email already exists")
+			}
+			return nil, fmt.Errorf("failed to create user: %w", err)
 		}
 	} else {
-		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-			return nil, errors.New("wrong password")
+		// 3. Если пользователь есть - проверяем пароль
+		if err := bcrypt.CompareHashAndPassword(
+			[]byte(user.Password),
+			[]byte(input.Password),
+		); err != nil {
+			return nil, errors.New("invalid password")
 		}
 	}
 
-	// Удаляем старые коды
+	// 4. Генерация и отправка кода (без изменений)
 	_ = s.repo.DeleteExistingEmailCodes(ctx, user.ID)
-	// Генерируем 6-значный код
 	code := fmt.Sprintf("%06d", rand.IntN(1000000))
 
-	// Сохраняем
 	err = s.repo.SaveEmailCode(ctx, &model.EmailCode{
 		ID:        uuid.NewString(),
 		UserID:    user.ID,
@@ -64,7 +73,7 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 		ExpiresAt: time.Now().Add(2 * time.Minute),
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to save verification code: %w", err)
 	}
 
 	go s.emailService.SendEmail(user.Email, code)
