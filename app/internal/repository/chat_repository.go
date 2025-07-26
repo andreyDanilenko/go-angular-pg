@@ -93,7 +93,6 @@ func (r *ChatRepository) UpdateChatTimestamp(ctx context.Context, chatID string)
 
 func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
 	chat := &model.ChatRoom{
-		// ID будет сгенерирован в BeforeCreate (нужно будет добавить)
 		Name:    "",
 		IsGroup: false,
 	}
@@ -145,18 +144,6 @@ func (r *ChatRepository) GetChatParticipants(ctx context.Context, chatID string)
 	return participants, err
 }
 
-// service/chat.go
-
-// Проверяет, является ли пользователь участником чата
-func (r *ChatRepository) IsChatParticipant(chatID string, userID string) (bool, error) {
-	var count int64
-	err := r.db.Model(&model.ChatParticipant{}).
-		Where("chat_id = ? AND user_id = ?", chatID, userID).
-		Count(&count).
-		Error
-	return count > 0, err
-}
-
 // Находит приватный чат между двумя пользователями
 func (r *ChatRepository) FindPrivateChat(user1ID, user2ID string) (string, error) {
 	var chatID string
@@ -174,4 +161,14 @@ func (r *ChatRepository) FindPrivateChat(user1ID, user2ID string) (string, error
 		return "", fmt.Errorf("chat not found")
 	}
 	return chatID, nil
+}
+
+func (r *ChatRepository) HasAccessToChat(ctx context.Context, userID, chatID string) (bool, error) {
+	var count int64
+	err := r.db.WithContext(ctx).
+		Model(&model.ChatParticipant{}).
+		Where("user_id = ? AND chat_id = ?", userID, chatID).
+		Count(&count).
+		Error
+	return count > 0, err
 }

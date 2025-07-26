@@ -5,7 +5,6 @@ import (
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"context"
-	"errors"
 	"fmt"
 	"log"
 )
@@ -16,30 +15,6 @@ type ChatService struct {
 
 func NewChatService(repo *repository.ChatRepository) *ChatService {
 	return &ChatService{repo: repo}
-}
-
-func (s *ChatService) ResolveChatID(senderID, recipientID, existingChatID string) (string, error) {
-	// Если указан chatID, проверяем доступ
-	if existingChatID != "" {
-		if isMember, _ := s.repo.IsChatParticipant(existingChatID, senderID); isMember {
-			return existingChatID, nil
-		}
-		return "", errors.New("access denied")
-	}
-
-	// Ищем существующий чат между пользователями
-	chatID, err := s.repo.FindPrivateChat(senderID, recipientID)
-	if err == nil {
-		return chatID, nil
-	}
-
-	// Создаём новый чат только если его нет
-	chat, err := s.CreatePrivateChat(senderID, recipientID)
-	if err != nil {
-		return "", err
-	}
-
-	return chat.ID, nil
 }
 
 func (s *ChatService) GetOrCreateChat(user1ID, user2ID string) (string, error) {
@@ -72,6 +47,7 @@ func (s *ChatService) GetOrCreateChat(user1ID, user2ID string) (string, error) {
 func (s *ChatService) GetChatParticipants(ctx context.Context, chatID string) ([]string, error) {
 	return s.repo.GetChatParticipants(ctx, chatID)
 }
+
 func (s *ChatService) GetMessagesWithReadStatus(ctx context.Context, chatID, userID string, limit, offset int) ([]model.ChatMessage, error) {
 	messages, err := s.repo.GetMessages(ctx, chatID, limit, offset)
 	if err != nil {
@@ -144,39 +120,8 @@ func (s *ChatService) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoo
 
 func (s *ChatService) GetMessageWithSender(ctx context.Context, messageID string) (*model.ChatMessage, error) {
 	return s.repo.GetMessageWithSender(ctx, messageID)
-
 }
 
-type ChatWithLastMessage struct {
-	model.ChatRoom
-	LastMessage *model.ChatMessage `json:"lastMessage,omitempty"`
-}
-
-func (s *ChatService) GetUserChatsWithLastMessage(ctx context.Context, userID string) ([]ChatWithLastMessage, error) {
-	chats, err := s.repo.GetUserChats(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []ChatWithLastMessage
-	for _, chat := range chats {
-		lastMessages, err := s.repo.GetMessages(ctx, chat.ID, 1, 0)
-		if err != nil {
-			continue
-		}
-		var lastMsg *model.ChatMessage
-		if len(lastMessages) > 0 {
-			lastMsg = &lastMessages[0]
-		}
-
-		count, _ := s.repo.CountUnreadMessages(chat.ID, userID)
-		chat.UnreadCount = count
-
-		result = append(result, ChatWithLastMessage{
-			ChatRoom:    chat,
-			LastMessage: lastMsg,
-		})
-	}
-
-	return result, nil
+func (s *ChatService) HasAccessToChat(ctx context.Context, userID, chatID string) (bool, error) {
+	return s.repo.HasAccessToChat(ctx, userID, chatID)
 }
