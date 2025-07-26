@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -82,9 +83,8 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 		}
 
 		var input struct {
-			ChatID      string `json:"chatId"`
-			RecipientID string `json:"recipientId"`
-			Text        string `json:"text"`
+			ChatID string `json:"chatId"`
+			Text   string `json:"text"`
 		}
 
 		if err := json.Unmarshal(msgBytes, &input); err != nil {
@@ -92,15 +92,10 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 			continue
 		}
 
-		// Определяем chatID
-		chatID, err := h.chatService.ResolveChatID(client.UserID, input.RecipientID, input.ChatID)
-		if err != nil {
-			log.Printf("Chat resolution failed: %v", err)
-			continue
-		}
+		// была ненужная логика проверки чата, он у нас есть всегда при переписке?
 
 		// Сохраняем сообщение
-		msg, err := h.chatService.SaveMessage(context.Background(), chatID, client.UserID, input.Text)
+		msg, err := h.chatService.SaveMessage(context.Background(), input.ChatID, client.UserID, input.Text)
 		if err != nil {
 			log.Printf("Failed to save message: %v", err)
 			continue
@@ -114,7 +109,7 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 		}
 
 		// Отправляем сообщение ВСЕМ участникам чата
-		participants, err := h.chatService.GetChatParticipants(context.Background(), chatID)
+		participants, err := h.chatService.GetChatParticipants(context.Background(), input.ChatID)
 		if err != nil {
 			log.Printf("Failed to get chat participants: %v", err)
 			continue
@@ -140,9 +135,7 @@ func (h *ChatHandler) readPump(client *ws.Client) {
 }
 
 func (h *ChatHandler) writePump(client *ws.Client) {
-	defer func() {
-		client.Close() // Используем безопасное закрытие
-	}()
+	defer client.Conn.Close()
 
 	for {
 		select {
@@ -168,32 +161,36 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверяем, что пользователь участвует в чате
-	chats, err := h.chatService.GetUserChats(r.Context(), userID)
+	hasAccess, err := h.chatService.HasAccessToChat(r.Context(), userID, chatID)
 	if err != nil {
-		http.Error(w, "Failed to get user chats", http.StatusInternalServerError)
+		http.Error(w, "Failed to check access", http.StatusInternalServerError)
 		return
 	}
-	var hasAccess bool
-	for _, chat := range chats {
-		if chat.ID == chatID {
-			hasAccess = true
-			break
-		}
-	}
 	if !hasAccess {
-		http.Error(w, "Access denied", http.StatusForbidden)
+		http.Error(w, "Chat not found", http.StatusForbidden)
 		return
 	}
 
-	// Получаем сообщения
-	messages, err := h.chatService.GetMessagesWithReadStatus(r.Context(), chatID, userID, 50, 0)
+	limit := 50
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	offset := 0
+	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
+		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
+			offset = o
+		}
+	}
+
+	messages, err := h.chatService.GetMessagesWithReadStatus(r.Context(), chatID, userID, limit, offset)
 	if err != nil {
 		http.Error(w, "Failed to get messages", http.StatusInternalServerError)
 		return
 	}
 
-	// Помечаем как прочитанные
 	for _, msg := range messages {
 		if msg.SenderID != userID {
 			_ = h.chatService.MarkMessageRead(r.Context(), msg.ID, userID)
@@ -205,6 +202,7 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 
 func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+
 	if !ok || userID == "" {
 		h.errorWriter.WriteError(w, http.StatusUnauthorized, "User ID missing in context")
 		return
@@ -215,12 +213,14 @@ func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) 
 		h.errorWriter.WriteError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if req.OtherUserID == "" {
+	otherUserId := req.OtherUserID
+
+	if otherUserId == "" {
 		h.errorWriter.WriteError(w, http.StatusBadRequest, "otherUserId is required")
 		return
 	}
 
-	chat, err := h.chatService.CreatePrivateChat(userID, req.OtherUserID)
+	chat, err := h.chatService.CreatePrivateChat(userID, otherUserId)
 	if err != nil {
 		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to create chat: "+err.Error())
 		return
