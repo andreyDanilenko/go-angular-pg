@@ -22,13 +22,30 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
-            cd /root/project/api-admin-marketplace
+            cd /root/project/api-admin-marketplace || exit 1
+
+            # Настройка SSH для работы с GitHub
             eval "$(ssh-agent -s)"
             ssh-add ~/.ssh/github_keys
-            ssh -T git@github.com
-            git remote set-url origin git@github.com:andreyDanilenko/admin-panel-golang.git
+            ssh -T git@github.com  # Проверка подключения
+
+            # Добавляем основной репозиторий как upstream (если ещё не добавлен)
+            if ! git remote | grep -q upstream; then
+              git remote add upstream git@github.com:andreyDanilenko/admin-panel-golang.git
+            fi
+
+            # Получаем все изменения
             git fetch --all
+
+            # Переключаемся на master и жестко сбрасываем его до upstream/master
             git checkout master
-            git pull origin master
+            git reset --hard upstream/master
+
+            # Принудительно синхронизируем с origin (если нужно)
+            git push --force origin master
+
+            # Перезапускаем контейнеры
             docker-compose down
             docker-compose up -d --build
+
+            echo "Деплой завершён. Master синхронизирован с основным репозиторием."
