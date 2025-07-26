@@ -9,6 +9,29 @@ import (
 	"gorm.io/gorm"
 )
 
+type ArticleRepositoryInterface interface {
+	CreateArticle(ctx context.Context, authorID, params model.ArticleInput) (*model.Article, error)
+	GetArticleByID(ctx context.Context, id string) (*model.Article, error)
+	GetAllArticles(ctx context.Context) ([]*model.Article, error)
+	GetArticlesByAuthor(ctx context.Context, authorID string) ([]*model.Article, error)
+	UpdateArticle(ctx context.Context, id, params model.ArticleInput) (*model.Article, error)
+	DeleteArticle(ctx context.Context, id string) error
+}
+
+type DBHandler interface {
+	Create(ctx context.Context, dest interface{}) error
+	First(ctx context.Context, dest interface{}, conds ...interface{}) error
+	Find(ctx context.Context, dest interface{}, conds ...interface{}) error
+	Update(ctx context.Context, model interface{}, updates map[string]interface{}) error
+	Delete(ctx context.Context, model interface{}, conds ...interface{}) (int64, error)
+}
+
+var (
+	ErrArticleNotFound = errors.New("article not found")
+	ErrInvalidCategory = errors.New("invalid article category")
+	ErrNothingToDelete = errors.New("no articles were deleted")
+)
+
 type ArticleRepository struct {
 	db *gorm.DB
 }
@@ -20,21 +43,18 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 func (r *ArticleRepository) CreateArticle(
 	ctx context.Context,
 	authorID string,
-	title string,
-	content string,
-	category model.ArticleCategory,
+	params model.ArticleInput,
 ) (*model.Article, error) {
+	if !params.Category.IsValid() {
+		return nil, fmt.Errorf("%w", ErrInvalidCategory)
+	}
+
 	article := &model.Article{
 		AuthorID: authorID,
-		Title:    title,
-		Content:  content,
-		Category: category,
+		Title:    params.Title,
+		Content:  params.Content,
+		Category: params.Category,
 	}
-
-	if !category.IsValid() {
-		return nil, fmt.Errorf("invalid article category")
-	}
-
 	result := r.db.WithContext(ctx).Create(article)
 	if result.Error != nil {
 		return nil, result.Error
@@ -89,7 +109,7 @@ func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID st
 	return articles, nil
 }
 
-func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
+func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, params model.ArticleInput) (*model.Article, error) {
 	var article model.Article
 	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -98,8 +118,9 @@ func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title,
 	result := r.db.WithContext(ctx).
 		Model(&article).
 		Updates(map[string]interface{}{
-			"title":   title,
-			"content": content,
+			"title":    params.Title,
+			"content":  params.Content,
+			"category": params.Category,
 		})
 
 	if result.Error != nil {
@@ -111,14 +132,13 @@ func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title,
 
 func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error {
 	result := r.db.WithContext(ctx).
-		Where("id = ?", id). // Явное указание условия
+		Where("id = ?", id).
 		Delete(&model.Article{})
 
 	if result.Error != nil {
 		return result.Error
 	}
 
-	// Проверяем, что действительно удалили запись
 	if result.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound
 	}

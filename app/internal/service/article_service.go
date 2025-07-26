@@ -28,9 +28,7 @@ func (s *ArticleService) CreateArticle(
 	return s.repo.CreateArticle(
 		ctx,
 		authorID,
-		input.Title,
-		input.Content,
-		input.Category,
+		input,
 	)
 }
 
@@ -56,7 +54,7 @@ func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, us
 		return nil, fmt.Errorf("article not found")
 	}
 
-	return s.repo.UpdateArticle(ctx, articleID, input.Title, input.Content)
+	return s.repo.UpdateArticle(ctx, articleID, input)
 }
 
 func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {
