@@ -36,3 +36,20 @@ docker run -d --name my_postgres \
   -p 5432:5432 \
   postgres:17.4
 Запусти сборку  
+
+
+
+
+docker ps
+docker exec -it <container_name_or_id> bash
+psql -U postgres -d <database_name>
+ПРоверка индексов
+SELECT indexname, indexdef
+FROM pg_indexes
+WHERE tablename = 'users';
+Удалить
+DROP INDEX IF EXISTS <index_name>;
+Проверить что удален
+SELECT indexname
+FROM pg_indexes
+WHERE tablename = 'users';
