@@ -1,6 +1,7 @@
 package model
 
 import (
+	"log"
 	"time"
 
 	"github.com/jaevor/go-nanoid"
@@ -17,7 +18,7 @@ type UserShort struct {
 
 type User struct {
 	ID         string    `gorm:"primaryKey;size:12" json:"id"` // NanoID (12 символов)
-	Username   string    `gorm:"size:50;not null" json:"username" validate:"required,min=3,max=50"`
+	Username   string    `gorm:"size:50" json:"username" validate:"omitempty,min=3,max=50"`
 	FirstName  string    `gorm:"size:50" json:"firstName,omitempty" validate:"omitempty,min=2,max=50"` // Необязательное
 	LastName   string    `gorm:"size:50" json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`  // Необязательное
 	MiddleName string    `gorm:"size:50" json:"middleName,omitempty"`                                  // Необязательное
@@ -29,7 +30,7 @@ type User struct {
 }
 
 type UpdateUserInput struct {
-	Username   string `gorm:"uniqueIndex;size:50;not null" json:"username" validate:"required,min=3,max=50"`
+	Username   string `gorm:"size:50" json:"username" validate:"omitempty,min=3,max=50"`
 	FirstName  string `gorm:"size:50" json:"firstName,omitempty" validate:"omitempty,min=2,max=50"` // Необязательное
 	LastName   string `gorm:"size:50" json:"lastName,omitempty" validate:"omitempty,min=2,max=50"`  // Необязательное
 	MiddleName string `gorm:"size:50" json:"middleName,omitempty"`                                  // Необязательное
@@ -40,9 +41,11 @@ type UpdateUserInput struct {
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 	genID, err := nanoid.Standard(12)
 	if err != nil {
+		log.Println("ERROR generating NanoID:", err)
 		return err
 	}
 	u.ID = genID()
+	log.Println("Generated user ID:", u.ID)
 	return nil
 }
 
