@@ -9,23 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type ArticleRepositoryInterface interface {
-	CreateArticle(ctx context.Context, authorID, params model.ArticleInput) (*model.Article, error)
-	GetArticleByID(ctx context.Context, id string) (*model.Article, error)
-	GetAllArticles(ctx context.Context) ([]*model.Article, error)
-	GetArticlesByAuthor(ctx context.Context, authorID string) ([]*model.Article, error)
-	UpdateArticle(ctx context.Context, id, params model.ArticleInput) (*model.Article, error)
-	DeleteArticle(ctx context.Context, id string) error
-}
-
-type DBHandler interface {
-	Create(ctx context.Context, dest interface{}) error
-	First(ctx context.Context, dest interface{}, conds ...interface{}) error
-	Find(ctx context.Context, dest interface{}, conds ...interface{}) error
-	Update(ctx context.Context, model interface{}, updates map[string]interface{}) error
-	Delete(ctx context.Context, model interface{}, conds ...interface{}) (int64, error)
-}
-
 var (
 	ErrArticleNotFound = errors.New("article not found")
 	ErrInvalidCategory = errors.New("invalid article category")
