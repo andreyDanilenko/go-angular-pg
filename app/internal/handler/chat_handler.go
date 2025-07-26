@@ -200,6 +200,7 @@ func (h *ChatHandler) GetMessages(w http.ResponseWriter, r *http.Request) {
 	h.responseJSON.WriteJSON(w, http.StatusOK, messages)
 }
 
+// Нужно сделать единый метод создания и поиска существующего привытныъ чатов
 func (h *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
 
@@ -240,3 +241,5 @@ func (h *ChatHandler) GetUserChats(w http.ResponseWriter, r *http.Request) {
 
 	h.responseJSON.WriteJSON(w, http.StatusOK, chats)
 }
+
+// Добавить последнее сообщение в список чатов чтоб было правильней
