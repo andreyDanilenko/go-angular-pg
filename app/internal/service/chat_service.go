@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 )
 
 type ChatService struct {
@@ -122,6 +123,12 @@ func (s *ChatService) SaveMessage(ctx context.Context, chatID, senderID, text st
 
 	if err := s.repo.SaveMessage(ctx, message); err != nil {
 		return nil, fmt.Errorf("failed to save message: %w", err)
+	}
+
+	// Обновляем время последнего сообщения в чате
+	if err := s.repo.UpdateChatTimestamp(ctx, chatID); err != nil {
+		log.Printf("Failed to update chat timestamp: %v", err)
+		// Не возвращаем ошибку, так как сообщение уже сохранено
 	}
 
 	return message, nil

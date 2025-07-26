@@ -83,6 +83,14 @@ func (r *ChatRepository) GetUserChats(ctx context.Context, userID string) ([]mod
 	return chats, err
 }
 
+func (r *ChatRepository) UpdateChatTimestamp(ctx context.Context, chatID string) error {
+	return r.db.WithContext(ctx).
+		Model(&model.ChatRoom{}).
+		Where("id = ?", chatID).
+		Update("updated_at", time.Now()).
+		Error
+}
+
 func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
 	chat := &model.ChatRoom{
 		// ID будет сгенерирован в BeforeCreate (нужно будет добавить)
