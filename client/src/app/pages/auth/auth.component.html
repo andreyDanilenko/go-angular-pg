@@ -1,35 +1,51 @@
 <div class="auth">
-  <h1  class="title">Авторизация</h1>
+  <h1 class="title">{{ isCodeVerification ? 'Введите код подтверждения' : 'Авторизация' }}</h1>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div *ngIf="apiError" class="api-error">
       {{ apiError }}
     </div>
 
-    <app-input
-      label="Email"
-      [control]="form.controls['email']"
-      type="email"
-      placeholder="example@mail.com"
-      size="md"
-      errorText="Корректный email обязателен"
-    ></app-input>
+    <div *ngIf="!isCodeVerification">
+      <app-input
+        label="Email"
+        [control]="form.controls['email']"
+        type="email"
+        placeholder="example@mail.com"
+        size="md"
+        errorText="Корректный email обязателен"
+      ></app-input>
 
-    <app-input
-      label="Пароль"
-      [control]="form.controls['password']"
-      type="password"
-      placeholder="Введите пароль"
-      size="md"
-      errorText="Минимум 8 символов"
-    ></app-input>
+      <app-input
+        label="Пароль"
+        [control]="form.controls['password']"
+        type="password"
+        placeholder="Введите пароль"
+        size="md"
+        errorText="Минимум 8 символов"
+      ></app-input>
+    </div>
+
+    <div *ngIf="isCodeVerification" class="code-verification">
+      <p class="code-instruction">Мы отправили 6-значный код на {{ form.value.email }}</p>
+
+      <app-input
+        label="Код подтверждения"
+        [control]="form.controls['code']"
+        type="text"
+        placeholder="Введите 6 цифр"
+        size="md"
+        errorText="Код должен содержать 6 цифр"
+        maxlength="6"
+      ></app-input>
+    </div>
 
     <app-button
-        type="primary"
-        [disabled]="form.invalid"
-        typeButton="submit"
-      >
-        Войти
+      type="primary"
+      [disabled]="form.invalid"
+      typeButton="submit"
+    >
+      {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}
     </app-button>
   </form>
 </div>
