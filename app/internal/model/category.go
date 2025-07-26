@@ -6,10 +6,8 @@ import (
 	"fmt"
 )
 
-// ArticleCategory тип для enum
 type ArticleCategory string
 
-// Допустимые значения категорий
 const (
 	CategoryGeneral  ArticleCategory = "general"
 	CategoryTech     ArticleCategory = "tech"
@@ -17,6 +15,16 @@ const (
 	CategoryPolitics ArticleCategory = "politics"
 	CategoryHealth   ArticleCategory = "health"
 )
+
+func GetValidCategories() []ArticleCategory {
+	return []ArticleCategory{
+		CategoryGeneral,
+		CategoryTech,
+		CategoryScience,
+		CategoryPolitics,
+		CategoryHealth,
+	}
+}
 
 func (ac ArticleCategory) IsValid() bool {
 	switch ac {
@@ -26,7 +34,6 @@ func (ac ArticleCategory) IsValid() bool {
 	return false
 }
 
-// Value для интерфейса driver.Valuer (запись в БД)
 func (ac ArticleCategory) Value() (driver.Value, error) {
 	if !ac.IsValid() {
 		return nil, errors.New("invalid article category")
@@ -34,7 +41,6 @@ func (ac ArticleCategory) Value() (driver.Value, error) {
 	return string(ac), nil
 }
 
-// Scan для интерфейса sql.Scanner (чтение из БД)
 func (ac *ArticleCategory) Scan(value interface{}) error {
 	if value == nil {
 		*ac = CategoryGeneral

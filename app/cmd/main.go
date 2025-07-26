@@ -65,7 +65,7 @@ func main() {
 	authService := service.NewUserService(userRepo, emailService, tokenManager)
 	articleService := service.NewArticleService(articleRepo)
 	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
-	articleHandler := handler.NewArticleHandler(articleService)
+	articleHandler := handler.NewArticleHandler(articleService, errorWriter, responseWriter)
 	dumpHandler := handler.NewDumpHandler(gormDB)
 
 	// web sockets

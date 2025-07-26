@@ -90,13 +90,11 @@ func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID st
 }
 
 func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
-	// Сначала получаем статью
 	var article model.Article
 	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 
-	// Обновляем только необходимые поля
 	result := r.db.WithContext(ctx).
 		Model(&article).
 		Updates(map[string]interface{}{
@@ -108,28 +106,8 @@ func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title,
 		return nil, result.Error
 	}
 
-	// Возвращаем обновленную статью
 	return &article, nil
 }
-
-// func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
-//     var article model.Article
-
-//     result := r.db.WithContext(ctx).
-//         Model(&model.Article{}).
-//         Where("id = ?", id).
-//         Updates(map[string]interface{}{
-//             "title":   title,
-//             "content": content,
-//         }).
-//         First(&article)  // Получаем обновленную запись
-
-//     if result.Error != nil {
-//         return nil, result.Error
-//     }
-
-//     return &article, nil
-// }
 
 func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error {
 	result := r.db.WithContext(ctx).

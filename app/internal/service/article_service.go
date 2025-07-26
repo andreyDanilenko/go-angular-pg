@@ -21,7 +21,6 @@ func (s *ArticleService) CreateArticle(
 	authorID string,
 	input model.ArticleInput,
 ) (*model.Article, error) {
-	// Проверка категории (дублирующая проверка для безопасности)
 	if !input.Category.IsValid() {
 		return nil, fmt.Errorf("invalid article category")
 	}
@@ -47,8 +46,17 @@ func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, 
 	return s.repo.GetAllArticles(ctx)
 }
 
-func (s *ArticleService) UpdateArticle(ctx context.Context, id string, input model.ArticleInput) (*model.Article, error) {
-	return s.repo.UpdateArticle(ctx, id, input.Title, input.Content)
+func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, userID string, input model.ArticleInput) (*model.Article, error) {
+	article, err := s.repo.GetArticleByID(ctx, articleID)
+	if err != nil {
+		return nil, err
+	}
+
+	if article.AuthorID != userID {
+		return nil, err
+	}
+
+	return s.repo.UpdateArticle(ctx, articleID, input.Title, input.Content)
 }
 
 func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {
