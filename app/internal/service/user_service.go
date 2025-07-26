@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"math/rand/v2"
@@ -33,7 +32,6 @@ func NewUserService(repo *repository.UserRepository, emailService *EmailService,
 }
 
 func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput) (*model.User, error) {
-	// 1. Проверяем существование пользователя
 	user, err := s.repo.GetByEmail(ctx, input.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("failed to check user existence: %w", err)
@@ -43,17 +41,12 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 		user, err = s.repo.Create(ctx, model.SignInInput{
 			Email:    input.Email,
 			Password: input.Password,
-			// Не передаём username вообще!
 		})
 		if err != nil {
-			// Обрабатываем возможные ошибки уникальности
-			if strings.Contains(err.Error(), "duplicate key") {
-				return nil, fmt.Errorf("user with this email already exists")
-			}
 			return nil, fmt.Errorf("failed to create user: %w", err)
 		}
 	} else {
-		// 3. Если пользователь есть - проверяем пароль
+		// Пользователь есть — сверяем пароль
 		if err := bcrypt.CompareHashAndPassword(
 			[]byte(user.Password),
 			[]byte(input.Password),
