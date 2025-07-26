@@ -20,7 +20,8 @@ import { ActivatedRoute } from '@angular/router';
     ButtonComponent
   ],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
+  providers: [WebSocketService],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: any[] = [];

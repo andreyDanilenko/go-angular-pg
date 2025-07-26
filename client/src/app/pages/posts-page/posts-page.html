@@ -1,35 +1,41 @@
 <div class="posts-page">
-  <h1>Articles</h1>
+  <h1>Статьи</h1>
 
-  <div *ngIf="isLoading" class="loading">Loading articles...</div>
+  <div *ngIf="isLoading" class="loading">
+    <i class="spinner"></i> Загружаем статьи...
+  </div>
 
-  <div *ngIf="error" class="error">
+  <div *ngIf="error" class="error-message">
     {{ error }}
-    <button (click)="loadArticles()">Retry</button>
+    <button (click)="loadArticles()" class="retry-button">Попробовать снова</button>
   </div>
 
   <div *ngIf="!isLoading && !error">
-    <div class="articles-list">
+    <div class="articles-grid">
       <div *ngFor="let article of articles" class="article-card">
-        <div class="article-header">
-          <h2>{{ article.Title }}</h2>
-          <span class="category-badge">{{ article.Category }}</span>
+        <div class="article-card__header">
+          <h2 class="article-title">{{ article.title }}</h2>
+          <span class="article-category">{{ article.category }}</span>
         </div>
 
         <div class="article-meta">
-          <span>By {{ article.Author?.username || 'Unknown' }}</span>
-          <span>•</span>
-          <span>{{ formatDate(article.CreatedAt) }}</span>
+          <span>Автор: {{ article.author?.username || 'Неизвестен' }}</span>
+          <span class="meta-separator">•</span>
+          <span>{{ formatDate(article.createdAt) }}</span>
         </div>
 
-        <p class="article-content">{{ article.Content | truncate:150 }}</p>
+        <p class="article-preview">{{ article.content | truncate:150 }}</p>
 
-        <a [routerLink]="['/posts', article.ID]" class="read-more">Read more</a>
+        <a [routerLink]="['/posts', article.id]" class="read-more-link">
+          Читать далее
+          <i class="arrow-icon"></i>
+        </a>
       </div>
     </div>
 
-    <div *ngIf="articles.length === 0" class="no-articles">
-      No articles found
+    <div *ngIf="articles.length === 0" class="empty-state">
+      <i class="empty-icon"></i>
+      <p>Статьи не найдены</p>
     </div>
   </div>
 </div>

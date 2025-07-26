@@ -1,11 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { ArticleService } from '../../services/article.service';
-import { Article } from '../../models/article.model';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ArticleService } from '../../core/services/article.service';
+import { Article } from '../../core/types/article.model';
+import { TruncatePipe } from '../../core/services/truncate.pipe';
 
 @Component({
   selector: 'app-posts-page',
-  templateUrl: './posts-page.component.html',
-  styleUrls: ['./posts-page.component.scss']
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    TruncatePipe
+  ],
+  templateUrl: './posts-page.html',
+  styleUrls: ['./posts-page.scss']
 })
 export class PostsPageComponent implements OnInit {
   articles: Article[] = [];
@@ -22,7 +31,7 @@ export class PostsPageComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.articleService.getArticles().subscribe({
+    this.articleService.getAllArticles().subscribe({
       next: (articles) => {
         this.articles = articles;
         this.isLoading = false;
