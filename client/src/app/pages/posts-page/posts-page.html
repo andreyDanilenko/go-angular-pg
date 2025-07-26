@@ -1,41 +1,46 @@
-<div class="posts-page">
-  <h1>Статьи</h1>
+<div class="PostsPage">
+  <h1 class="PostsPage__Title">Статьи</h1>
 
-  <div *ngIf="isLoading" class="loading">
-    <i class="spinner"></i> Загружаем статьи...
+  <div *ngIf="isLoading" class="PostsPage__Loading">
+    <span class="PostsPage__Spinner"></span>
+    Загружаем статьи...
   </div>
 
-  <div *ngIf="error" class="error-message">
+  <div *ngIf="error" class="PostsPage__Error">
     {{ error }}
-    <button (click)="loadArticles()" class="retry-button">Попробовать снова</button>
+    <button (click)="loadArticles()" class="PostsPage__RetryButton">Попробовать снова</button>
   </div>
 
-  <div *ngIf="!isLoading && !error">
-    <div class="articles-grid">
-      <div *ngFor="let article of articles" class="article-card">
-        <div class="article-card__header">
-          <h2 class="article-title">{{ article.title }}</h2>
-          <span class="article-category">{{ article.category }}</span>
+  <div *ngIf="!isLoading && !error" class="PostsPage__Content">
+    <div class="PostsPage__ArticlesList">
+      <div *ngFor="let article of articles" class="PostsPage__ArticleCard">
+        <div class="PostsPage__ArticleHeader">
+          <h2 class="PostsPage__ArticleTitle">{{ article.title }}</h2>
+          <span class="PostsPage__ArticleCategory">{{ article.category }}</span>
         </div>
 
-        <div class="article-meta">
-          <span>Автор: {{ article.author?.username || 'Неизвестен' }}</span>
-          <span class="meta-separator">•</span>
-          <span>{{ formatDate(article.createdAt) }}</span>
+        <div class="PostsPage__ArticleMeta">
+          <span class="PostsPage__ArticleAuthor">
+            Автор: {{ article.author?.username || 'Неизвестен' }}
+          </span>
+          <span class="PostsPage__MetaSeparator">•</span>
+          <span class="PostsPage__ArticleDate">
+            {{ formatDate(article.createdAt) }}
+          </span>
         </div>
 
-        <p class="article-preview">{{ article.content | truncate:150 }}</p>
+        <p class="PostsPage__ArticlePreview">
+          {{ article.content | truncate:150 }}
+        </p>
 
-        <a [routerLink]="['/posts', article.id]" class="read-more-link">
+        <a [routerLink]="['/posts', article.id]" class="PostsPage__ReadMoreLink">
           Читать далее
-          <i class="arrow-icon"></i>
         </a>
       </div>
     </div>
 
-    <div *ngIf="articles.length === 0" class="empty-state">
-      <i class="empty-icon"></i>
-      <p>Статьи не найдены</p>
+    <div *ngIf="articles.length === 0" class="PostsPage__EmptyState">
+      Статьи не найдены
     </div>
   </div>
 </div>

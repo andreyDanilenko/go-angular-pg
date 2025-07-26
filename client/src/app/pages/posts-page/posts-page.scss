@@ -1,96 +1,152 @@
-.posts-page {
-  max-width: 800px;
+:host {
+  height: calc(100vh - 64px);
+  overflow: auto;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 2rem;
+}
 
-  h1 {
+.PostsPage {
+  &__Title {
     font-size: 2.5rem;
     margin-bottom: 2rem;
     color: #333;
+    font-weight: 600;
   }
 
-  .loading, .error, .no-articles {
+  &__Loading {
     text-align: center;
     padding: 2rem;
     font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
   }
 
-  .error {
-    color: #d32f2f;
+  &__Spinner {
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid #1976d2;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+  }
 
-    button {
-      margin-left: 1rem;
-      padding: 0.5rem 1rem;
-      background: #d32f2f;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+  &__Error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #d32f2f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__RetryButton {
+    padding: 0.6rem 1.2rem;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #b71c1c;
     }
   }
 
-  .articles-list {
+  &__EmptyState {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+    font-size: 1.2rem;
+  }
+
+  &__ArticlesList {
     display: grid;
     gap: 2rem;
   }
 
-  .article-card {
+  &__ArticleCard {
     background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 0.75rem;
+    padding: 1.8rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .article-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-
-      h2 {
-        font-size: 1.5rem;
-        margin: 0;
-        color: #222;
-      }
-
-      .category-badge {
-        background: #e0f7fa;
-        color: #00838f;
-        padding: 0.25rem 0.5rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 500;
-      }
-    }
-
-    .article-meta {
-      display: flex;
-      gap: 0.5rem;
-      color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    .article-content {
-      color: #444;
-      line-height: 1.6;
-      margin-bottom: 1.5rem;
-    }
-
-    .read-more {
-      color: #1976d2;
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-block;
-
-      &:hover {
-        text-decoration: underline;
-      }
+      transform: translateY(-0.25rem);
+      box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.12);
     }
   }
+
+  &__ArticleHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  &__ArticleTitle {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #222;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  &__ArticleCategory {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  &__ArticleMeta {
+    display: flex;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+    align-items: center;
+  }
+
+  &__MetaSeparator {
+    opacity: 0.5;
+  }
+
+  &__ArticlePreview {
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+  }
+
+  &__ReadMoreLink {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #0d47a1;
+      text-decoration: underline;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
