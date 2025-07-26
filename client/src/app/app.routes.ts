@@ -28,7 +28,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'message',
+    path: 'messages',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
     children: [

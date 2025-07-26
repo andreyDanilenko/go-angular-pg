@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { ArticleService } from '../../core/services/article.service';
 import { Article } from '../../core/types/article.model';
 import { TruncatePipe } from '../../core/services/truncate.pipe';
+import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @Component({
   selector: 'app-posts-page',
@@ -14,7 +16,20 @@ import { TruncatePipe } from '../../core/services/truncate.pipe';
     TruncatePipe
   ],
   templateUrl: './posts-page.html',
-  styleUrls: ['./posts-page.scss']
+  styleUrls: ['./posts-page.scss'],
+
+  animations: [
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(100, [
+            animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class PostsPageComponent implements OnInit {
   articles: Article[] = [];
@@ -37,7 +52,7 @@ export class PostsPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load articles';
+        this.error = 'Не удалось загрузить статьи';
         this.isLoading = false;
         console.error(err);
       }
@@ -45,7 +60,7 @@ export class PostsPageComponent implements OnInit {
   }
 
   formatDate(date: string | Date): string {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('ru-RU', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
