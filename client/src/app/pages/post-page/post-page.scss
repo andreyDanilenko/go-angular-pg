@@ -136,4 +136,33 @@
       background: #e0e0e0;
     }
   }
+
+  &__ViewActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  &__DeleteButton {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #b71c1c;
+    }
+  }
+
+  &__Actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

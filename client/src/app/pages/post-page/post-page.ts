@@ -72,7 +72,6 @@ export class PostEditorComponent implements OnInit {
     const postData = this.postForm.value;
 
     if (this.isEditMode && this.article) {
-      // Обновляем пост
       this.articleService.updateArticle(this.article.id, postData).subscribe({
         next: () => {
           this.router.navigate(['/posts', this.article?.id]);
@@ -83,7 +82,6 @@ export class PostEditorComponent implements OnInit {
         }
       });
     } else {
-      // Создаем новый пост
       this.articleService.createArticle(postData).subscribe({
         next: (newPost) => {
           this.router.navigate(['/posts', newPost.id]);
@@ -96,13 +94,28 @@ export class PostEditorComponent implements OnInit {
     }
   }
 
+  deleteArticle() {
+    if (!this.article) return;
+
+    if (confirm('Вы уверены, что хотите удалить этот пост? Это действие нельзя отменить.')) {
+      this.isLoading = true;
+      this.articleService.deleteArticle(this.article.id).subscribe({
+        next: () => {
+          this.router.navigate(['/posts']);
+        },
+        error: (err) => {
+          this.error = 'Ошибка при удалении поста';
+          this.isLoading = false;
+        }
+      });
+    }
+  }
+
   toggleEditMode(): void {
     if (this.isEditMode) {
-      // Выходим из режима редактирования
       this.postForm.reset(this.article);
       this.isEditMode = false;
     } else {
-      // Входим в режим редактирования
       this.isEditMode = true;
     }
   }

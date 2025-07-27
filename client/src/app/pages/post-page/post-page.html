@@ -21,9 +21,14 @@
         {{ article.content }}
       </div>
 
-      <button (click)="toggleEditMode()" class="PostEditor__EditButton">
-        Редактировать
-      </button>
+      <div class="PostEditor__ViewActions">
+        <button (click)="toggleEditMode()" class="PostEditor__EditButton">
+          Редактировать
+        </button>
+        <button (click)="deleteArticle()" class="PostEditor__DeleteButton">
+          Удалить
+        </button>
+      </div>
     </div>
 
     <!-- Режим редактирования (или создание нового поста) -->
@@ -64,12 +69,19 @@
         />
       </div>
 
-      <div class="PostEditor__Actions">
+           <div class="PostEditor__Actions">
         <button type="submit" [disabled]="postForm.invalid" class="PostEditor__SubmitButton">
           {{ isEditMode ? 'Сохранить' : 'Опубликовать' }}
         </button>
-        <button type="button" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])" class="PostEditor__CancelButton">
+        <button type="button" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])"
+                class="PostEditor__CancelButton">
           Отмена
+        </button>
+
+        <!-- Кнопка удаления в режиме редактирования -->
+        <button *ngIf="isEditMode && article" type="button" (click)="deleteArticle()"
+                class="PostEditor__DeleteButton">
+          Удалить
         </button>
       </div>
     </form>
