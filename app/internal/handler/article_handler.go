@@ -163,6 +163,17 @@ func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	id := chi.URLParam(r, "id")
 
+	article, err := h.service.GetArticle(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if article.AuthorID != userID {
+		h.errorWriter.WriteError(w, http.StatusForbidden, "Вы можете удалять только свои посты")
+		return
+	}
+
 	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

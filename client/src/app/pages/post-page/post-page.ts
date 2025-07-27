@@ -104,7 +104,7 @@ export class PostEditorComponent implements OnInit {
           this.router.navigate(['/posts']);
         },
         error: (err) => {
-          this.error = 'Ошибка при удалении поста';
+          this.error =  err.error.message ??'Ошибка при удалении поста';
           this.isLoading = false;
         }
       });
