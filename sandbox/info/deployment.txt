@@ -52,5 +52,20 @@ cat ~/.ssh/id_rsa_github_deploy.pub | ssh user@server_ip 'mkdir -p ~/.ssh && cat
 Посмотреть образы
 docker images
 Зайти в контейнер
-docker exec -it 559bb51b67c3  bash  
+docker exec -it 45a04d02adcf  bash  
 docker exec -it my-nginx sh        # через имя (sh для Alpine-based образов)
+
+psql -U postgres
+или конкретной 
+psql -U postgres -d auth_service
+Почистить пользователя из базы
+DELETE FROM users WHERE email = 'Email';
+
+Если в базе есть зависимости
+auth_service=# DELETE FROM users WHERE email = 'danilenko2@mail.ru';
+ERROR:  update or delete on table "users" violates foreign key constraint "fk_chat_messages_sender" on table "chat_messages"
+DETAIL:  Key (id)=(aRjJGSivRWXL) is still referenced from table "chat_messages".
+auth_service=# DELETE FROM chat_messages WHERE sender_id = 'aRjJGSivRWXL';
+DELETE 2
+auth_service=# DELETE FROM users WHERE email = 'danilenko2@mail.ru';
+DELETE 1

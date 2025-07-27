@@ -91,7 +91,7 @@ func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*mod
 	}
 
 	_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
-	token, err := s.tokenManager.Generate(user.ID, user.Role, 24*time.Hour)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, 3*time.Hour)
 	if err != nil {
 		return nil, "", err
 	}
