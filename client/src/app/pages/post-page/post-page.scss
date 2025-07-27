@@ -1,8 +1,14 @@
-.PostEditor {
-  max-width: 800px;
+:host {
+  height: calc(100vh - 64px);
+  overflow: auto;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 2rem;
+}
 
+
+
+.PostEditor {
   &__Loading {
     text-align: center;
     padding: 2rem;
