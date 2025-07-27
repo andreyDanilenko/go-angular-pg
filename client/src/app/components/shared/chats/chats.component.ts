@@ -50,7 +50,8 @@ interface MessagePayload {
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule, InputComponent],
   templateUrl: './chats.component.html',
-  styleUrls: ['./chats.component.css']
+  styleUrls: ['./chats.component.css'],
+  providers: [BaseApiService]
 })
 export class ChatsComponent implements OnInit, OnDestroy {
   search = new FormControl('');

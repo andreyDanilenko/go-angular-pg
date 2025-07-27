@@ -5,8 +5,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"gorm.io/gorm"
+)
+
+var (
+	ErrArticleNotFound = errors.New("article not found")
+	ErrInvalidCategory = errors.New("invalid article category")
+	ErrNothingToDelete = errors.New("no articles were deleted")
 )
 
 type ArticleRepository struct {
@@ -20,33 +27,61 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 func (r *ArticleRepository) CreateArticle(
 	ctx context.Context,
 	authorID string,
-	title string,
-	content string,
-	category model.ArticleCategory,
+	params model.ArticleInput,
 ) (*model.Article, error) {
+	// Логируем начало операции
+	log.Printf("Creating article for authorID: %s, title: %s, category: %s",
+		authorID, params.Title, params.Category)
+
+	// 1. Валидация категории
+	if !params.Category.IsValid() {
+		log.Printf("Invalid category: %s", params.Category)
+		return nil, fmt.Errorf("%w", ErrInvalidCategory)
+	}
+
+	// 2. Проверка существования автора (с GORM)
+	var authorCount int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("id = ?", authorID).
+		Count(&authorCount).Error; err != nil {
+
+		log.Printf("Error checking author existence: %v", err)
+		return nil, fmt.Errorf("failed to check author: %w", err)
+	}
+
+	if authorCount == 0 {
+		log.Printf("Author not found: %s", authorID)
+		return nil, fmt.Errorf("author with id %s not found", authorID)
+	}
+
+	// 3. Создание статьи
 	article := &model.Article{
+		Title:    params.Title,
+		Content:  params.Content,
+		Category: params.Category,
 		AuthorID: authorID,
-		Title:    title,
-		Content:  content,
-		Category: category,
 	}
 
-	if !category.IsValid() {
-		return nil, fmt.Errorf("invalid article category")
+	if err := r.db.WithContext(ctx).Create(article).Error; err != nil {
+		log.Printf("Error creating article: %v", err)
+
+		// Проверяем, является ли ошибка нарушением внешнего ключа
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			log.Printf("Foreign key violation - author might not exist despite previous check")
+			return nil, fmt.Errorf("author does not exist")
+		}
+
+		return nil, fmt.Errorf("failed to create article: %w", err)
 	}
 
-	result := r.db.WithContext(ctx).Create(article)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
+	log.Printf("Successfully created article with ID: %s", article.ID)
 	return article, nil
 }
 
 func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*model.Article, error) {
 	var article model.Article
 
-	// Явно указываем условие WHERE для строкового ID
 	err := r.db.WithContext(ctx).
 		Where("id = ?", id).
 		First(&article).
@@ -55,6 +90,7 @@ func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*mod
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -89,58 +125,36 @@ func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID st
 	return articles, nil
 }
 
-func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
-	// Сначала получаем статью
+func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, params model.ArticleInput) (*model.Article, error) {
 	var article model.Article
 	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 
-	// Обновляем только необходимые поля
 	result := r.db.WithContext(ctx).
 		Model(&article).
 		Updates(map[string]interface{}{
-			"title":   title,
-			"content": content,
+			"title":    params.Title,
+			"content":  params.Content,
+			"category": params.Category,
 		})
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	// Возвращаем обновленную статью
 	return &article, nil
 }
 
-// func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, title, content string) (*model.Article, error) {
-//     var article model.Article
-
-//     result := r.db.WithContext(ctx).
-//         Model(&model.Article{}).
-//         Where("id = ?", id).
-//         Updates(map[string]interface{}{
-//             "title":   title,
-//             "content": content,
-//         }).
-//         First(&article)  // Получаем обновленную запись
-
-//     if result.Error != nil {
-//         return nil, result.Error
-//     }
-
-//     return &article, nil
-// }
-
 func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error {
 	result := r.db.WithContext(ctx).
-		Where("id = ?", id). // Явное указание условия
+		Where("id = ?", id).
 		Delete(&model.Article{})
 
 	if result.Error != nil {
 		return result.Error
 	}
 
-	// Проверяем, что действительно удалили запись
 	if result.RowsAffected == 0 {
 		return gorm.ErrRecordNotFound
 	}

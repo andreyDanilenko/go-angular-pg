@@ -1,0 +1,168 @@
+.PostEditor {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  &__Loading {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  &__Error {
+    color: #d32f2f;
+    padding: 1rem;
+    background: #ffebee;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  &__ViewMode {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__Title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  &__Meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  &__ContentText {
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    white-space: pre-line;
+  }
+
+  &__EditButton {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      background: #1565c0;
+    }
+  }
+
+  &__EditMode {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__FormGroup {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+      }
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+  }
+
+  &__ErrorText {
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  &__Actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  &__SubmitButton {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      background: #1565c0;
+    }
+
+    &:disabled {
+      background: #90caf9;
+      cursor: not-allowed;
+    }
+  }
+
+  &__CancelButton {
+    background: #f5f5f5;
+    color: #333;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+
+  &__ViewActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  &__DeleteButton {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #b71c1c;
+    }
+  }
+
+  &__Actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

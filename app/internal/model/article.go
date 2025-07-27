@@ -19,7 +19,6 @@ type Article struct {
 	Category ArticleCategory `gorm:"size:50;not null;default:'general'" json:"category,omitempty"`
 }
 
-// BeforeCreate - хук для генерации ID
 func (a *Article) BeforeCreate(tx *gorm.DB) error {
 	genID, err := nanoid.Standard(12)
 	if err != nil {
