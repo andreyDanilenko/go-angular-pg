@@ -8,6 +8,7 @@ import { HomeComponent } from './pages/main/main.component';
 import { ChatsPageComponent } from './pages/chats/chats-page.component';
 import { ChatPageComponent } from './pages/chat/chat-page.component';
 import { PostsPageComponent } from './pages/posts-page/posts-page';
+import { PostEditorComponent } from './pages/post-page/post-page';
 
 export const routes: Routes = [
   {
@@ -42,6 +43,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: PostsPageComponent },
+      { path: 'create', component: PostEditorComponent },
+      { path: ':id', component: PostEditorComponent },
+      { path: ':id/edit', component: PostEditorComponent }
     ]
   },
   { path: '**', redirectTo: '' }

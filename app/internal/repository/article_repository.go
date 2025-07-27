@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -28,21 +29,53 @@ func (r *ArticleRepository) CreateArticle(
 	authorID string,
 	params model.ArticleInput,
 ) (*model.Article, error) {
+	// Логируем начало операции
+	log.Printf("Creating article for authorID: %s, title: %s, category: %s",
+		authorID, params.Title, params.Category)
+
+	// 1. Валидация категории
 	if !params.Category.IsValid() {
+		log.Printf("Invalid category: %s", params.Category)
 		return nil, fmt.Errorf("%w", ErrInvalidCategory)
 	}
 
+	// 2. Проверка существования автора (с GORM)
+	var authorCount int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("id = ?", authorID).
+		Count(&authorCount).Error; err != nil {
+
+		log.Printf("Error checking author existence: %v", err)
+		return nil, fmt.Errorf("failed to check author: %w", err)
+	}
+
+	if authorCount == 0 {
+		log.Printf("Author not found: %s", authorID)
+		return nil, fmt.Errorf("author with id %s not found", authorID)
+	}
+
+	// 3. Создание статьи
 	article := &model.Article{
-		AuthorID: authorID,
 		Title:    params.Title,
 		Content:  params.Content,
 		Category: params.Category,
-	}
-	result := r.db.WithContext(ctx).Create(article)
-	if result.Error != nil {
-		return nil, result.Error
+		AuthorID: authorID,
 	}
 
+	if err := r.db.WithContext(ctx).Create(article).Error; err != nil {
+		log.Printf("Error creating article: %v", err)
+
+		// Проверяем, является ли ошибка нарушением внешнего ключа
+		if errors.Is(err, gorm.ErrForeignKeyViolated) {
+			log.Printf("Foreign key violation - author might not exist despite previous check")
+			return nil, fmt.Errorf("author does not exist")
+		}
+
+		return nil, fmt.Errorf("failed to create article: %w", err)
+	}
+
+	log.Printf("Successfully created article with ID: %s", article.ID)
 	return article, nil
 }
 

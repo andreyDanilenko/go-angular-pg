@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ArticleService } from '../../core/services/article.service';
 import { Article } from '../../core/types/article.model';
 import { TruncatePipe } from '../../core/services/truncate.pipe';
@@ -35,7 +35,7 @@ export class PostsPageComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  constructor(private articleService: ArticleService) {}
+  constructor(private articleService: ArticleService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadArticles();
@@ -64,5 +64,9 @@ export class PostsPageComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     });
+  }
+
+  viewArticle(articleId: string) {
+    this.router.navigate(['/posts', articleId]);
   }
 }

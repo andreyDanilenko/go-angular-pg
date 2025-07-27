@@ -1,5 +1,12 @@
 <div class="PostsPage">
-  <h1 class="PostsPage__Title">Статьи</h1>
+  <div class="PostsPage__Header">
+    <h1 class="PostsPage__Title">Статьи</h1>
+    <button
+      [routerLink]="['/posts/create']"
+      class="PostsPage__CreateButton">
+      + Новая статья
+    </button>
+  </div>
 
   <div *ngIf="isLoading" class="PostsPage__Loading">
     <span class="PostsPage__Spinner"></span>
@@ -11,9 +18,13 @@
     <button (click)="loadArticles()" class="PostsPage__RetryButton">Попробовать снова</button>
   </div>
 
-  <div *ngIf="!isLoading && !error" class="PostsPage__Content" @listAnimation>
+  <div *ngIf="!isLoading && !error" class="PostsPage__Content">
     <div class="PostsPage__ArticlesList">
-      <div *ngFor="let article of articles" class="PostsPage__ArticleCard">
+      <div
+        *ngFor="let article of articles"
+        class="PostsPage__ArticleCard"
+        [routerLink]="['/posts', article.id]"
+        (click)="viewArticle(article.id)">
         <div class="PostsPage__ArticleHeader">
           <h2 class="PostsPage__ArticleTitle">{{ article.title }}</h2>
           <span class="PostsPage__ArticleCategory">{{ article.category }}</span>
@@ -33,9 +44,7 @@
           {{ article.content | truncate:150 }}
         </p>
 
-        <a [routerLink]="['/posts', article.id]" class="PostsPage__ReadMoreLink">
-          Читать далее
-        </a>
+        <div class="PostsPage__ReadMoreLink">Читать далее</div>
       </div>
     </div>
 

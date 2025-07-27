@@ -1,0 +1,77 @@
+<div class="PostEditor">
+  <div *ngIf="isLoading" class="PostEditor__Loading">
+    Загрузка...
+  </div>
+
+  <div *ngIf="error" class="PostEditor__Error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading" class="PostEditor__Content">
+    <!-- Режим просмотра (если пост существует и не в режиме редактирования) -->
+    <div *ngIf="article && !isEditMode" class="PostEditor__ViewMode">
+      <h1 class="PostEditor__Title">{{ article.title }}</h1>
+
+      <div class="PostEditor__Meta">
+        <span class="PostEditor__Category">{{ article.category }}</span>
+        <span class="PostEditor__Date">{{ article.createdAt | date }}</span>
+      </div>
+
+      <div class="PostEditor__ContentText">
+        {{ article.content }}
+      </div>
+
+      <button (click)="toggleEditMode()" class="PostEditor__EditButton">
+        Редактировать
+      </button>
+    </div>
+
+    <!-- Режим редактирования (или создание нового поста) -->
+    <form *ngIf="isEditMode || !article" [formGroup]="postForm" (ngSubmit)="onSubmit()" class="PostEditor__EditMode">
+      <div class="PostEditor__FormGroup">
+        <label for="title">Заголовок</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="Название поста"
+        />
+        <div *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched" class="PostEditor__ErrorText">
+          Заголовок обязателен (макс. 100 символов)
+        </div>
+      </div>
+
+      <div class="PostEditor__FormGroup">
+        <label for="content">Содержание</label>
+        <textarea
+          id="content"
+          formControlName="content"
+          rows="10"
+          placeholder="Текст поста..."
+        ></textarea>
+        <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched" class="PostEditor__ErrorText">
+          Текст обязателен
+        </div>
+      </div>
+
+      <div class="PostEditor__FormGroup">
+        <label for="category">Категория</label>
+        <input
+          id="category"
+          type="text"
+          formControlName="category"
+          placeholder="Категория"
+        />
+      </div>
+
+      <div class="PostEditor__Actions">
+        <button type="submit" [disabled]="postForm.invalid" class="PostEditor__SubmitButton">
+          {{ isEditMode ? 'Сохранить' : 'Опубликовать' }}
+        </button>
+        <button type="button" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])" class="PostEditor__CancelButton">
+          Отмена
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
