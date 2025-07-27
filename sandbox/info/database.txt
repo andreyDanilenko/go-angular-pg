@@ -53,3 +53,38 @@ DROP INDEX IF EXISTS <index_name>;
 SELECT indexname
 FROM pg_indexes
 WHERE tablename = 'users';
+
+
+Посмотреть образы
+docker images
+Зайти в контейнер
+docker exec -it 45a04d02adcf  bash  
+docker exec -it my-nginx sh        # через имя (sh для Alpine-based образов)
+
+psql -U postgres
+или конкретной 
+psql -U postgres -d auth_service
+Почистить пользователя из базы
+DELETE FROM users WHERE email = 'Email';
+
+Если в базе есть зависимости
+auth_service=# DELETE FROM users WHERE email = 'danilenko2@mail.ru';
+ERROR:  update or delete on table "users" violates foreign key constraint "fk_chat_messages_sender" on table "chat_messages"
+DETAIL:  Key (id)=(aRjJGSivRWXL) is still referenced from table "chat_messages".
+auth_service=# DELETE FROM chat_messages WHERE sender_id = 'aRjJGSivRWXL';
+DELETE 2
+auth_service=# DELETE FROM users WHERE email = 'danilenko2@mail.ru';
+DELETE 1
+
+
+Транзакции для отката поломки в случае чего и безопасно
+BEGIN;
+DELETE FROM chat_messages WHERE sender_id = 'aRjJGSivRWXL';
+DELETE FROM users WHERE email = 'danilenko2@mail.ru';
+COMMIT;
+
+Откат транзакции
+BEGIN;
+DELETE FROM chat_messages WHERE sender_id = 'aRjJGSivRWXL'; 
+DELETE FROM users WHERE email = 'invalid_email';        
+ROLLBACK; 
