@@ -1,0 +1,40 @@
+@use './colors' as *;
+@use './typography' as *;
+@use './spacing' as *;
+
+:root {
+  // Цвета
+  --primary-color: #{$primary};
+  --primary-variant-color: #{$primary-variant};
+  --secondary-color: #{$secondary};
+  --secondary-variant-color: #{$secondary-variant};
+  --background-color: #{$background};
+  --surface-color: #{$surface};
+  --error-color: #{$error};
+
+  --on-primary-color: #{$on-primary};
+  --on-secondary-color: #{$on-secondary};
+  --on-background-color: #{$on-background};
+  --on-surface-color: #{$on-surface};
+  --on-error-color: #{$on-error};
+
+  // Текст
+  --font-family-primary: #{$font-family-primary};
+  --font-family-secondary: #{$font-family-secondary};
+
+  // Отступы
+  --spacing-small: #{$spacing-small};
+  --spacing-medium: #{$spacing-medium};
+  --spacing-large: #{$spacing-large};
+
+  // Радиусы
+  --radius-small: #{$radius-small};
+  --radius-medium: #{$radius-medium};
+}
+
+// Глобальные стили
+body {
+  background-color: var(--background-color);
+  color: var(--on-background-color);
+  font-family: var(--font-family-primary);
+}

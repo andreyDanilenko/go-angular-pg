@@ -1,0 +1,64 @@
+@use './spacing' as *;
+
+// Брейкпоинты
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// Миксины для медиазапросов
+@mixin xs {
+  @media (min-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+// Адаптивные утилиты
+.responsive-padding {
+  padding: $spacing-small;
+
+  @include sm {
+    padding: $spacing-medium;
+  }
+
+  @include lg {
+    padding: $spacing-large;
+  }
+}
+
+.responsive-font {
+  font-size: $font-size-medium;
+
+  @include md {
+    font-size: $font-size-large;
+  }
+
+  @include xl {
+    font-size: $font-size-xlarge;
+  }
+}

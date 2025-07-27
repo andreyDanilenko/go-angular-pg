@@ -1,0 +1,20 @@
+@use './colors' as *;
+@use './dark-theme' as dark;
+@use './typography' as *;
+@use './spacing' as *;
+
+:root {
+  // Цвета
+  --primary-color: #{dark.$dark-primary};
+  --primary-variant-color: #{dark.$dark-primary-variant};
+  --secondary-color: #{dark.$dark-secondary};
+  --background-color: #{dark.$dark-background};
+  --surface-color: #{dark.$dark-surface};
+  --error-color: #{dark.$dark-error};
+
+  --on-primary-color: #{dark.$dark-on-primary};
+  --on-secondary-color: #{dark.$dark-on-secondary};
+  --on-background-color: #{dark.$dark-on-background};
+  --on-surface-color: #{dark.$dark-on-surface};
+  --on-error-color: #{dark.$dark-on-error};
+}
