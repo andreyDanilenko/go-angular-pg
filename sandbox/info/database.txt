@@ -88,3 +88,6 @@ BEGIN;
 DELETE FROM chat_messages WHERE sender_id = 'aRjJGSivRWXL'; 
 DELETE FROM users WHERE email = 'invalid_email';        
 ROLLBACK; 
+
+смена значений
+UPDATE users SET role = 'admin' WHERE id = 'ваш_user_id';
