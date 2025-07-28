@@ -41,7 +41,7 @@ func (s *ArticleService) GetArticlesByAuthor(ctx context.Context, authorID strin
 	return s.repo.GetArticlesByAuthor(ctx, authorID)
 }
 
-func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, error) {
+func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.ArticleWithAuthor, error) {
 	return s.repo.GetAllArticles(ctx)
 }
 

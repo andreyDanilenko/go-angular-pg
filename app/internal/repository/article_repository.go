@@ -92,16 +92,18 @@ func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*mod
 	return &article, nil
 }
 
-func (r *ArticleRepository) GetAllArticles(ctx context.Context) ([]*model.Article, error) {
-	var articles []*model.Article
-	result := r.db.WithContext(ctx).
-		Order("created_at DESC").
-		Find(&articles)
+func (r *ArticleRepository) GetAllArticles(ctx context.Context) ([]*model.ArticleWithAuthor, error) {
+	var articles []*model.ArticleWithAuthor
+	err := r.db.WithContext(ctx).
+		Table("articles").
+		Select("articles.*, users.id as author_id, users.username as author_name").
+		Joins("LEFT JOIN users ON users.id = articles.author_id").
+		Order("articles.created_at DESC").
+		Scan(&articles).Error
 
-	if result.Error != nil {
-		return nil, result.Error
+	if err != nil {
+		return nil, err
 	}
-
 	return articles, nil
 }
 
