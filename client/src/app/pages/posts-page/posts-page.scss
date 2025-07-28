@@ -1,6 +1,6 @@
 :host {
   height: calc(100vh - 64px);
-  overflow: auto;
+  // overflow: auto;
   max-width: 80rem;
   margin: 0 auto;
   padding: 2rem;
@@ -174,4 +174,8 @@
       text-decoration: underline;
     }
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
