@@ -46,17 +46,19 @@ func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, 
 }
 
 func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, userID string, input model.ArticleInput) (*model.Article, error) {
-	// article, err := s.repo.GetArticleByID(ctx, articleID)
-
 	article, err := s.repo.GetArticleByID(ctx, articleID)
 	if err != nil {
 		return nil, fmt.Errorf("repository update error: %w", err)
 	}
 
+	if article == nil {
+		return nil, fmt.Errorf("not found: article %s not found", articleID)
+	}
+
 	if article.AuthorID != userID {
 		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
 		if !ok || role != model.RoleAdmin {
-			return nil, fmt.Errorf("user %s is not author of article %s", userID, articleID)
+			return nil, fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
 		}
 	}
 
@@ -68,6 +70,22 @@ func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, us
 	return updatedArticle, nil
 }
 
-func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {
-	return s.repo.DeleteArticle(ctx, id)
+func (s *ArticleService) DeleteArticle(ctx context.Context, articleID, userID string) error {
+	article, err := s.repo.GetArticleByID(ctx, articleID)
+	if err != nil {
+		return fmt.Errorf("repository update error: %w", err)
+	}
+
+	if article == nil {
+		return fmt.Errorf("not found: article %s not found", articleID)
+	}
+
+	if article.AuthorID != userID {
+		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
+		if !ok || role != model.RoleAdmin {
+			return fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
+		}
+	}
+
+	return s.repo.DeleteArticle(ctx, articleID)
 }

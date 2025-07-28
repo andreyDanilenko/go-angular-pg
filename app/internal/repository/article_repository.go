@@ -29,17 +29,14 @@ func (r *ArticleRepository) CreateArticle(
 	authorID string,
 	params model.ArticleInput,
 ) (*model.Article, error) {
-	// Логируем начало операции
 	log.Printf("Creating article for authorID: %s, title: %s, category: %s",
 		authorID, params.Title, params.Category)
 
-	// 1. Валидация категории
 	if !params.Category.IsValid() {
 		log.Printf("Invalid category: %s", params.Category)
 		return nil, fmt.Errorf("%w", ErrInvalidCategory)
 	}
 
-	// 2. Проверка существования автора (с GORM)
 	var authorCount int64
 	if err := r.db.WithContext(ctx).
 		Model(&model.User{}).
@@ -55,7 +52,6 @@ func (r *ArticleRepository) CreateArticle(
 		return nil, fmt.Errorf("author with id %s not found", authorID)
 	}
 
-	// 3. Создание статьи
 	article := &model.Article{
 		Title:    params.Title,
 		Content:  params.Content,
@@ -66,7 +62,6 @@ func (r *ArticleRepository) CreateArticle(
 	if err := r.db.WithContext(ctx).Create(article).Error; err != nil {
 		log.Printf("Error creating article: %v", err)
 
-		// Проверяем, является ли ошибка нарушением внешнего ключа
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
 			log.Printf("Foreign key violation - author might not exist despite previous check")
 			return nil, fmt.Errorf("author does not exist")
@@ -82,17 +77,16 @@ func (r *ArticleRepository) CreateArticle(
 func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*model.Article, error) {
 	var article model.Article
 
-	err := r.db.WithContext(ctx).
+	result := r.db.WithContext(ctx).
 		Where("id = ?", id).
-		First(&article).
-		Error
+		First(&article)
 
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("article not found")
 	}
 
-	if err != nil {
-		return nil, err
+	if result.Error != nil {
+		return nil, fmt.Errorf("database error: %w", result.Error)
 	}
 
 	return &article, nil
@@ -157,7 +151,7 @@ func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error 
 	}
 
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		return fmt.Errorf("record not found")
 	}
 
 	return nil
