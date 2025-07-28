@@ -7,8 +7,8 @@ export interface Article {
   content: string;
   createdAt: Date | string;
   updatedAt: Date | string;
-  author?: User;
   category: ArticleCategory;
+  authorName: string;
 }
 
 export type ArticleCategory =
