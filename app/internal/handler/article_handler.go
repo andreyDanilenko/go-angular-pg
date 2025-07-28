@@ -145,9 +145,10 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	article, err := h.service.UpdateArticle(r.Context(), articleID, userID, input)
+
 	if err != nil {
 		log.Printf("Failed to update article: %v", err)
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to update article")
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, err.Error())
 
 		return
 	}

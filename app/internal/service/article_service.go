@@ -1,6 +1,7 @@
 package service
 
 import (
+	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"fmt"
@@ -45,16 +46,26 @@ func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, 
 }
 
 func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, userID string, input model.ArticleInput) (*model.Article, error) {
+	// article, err := s.repo.GetArticleByID(ctx, articleID)
+
 	article, err := s.repo.GetArticleByID(ctx, articleID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repository update error: %w", err)
 	}
 
 	if article.AuthorID != userID {
-		return nil, fmt.Errorf("article not found")
+		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
+		if !ok || role != model.RoleAdmin {
+			return nil, fmt.Errorf("user %s is not author of article %s", userID, articleID)
+		}
 	}
 
-	return s.repo.UpdateArticle(ctx, articleID, input)
+	updatedArticle, err := s.repo.UpdateArticle(ctx, articleID, input)
+	if err != nil {
+		return nil, fmt.Errorf("repository update error: %w", err)
+	}
+
+	return updatedArticle, nil
 }
 
 func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {

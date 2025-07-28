@@ -126,6 +126,7 @@ func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID st
 }
 
 func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, params model.ArticleInput) (*model.Article, error) {
+
 	var article model.Article
 	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
 		return nil, err
