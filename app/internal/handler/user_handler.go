@@ -91,6 +91,20 @@ func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	h.responseJSON.WriteJSON(w, http.StatusOK, users)
 }
 
+// Тут информация для самого пользователя
+func (h *UserHandler) GetUserMe(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(middleware.UserIDKey).(string)
+
+	user, err := h.authService.GetUserMe(r.Context(), userID)
+	if err != nil {
+		h.errorWriter.WriteError(w, http.StatusNotFound, "User not found")
+		return
+	}
+
+	h.responseJSON.WriteJSON(w, http.StatusOK, user)
+}
+
+// Тут информация для всех
 func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 

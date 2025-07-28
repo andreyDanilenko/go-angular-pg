@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ArticleService } from '../../core/services/article.service';
 import { Article } from '../../core/types/article.model';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-post-editor',
@@ -41,11 +42,8 @@ export class PostEditorComponent implements OnInit {
     const postId = this.route.snapshot.paramMap.get('id');
 
     if (postId) {
-      // Режим редактирования существующего поста
-      // this.isEditMode = true;
       this.loadPost(postId);
     } else {
-      // Режим создания нового поста
       this.isEditMode = false;
     }
   }
@@ -72,23 +70,32 @@ export class PostEditorComponent implements OnInit {
     const postData = this.postForm.value;
 
     if (this.isEditMode && this.article) {
-      this.articleService.updateArticle(this.article.id, postData).subscribe({
-        next: () => {
+      this.articleService.updateArticle(this.article.id, postData).pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+      ).subscribe({
+        next: (response) => {
+          this.article = {...this.article, ...response}
           this.router.navigate(['/posts', this.article?.id]);
+          this.isEditMode = false;
         },
         error: (err) => {
-          this.error = 'Ошибка при обновлении';
-          this.isLoading = false;
-        }
+          this.error = err?.error.message ?? 'Ошибка при обновлении';
+        },
       });
     } else {
-      this.articleService.createArticle(postData).subscribe({
+      this.articleService.createArticle(postData).pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+      ).subscribe({
         next: (newPost) => {
           this.router.navigate(['/posts', newPost.id]);
+          this.isEditMode = false;
         },
         error: (err) => {
-          this.error = 'Ошибка при создании';
-          this.isLoading = false;
+          this.error = err?.error.message ?? 'Ошибка при создании';
         }
       });
     }
@@ -104,7 +111,7 @@ export class PostEditorComponent implements OnInit {
           this.router.navigate(['/posts']);
         },
         error: (err) => {
-          this.error =  err.error.message ??'Ошибка при удалении поста';
+          this.error =  err?.error.message ?? 'Ошибка при удалении поста';
           this.isLoading = false;
         }
       });

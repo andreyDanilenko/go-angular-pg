@@ -146,9 +146,11 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 
 	article, err := h.service.UpdateArticle(r.Context(), articleID, userID, input)
 	if err != nil {
-		log.Printf("Failed to update article: %v", err)
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to update article")
-
+		statusCode := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "forbidden:") {
+			statusCode = http.StatusForbidden
+		}
+		h.errorWriter.WriteError(w, statusCode, err.Error())
 		return
 	}
 
@@ -163,19 +165,12 @@ func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	id := chi.URLParam(r, "id")
 
-	article, err := h.service.GetArticle(r.Context(), id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if article.AuthorID != userID {
-		h.errorWriter.WriteError(w, http.StatusForbidden, "Вы можете удалять только свои посты")
-		return
-	}
-
-	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := h.service.DeleteArticle(r.Context(), id, userID); err != nil {
+		statusCode := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "forbidden:") {
+			statusCode = http.StatusForbidden
+		}
+		h.errorWriter.WriteError(w, statusCode, err.Error())
 		return
 	}
 

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"fmt"
@@ -40,23 +41,51 @@ func (s *ArticleService) GetArticlesByAuthor(ctx context.Context, authorID strin
 	return s.repo.GetArticlesByAuthor(ctx, authorID)
 }
 
-func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.Article, error) {
+func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.ArticleWithAuthor, error) {
 	return s.repo.GetAllArticles(ctx)
 }
 
 func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, userID string, input model.ArticleInput) (*model.Article, error) {
 	article, err := s.repo.GetArticleByID(ctx, articleID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repository update error: %w", err)
+	}
+
+	if article == nil {
+		return nil, fmt.Errorf("not found: article %s not found", articleID)
 	}
 
 	if article.AuthorID != userID {
-		return nil, fmt.Errorf("article not found")
+		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
+		if !ok || role != model.RoleAdmin {
+			return nil, fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
+		}
 	}
 
-	return s.repo.UpdateArticle(ctx, articleID, input)
+	updatedArticle, err := s.repo.UpdateArticle(ctx, articleID, input)
+	if err != nil {
+		return nil, fmt.Errorf("repository update error: %w", err)
+	}
+
+	return updatedArticle, nil
 }
 
-func (s *ArticleService) DeleteArticle(ctx context.Context, id string) error {
-	return s.repo.DeleteArticle(ctx, id)
+func (s *ArticleService) DeleteArticle(ctx context.Context, articleID, userID string) error {
+	article, err := s.repo.GetArticleByID(ctx, articleID)
+	if err != nil {
+		return fmt.Errorf("repository update error: %w", err)
+	}
+
+	if article == nil {
+		return fmt.Errorf("not found: article %s not found", articleID)
+	}
+
+	if article.AuthorID != userID {
+		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
+		if !ok || role != model.RoleAdmin {
+			return fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
+		}
+	}
+
+	return s.repo.DeleteArticle(ctx, articleID)
 }

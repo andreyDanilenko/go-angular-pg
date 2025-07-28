@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ArticleService } from '../../core/services/article.service';
 import { Article } from '../../core/types/article.model';
 import { TruncatePipe } from '../../core/services/truncate.pipe';
-import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 
 @Component({
   selector: 'app-posts-page',
@@ -16,19 +15,6 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
   ],
   templateUrl: './posts-page.html',
   styleUrls: ['./posts-page.scss'],
-
-  animations: [
-    trigger('listAnimation', [
-      transition('* => *', [
-        query(':enter', [
-          style({ opacity: 0, transform: 'translateY(20px)' }),
-          stagger(100, [
-            animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-          ])
-        ], { optional: true })
-      ])
-    ])
-  ]
 })
 export class PostsPageComponent implements OnInit {
   articles: Article[] = [];

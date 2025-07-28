@@ -113,10 +113,35 @@ func main() {
 			r.Get("/users/{id}", authHandler.GetUserByID)
 			r.Put("/users/{id}", authHandler.UpdateUser)
 
-			r.Get("/articles", articleHandler.GetUserArticles)
-			r.Post("/articles", articleHandler.CreateArticle)
-			r.Put("/articles/{id}", articleHandler.UpdateArticle)
-			r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+			r.Group(func(r chi.Router) {
+				r.Get("/articles", articleHandler.GetUserArticles)
+
+				r.Group(func(r chi.Router) {
+					r.Use(middleware.RequireAnyPermission([]model.Permission{
+						model.PermissionCreateArticle,
+					}, errorWriter))
+
+					r.Post("/articles", articleHandler.CreateArticle)
+				})
+
+				r.Group(func(r chi.Router) {
+					r.Use(middleware.RequireAnyPermission([]model.Permission{
+						model.PermissionEditOwnArticle,
+						model.PermissionEditAllArticles,
+					}, errorWriter))
+
+					r.Put("/articles/{id}", articleHandler.UpdateArticle)
+				})
+
+				r.Group(func(r chi.Router) {
+					r.Use(middleware.RequireAnyPermission([]model.Permission{
+						model.PermissionDeleteAllArticles,
+						model.PermissionDeleteOwnArticle,
+					}, errorWriter))
+
+					r.Delete("/articles/{id}", articleHandler.DeleteArticle)
+				})
+			})
 
 			// WebSocket для чата
 			r.Get("/chat/messages", chatHandler.GetMessages)

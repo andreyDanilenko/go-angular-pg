@@ -29,6 +29,12 @@ type User struct {
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 }
 
+type ArticleWithAuthor struct {
+	Article
+	AuthorID   string `json:"authorId"`
+	AuthorName string `json:"authorName"`
+}
+
 type UpdateUserInput struct {
 	Username   string `gorm:"size:50" json:"username" validate:"omitempty,min=3,max=50"`
 	FirstName  string `gorm:"size:50" json:"firstName,omitempty" validate:"omitempty,min=2,max=50"` // Необязательное

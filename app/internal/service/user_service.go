@@ -119,6 +119,31 @@ func (s *UserService) GetUsers(ctx context.Context) ([]model.UserShort, error) {
 	return shortUsers, nil
 }
 
+func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, error) {
+	user, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	// Тут надо будет минимизтировать информацию так как это будет для всех
+	fullUser := &model.User{
+		ID:         user.ID,
+		Username:   user.Username,
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		MiddleName: user.MiddleName,
+		Role:       user.Role,
+		Email:      user.Email,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+	}
+
+	return fullUser, nil
+}
+
 // Получение полного пользователя по ID
 func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
 	user, err := s.repo.GetByID(ctx, id)
@@ -129,6 +154,7 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, 
 		return nil, errors.New("user not found")
 	}
 
+	// Тут надо будет минимизтировать информацию так как это будет для всех
 	fullUser := &model.User{
 		ID:         user.ID,
 		Username:   user.Username,
@@ -136,7 +162,6 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, 
 		LastName:   user.LastName,
 		MiddleName: user.MiddleName,
 		Role:       user.Role,
-		Email:      user.Email,
 		CreatedAt:  user.CreatedAt,
 		UpdatedAt:  user.UpdatedAt,
 	}
