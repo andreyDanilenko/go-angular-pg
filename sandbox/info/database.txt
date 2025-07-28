@@ -90,4 +90,8 @@ DELETE FROM users WHERE email = 'invalid_email';
 ROLLBACK; 
 
 смена значений
+ docker ps
+ docker exec -it a3bd1c46c3fe    bash 
+ psql -U postgres -d auth_service;
+ И делай что хочешь
 UPDATE users SET role = 'admin' WHERE id = 'ваш_user_id';
