@@ -3,30 +3,53 @@ package model
 type Permission string
 
 const (
-	PermissionViewArticles   Permission = "view_articles"
-	PermissionCreateArticles Permission = "create_articles"
+	PermissionViewAllUsers   Permission = "view_all_users"
+	PermissionViewOwnProfile Permission = "view_own_profile"
 	PermissionEditOwnProfile Permission = "edit_own_profile"
-	PermissionEditAnyProfile Permission = "edit_any_profile"
-	PermissionSendMessages   Permission = "send_messages"
-	// Добавьте другие необходимые разрешения
+
+	PermissionViewAllArticles   Permission = "view_all_articles"
+	PermissionViewOwnArticles   Permission = "view_own_articles"
+	PermissionCreateArticle     Permission = "create_article"
+	PermissionEditOwnArticle    Permission = "edit_own_article"
+	PermissionEditAllArticles   Permission = "edit_all_articles"
+	PermissionDeleteOwnArticle  Permission = "delete_own_article"
+	PermissionDeleteAllArticles Permission = "delete_all_articles"
+
+	PermissionUseChat           Permission = "use_chat"
+	PermissionViewAllChats      Permission = "view_all_chats"
+	PermissionCreatePrivateChat Permission = "create_private_chat"
+	PermissionViewChatHistory   Permission = "view_chat_history"
 )
 
-// RolePermissions определяет какие разрешения есть у каждой роли
 var RolePermissions = map[UserRole][]Permission{
 	RoleAdmin: {
-		PermissionViewArticles,
-		PermissionCreateArticles,
+		PermissionViewAllUsers,
+		PermissionViewOwnProfile,
 		PermissionEditOwnProfile,
-		PermissionEditAnyProfile,
-		PermissionSendMessages,
-		// Все разрешения для админа
+		PermissionViewAllArticles,
+		PermissionCreateArticle,
+		PermissionEditAllArticles,
+		PermissionDeleteAllArticles,
+		PermissionUseChat,
+		PermissionViewAllChats,
+		PermissionCreatePrivateChat,
+		PermissionViewChatHistory,
 	},
 	RoleUser: {
-		PermissionViewArticles,
+		PermissionViewOwnProfile,
 		PermissionEditOwnProfile,
-		PermissionSendMessages,
+		PermissionViewAllArticles,
+		PermissionViewOwnArticles,
+		PermissionCreateArticle,
+		PermissionEditOwnArticle,
+		PermissionDeleteOwnArticle,
+		PermissionUseChat,
 	},
 	RoleGuest: {
-		PermissionViewArticles,
+		PermissionViewAllArticles,
 	},
+}
+
+func GetPermissionsForRole(role UserRole) []Permission {
+	return RolePermissions[role]
 }
