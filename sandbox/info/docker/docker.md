@@ -63,12 +63,6 @@ docker exec -it container_name psql -U POSTGRES_USER
   ```
 
 ### Работа с транзакциями
-```sql
-BEGIN;
--- Ваши SQL-команды
-COMMIT; -- или ROLLBACK для отмены
-```
-
 Пример:
 ```sql
 BEGIN;
