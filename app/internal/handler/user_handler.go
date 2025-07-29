@@ -2,34 +2,40 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
 	"admin/panel/internal/service"
+	"admin/panel/internal/telegram"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
 
 type UserHandler struct {
-	authService  *service.UserService
-	validate     *validator.Validate
-	errorWriter  contract.ErrorWriter
-	responseJSON contract.ResponseWriter
+	authService    *service.UserService
+	validate       *validator.Validate
+	errorWriter    contract.ErrorWriter
+	responseJSON   contract.ResponseWriter
+	telegramNotify *telegram.TelegramService
 }
 
 func NewUserHandler(
 	authService *service.UserService,
 	ew contract.ErrorWriter,
 	rw contract.ResponseWriter,
+	telegramNotify *telegram.TelegramService,
+
 ) *UserHandler {
 	return &UserHandler{
-		authService:  authService,
-		validate:     validator.New(),
-		errorWriter:  ew,
-		responseJSON: rw,
+		authService:    authService,
+		validate:       validator.New(),
+		errorWriter:    ew,
+		responseJSON:   rw,
+		telegramNotify: telegramNotify,
 	}
 }
 
@@ -38,6 +44,13 @@ func (h *UserHandler) StartAuthFlow(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "bad_request", "Неверный формат", nil)
 		return
+	}
+
+	if h.telegramNotify != nil {
+		h.telegramNotify.SendMessage(fmt.Sprintf(
+			"🔔 Новый запрос на регистрацию\nEmail: %s\n",
+			input.Email,
+		))
 	}
 
 	if err := h.validate.Struct(input); err != nil {
@@ -79,6 +92,16 @@ func (h *UserHandler) ConfirmCode(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 		"user":  user,
 	})
+
+	if h.telegramNotify != nil {
+		h.telegramNotify.SendMessage(fmt.Sprintf(
+			"🔔 Новый запрос на аутентификацию\n"+
+				"📧 nEmail: %s\n"+
+				"🖥️ nID: %s\n"+
+				user.Email,
+			user.ID,
+		))
+	}
 }
 
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
