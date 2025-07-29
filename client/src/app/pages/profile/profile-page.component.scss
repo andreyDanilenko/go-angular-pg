@@ -1,7 +1,8 @@
 :host {
   height: calc(100vh - 88px);
   overflow: auto;
-  max-width: 80rem;
+  margin: 0 auto;
+  max-width: 1200px;
   padding: 2rem;
 }
 .Title {
@@ -11,8 +12,6 @@
     margin-bottom: 32px;
 }
 .UserProfile {
-  max-width: 600px;
-  margin: 0 auto;
   padding: 2rem;
   background: #fff;
   border-radius: 8px;
