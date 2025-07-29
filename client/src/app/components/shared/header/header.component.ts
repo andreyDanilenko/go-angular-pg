@@ -1,40 +1,36 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { UserStore } from '../../../stores/user-store/user.store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { User } from '../../../core/types/user.model';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, AsyncPipe, NgIf],
+  imports: [RouterLink, CommonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
-  currentUser$: Observable<User | null>;
-  displayName$: Observable<string>;
+export class HeaderComponent implements OnInit {
+  currentUser: User | null = null;
 
-  constructor(private userStore: UserStore) {
-    this.currentUser$ = this.userStore.state$.pipe(
-      map(state => state.currentUser)
-    );
+  constructor(private userStore: UserStore) {}
 
-    this.displayName$ = this.currentUser$.pipe(
-      map(user => this.getDisplayName(user))
-    );
+  ngOnInit(): void {
+    this.userStore.state$.subscribe(state => {
+      this.currentUser = state.currentUser;
+    });
   }
 
-  private getDisplayName(user: User | null): string {
-    if (!user) return '';
+  get displayName(): string {
+    if (!this.currentUser) return '';
+      const role = this.currentUser.role.toUpperCase()
 
-    if (user.username) return `${user.username} ${user.role.toUpperCase()}`;
-    if (user.firstName && user.lastName) {
-      return `${user.lastName} ${user.firstName.charAt(0)}. ${user.role}`;
+    if (this.currentUser.username) return `${this.currentUser.username} ${role}`;
+    if (this.currentUser.firstName && this.currentUser.lastName) {
+      return `${this.currentUser.lastName} ${this.currentUser.firstName.charAt(0)}. ${role}`;
     }
 
-    return `${user.email} ${user.role.toUpperCase()}`;
+    return `${this.currentUser.email} ${role}`;
   }
 }
