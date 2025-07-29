@@ -1,4 +1,4 @@
-<h1 class="UserProfile__Title">Профиль</h1>
+<h1 class="Title">Профиль</h1>
 
 <div class="UserProfile" *ngIf="currentUser; else loading">
   <div *ngIf="!isEditMode" class="UserProfile__ViewMode">
@@ -87,6 +87,10 @@
       <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
     </div>
   </form>
+</div>
+
+<div class="">
+    <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
 </div>
 
 <ng-template #loading>

@@ -1,10 +1,15 @@
 :host {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 88px);
   overflow: auto;
   max-width: 80rem;
   padding: 2rem;
 }
-
+.Title {
+    font-size: 2rem;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 32px;
+}
 .UserProfile {
   max-width: 600px;
   margin: 0 auto;
@@ -18,13 +23,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-  }
-
-  &__Title {
-    font-size: 2rem;
-    color: #333;
-    font-weight: 600;
-    margin-bottom: 32px;
   }
 
   &__EditButton {

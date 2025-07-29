@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { UserService } from '../../core/services/user.service';
 import { User } from '../../core/types/user.model';
 import { UserStore } from '../../stores/user-store/user.store';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -13,6 +15,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   isEditMode = false;
   currentUser: User | null = null;
   editedUser: {
@@ -87,4 +92,10 @@ export class ProfilePageComponent implements OnInit {
       });
     }
   }
+
+  logout(): void {
+      this.authService.logout();
+      this.router.navigate(['/auth/login']);
+  }
+
 }

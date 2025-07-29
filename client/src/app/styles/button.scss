@@ -141,3 +141,18 @@ button .icon img {
   height: 1em;
   display: block;
 }
+
+button.btn-danger {
+  background: #d32f2f;
+  color: white;
+  border: none;
+}
+
+button.btn-danger:not(:disabled):hover {
+  background-color: #b71c1c;
+}
+
+button.btn-danger:disabled {
+  background: #ef9a9a;
+  cursor: not-allowed;
+}
