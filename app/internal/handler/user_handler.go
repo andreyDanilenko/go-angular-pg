@@ -93,15 +93,13 @@ func (h *UserHandler) ConfirmCode(w http.ResponseWriter, r *http.Request) {
 		"user":  user,
 	})
 
-	if h.telegramNotify != nil {
-		h.telegramNotify.SendMessage(fmt.Sprintf(
-			"🔔 Новый запрос на аутентификацию\n"+
-				"📧 nEmail: %s\n"+
-				"🖥️ nID: %s\n"+
-				user.Email,
-			user.ID,
-		))
-	}
+	h.telegramNotify.SendMessage(fmt.Sprintf(
+		"✅ Успешная аутентификация\n"+
+			"📧 Email: %s\n"+
+			"🆔 ID: %s\n"+
+			user.Email,
+		user.ID,
+	))
 }
 
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
