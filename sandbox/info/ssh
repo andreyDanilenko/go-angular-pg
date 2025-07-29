@@ -15,3 +15,13 @@ ssh -T git@github.com
 
 Меняем URL репозитория на SSH
 git remote set-url origin git@github.com:andreyDanilenko/admin-panel-golang.git
+
+
+// пример bash скрипта
+while true; do
+  next_archive=$(ls archive-*.tar.gz 2>/dev/null | head -n 1)
+  [ -z "$next_archive" ] && break  # Выход, когда архивов не осталось
+  
+  echo "Распаковываем $next_archive..."
+  tar -xzvf "$next_archive" && rm -f "$next_archive"
+done
