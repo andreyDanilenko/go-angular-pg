@@ -34,8 +34,6 @@ export class ProfilePageComponent implements OnInit {
       // Сбрасываем editedUser при каждом изменении currentUser
       this.resetEditedUser();
     });
-
-    this.userService.getUserMe().subscribe();
   }
 
   toggleEditMode(): void {
@@ -76,7 +74,7 @@ export class ProfilePageComponent implements OnInit {
         ...this.editedUser
       };
 
-      this.userService.updateUser(updatedUser).subscribe({
+      this.userService.updateUserMe(updatedUser).subscribe({
         next: (response) => {
           this.currentUser = response;
           this.isEditMode = false;

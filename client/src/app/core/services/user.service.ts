@@ -33,8 +33,6 @@ export class UserService {
     return this.api.get<User>('users/me').pipe(
       tap({
         next: (user) => {
-          console.log(user);
-
           this.store.setCurrentUser(user);
           this.store.setLoading(false);
         },
@@ -46,44 +44,44 @@ export class UserService {
     );
   }
 
-  getUser(id: number): Observable<User> {
-    this.store.setLoading(true);
-    return this.api.get<User>(`users/${id}`).pipe(
-      tap({
-        next: (user) => {
-          this.store.setCurrentUser(user);
-          this.store.setLoading(false);
-        },
-        error: (err) => {
-          this.store.setError('Failed to load user');
-          this.store.setLoading(false);
-        }
-      })
-    );
-  }
+  // getUser(id: number): Observable<User> {
+  //   this.store.setLoading(true);
+  //   return this.api.get<User>(`users/${id}`).pipe(
+  //     tap({
+  //       next: (user) => {
+  //         this.store.setCurrentUser(user);
+  //         this.store.setLoading(false);
+  //       },
+  //       error: (err) => {
+  //         this.store.setError('Failed to load user');
+  //         this.store.setLoading(false);
+  //       }
+  //     })
+  //   );
+  // }
 
-  createUser(userData: Omit<User, 'id'>): Observable<User> {
-    this.store.setLoading(true);
-    return this.api.post<User>('users', userData).pipe(
-      tap({
-        next: (user) => {
-          this.store.addUser(user);
-          this.store.setLoading(false);
-        },
-        error: (err) => {
-          this.store.setError('Ошибка создания');
-          this.store.setLoading(false);
-        }
-      })
-    );
-  }
+  // createUser(userData: Omit<User, 'id'>): Observable<User> {
+  //   this.store.setLoading(true);
+  //   return this.api.post<User>('users', userData).pipe(
+  //     tap({
+  //       next: (user) => {
+  //         this.store.addUser(user);
+  //         this.store.setLoading(false);
+  //       },
+  //       error: (err) => {
+  //         this.store.setError('Ошибка создания');
+  //         this.store.setLoading(false);
+  //       }
+  //     })
+  //   );
+  // }
 
-  updateUser(user: User): Observable<User> {
+  updateUserMe(user: User): Observable<User> {
     this.store.setLoading(true);
     return this.api.put<User>(`users/${user.id}`, user).pipe(
       tap({
         next: (updatedUser) => {
-          this.store.updateUser(updatedUser);
+          this.store.setCurrentUser(updatedUser);
           this.store.setLoading(false);
         },
         error: (err) => {
@@ -94,19 +92,19 @@ export class UserService {
     );
   }
 
-  deleteUser(id: string): Observable<void> {
-    this.store.setLoading(true);
-    return this.api.delete<void>(`users/${id}`).pipe(
-      tap({
-        next: () => {
-          this.store.deleteUser(id);
-          this.store.setLoading(false);
-        },
-        error: (err) => {
-          this.store.setError('Ошиюка удаления');
-          this.store.setLoading(false);
-        }
-      })
-    );
-  }
+  // deleteUser(id: string): Observable<void> {
+  //   this.store.setLoading(true);
+  //   return this.api.delete<void>(`users/${id}`).pipe(
+  //     tap({
+  //       next: () => {
+  //         this.store.deleteUser(id);
+  //         this.store.setLoading(false);
+  //       },
+  //       error: (err) => {
+  //         this.store.setError('Ошиюка удаления');
+  //         this.store.setLoading(false);
+  //       }
+  //     })
+  //   );
+  // }
 }
