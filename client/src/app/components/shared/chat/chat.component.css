@@ -1,5 +1,5 @@
 .chat-container {
-  height: calc(100vh - 64px); /* Сохраняем ваш отступ для header */
+  height: calc(100vh - 88px); /* Сохраняем ваш отступ для header */
   display: flex;
   flex-direction: column;
   overflow: hidden;

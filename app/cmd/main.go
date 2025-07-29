@@ -9,11 +9,14 @@ import (
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
+	"admin/panel/internal/telegram"
 	"admin/panel/internal/utils"
 	"admin/panel/internal/ws"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -23,6 +26,18 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
+
+	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
+	if botToken == "" {
+		log.Fatal("TELEGRAM_BOT_TOKEN не установлен в .env файле")
+	}
+
+	chatIDStr := os.Getenv("TELEGRAM_CHAT_ID")
+	chatID, err := strconv.ParseInt(chatIDStr, 10, 64)
+	if err != nil {
+		log.Fatalf("Неверный TELEGRAM_CHAT_ID: %v", err)
+	}
+	telegramService, err := telegram.NewTelegramService(botToken, chatID)
 
 	// Инициализация GORM
 	gormDB, err := gorm.Open(postgres.Open(fmt.Sprintf(
@@ -64,7 +79,7 @@ func main() {
 	articleRepo := repository.NewArticleRepository(gormDB)
 	authService := service.NewUserService(userRepo, emailService, tokenManager)
 	articleService := service.NewArticleService(articleRepo)
-	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter)
+	authHandler := handler.NewUserHandler(authService, errorWriter, responseWriter, telegramService)
 	articleHandler := handler.NewArticleHandler(articleService, errorWriter, responseWriter)
 	dumpHandler := handler.NewDumpHandler(gormDB)
 
@@ -110,6 +125,7 @@ func main() {
 			r.Use(middleware.JWTAuth(tokenManager, errorWriter))
 
 			r.Get("/users", authHandler.GetUsers)
+			r.Get("/users/me", authHandler.GetUserMe)
 			r.Get("/users/{id}", authHandler.GetUserByID)
 			r.Put("/users/{id}", authHandler.UpdateUser)
 

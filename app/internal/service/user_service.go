@@ -128,7 +128,6 @@ func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, er
 		return nil, errors.New("user not found")
 	}
 
-	// Тут надо будет минимизтировать информацию так как это будет для всех
 	fullUser := &model.User{
 		ID:         user.ID,
 		Username:   user.Username,
@@ -177,7 +176,6 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 		return nil, errors.New("нельзя редактировать другого пользователя")
 	}
 
-	// Если админ, разрешаем менять роль
 	if role == model.RoleAdmin {
 		if input.Role != "" {
 			if !model.UserRole(input.Role).IsValid() {
@@ -185,8 +183,7 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 			}
 		}
 	} else {
-		// Обычный пользователь не может менять роль
-		input.Role = "" // или игнорируем роль из input
+		input.Role = ""
 	}
 
 	return s.repo.UpdateUser(ctx, userID, input)

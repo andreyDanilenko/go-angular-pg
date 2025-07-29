@@ -9,6 +9,7 @@ import { ChatsPageComponent } from './pages/chats/chats-page.component';
 import { ChatPageComponent } from './pages/chat/chat-page.component';
 import { PostsPageComponent } from './pages/posts-page/posts-page';
 import { PostEditorComponent } from './pages/post-page/post-page';
+import { ProfilePageComponent } from './pages/profile/profile-page.component';
 
 export const routes: Routes = [
   {
@@ -37,7 +38,7 @@ export const routes: Routes = [
       { path: ':id', component: ChatPageComponent },
     ]
   },
-    {
+  {
     path: 'posts',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
@@ -46,6 +47,17 @@ export const routes: Routes = [
       { path: 'create', component: PostEditorComponent },
       { path: ':id', component: PostEditorComponent },
       { path: ':id/edit', component: PostEditorComponent }
+    ]
+  },
+    {
+    path: 'profile',
+    component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: ProfilePageComponent },
+      // { path: 'create', component: PostEditorComponent },
+      // { path: ':id', component: PostEditorComponent },
+      // { path: ':id/edit', component: PostEditorComponent }
     ]
   },
   { path: '**', redirectTo: '' }

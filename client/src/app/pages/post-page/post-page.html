@@ -22,10 +22,10 @@
       </div>
 
       <div class="PostEditor__ViewActions">
-        <button (click)="toggleEditMode()" class="PostEditor__EditButton">
+        <button (click)="toggleEditMode()"  class="btn-primary btn-size-compact" >
           Редактировать
         </button>
-        <button (click)="deleteArticle()" class="PostEditor__DeleteButton">
+        <button (click)="deleteArticle()" class="btn-danger btn-size-compact" >
           Удалить
         </button>
       </div>
@@ -59,30 +59,26 @@
         </div>
       </div>
 
-      <div class="PostEditor__FormGroup">
-        <label for="category">Категория</label>
-        <input
-          id="category"
-          type="text"
-          formControlName="category"
-          placeholder="Категория"
-        />
-      </div>
+     <div class="PostEditor__FormGroup">
+      <label for="category">Категория</label>
+      <select
+        id="category"
+        formControlName="category"
+        class="PostEditor__Select"
+      >
+        <option value="" disabled selected>Выберите категорию</option>
+        <option *ngFor="let category of categoryOptions" [value]="category.value">
+          {{ category.label }}
+        </option>
+      </select>
+    </div>
 
-           <div class="PostEditor__Actions">
-        <button type="submit" [disabled]="postForm.invalid" class="PostEditor__SubmitButton">
+      <div class="PostEditor__Actions">
+        <button type="submit" [disabled]="postForm.invalid" class="btn-primary btn-size-compact" >
           {{ isEditMode ? 'Сохранить' : 'Опубликовать' }}
         </button>
-        <button type="button" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])"
-                class="PostEditor__CancelButton">
-          Отмена
-        </button>
-
-        <!-- Кнопка удаления в режиме редактирования -->
-        <button *ngIf="isEditMode && article" type="button" (click)="deleteArticle()"
-                class="PostEditor__DeleteButton">
-          Удалить
-        </button>
+        <button class="btn-tertiary btn-size-compact" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])">Отмена</button>
+        <button *ngIf="isEditMode && article"  class="btn-danger btn-size-compact" (click)="deleteArticle()">Удалить</button>
       </div>
     </form>
   </div>

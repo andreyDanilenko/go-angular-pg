@@ -1,11 +1,7 @@
 <div class="PostsPage">
   <div class="PostsPage__Header">
     <h1 class="PostsPage__Title">Статьи</h1>
-    <button
-      [routerLink]="['/posts/create']"
-      class="PostsPage__CreateButton">
-      + Новая статья
-    </button>
+    <button [routerLink]="['/posts/create']" class="btn-primary btn-size-compact">Добавить статью</button>
   </div>
 
   <div *ngIf="isLoading" class="PostsPage__Loading">
@@ -15,7 +11,7 @@
 
   <div *ngIf="error" class="PostsPage__Error">
     {{ error }}
-    <button (click)="loadArticles()" class="PostsPage__RetryButton">Попробовать снова</button>
+    <button class="btn-primary btn-size-compact" (click)="loadArticles()">Попробовать снова</button>
   </div>
 
   <div *ngIf="!isLoading && !error" class="PostsPage__Content">
