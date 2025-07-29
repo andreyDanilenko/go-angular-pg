@@ -1,6 +1,5 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UserService } from './core/services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +11,4 @@ import { UserService } from './core/services/user.service';
 export class App {
   protected readonly title = signal('client');
 
-  constructor(private userService: UserService) {}
-
-  ngOnInit() {
-    this.userService.getUserMe().subscribe();
-  }
 }
