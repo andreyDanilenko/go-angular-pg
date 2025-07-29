@@ -110,6 +110,7 @@ func main() {
 			r.Use(middleware.JWTAuth(tokenManager, errorWriter))
 
 			r.Get("/users", authHandler.GetUsers)
+			r.Get("/users/me", authHandler.GetUserMe)
 			r.Get("/users/{id}", authHandler.GetUserByID)
 			r.Put("/users/{id}", authHandler.UpdateUser)
 
