@@ -28,14 +28,8 @@
     </div>
 
 
-    <div class="UserProfile__FormActions">
-      <button
-        *ngIf="!isEditMode"
-        (click)="toggleEditMode()"
-        class="UserProfile__EditButton"
-      >
-        Редактировать
-      </button>
+    <div *ngIf="!isEditMode" class="UserProfile__FormActions">
+        <button class="btn-success btn-size-compact" (click)="toggleEditMode()">Редактировать</button>
     </div>
   </div>
 
@@ -89,20 +83,8 @@
     </div>
 
     <div class="UserProfile__FormActions">
-      <button
-        type="button"
-        (click)="toggleEditMode()"
-        class="UserProfile__Button UserProfile__Button--cancel"
-      >
-        Отмена
-      </button>
-      <button
-        type="submit"
-        [disabled]="!isFormValid()"
-        class="UserProfile__Button UserProfile__Button--submit"
-      >
-        Сохранить
-      </button>
+      <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
+      <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
     </div>
   </form>
 </div>

@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Импортируем необходимые модули
+  imports: [CommonModule, FormsModule],
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.scss']
 })
@@ -31,15 +31,8 @@ export class ProfilePageComponent implements OnInit {
   ngOnInit(): void {
     this.userStore.state$.subscribe(state => {
       this.currentUser = state.currentUser;
-      if (this.currentUser) {
-        this.editedUser = {
-          username: this.currentUser.username,
-          firstName: this.currentUser.firstName,
-          lastName: this.currentUser.lastName,
-          middleName: this.currentUser.middleName,
-          email: this.currentUser.email
-        };
-      }
+      // Сбрасываем editedUser при каждом изменении currentUser
+      this.resetEditedUser();
     });
 
     this.userService.getUserMe().subscribe();
@@ -47,7 +40,8 @@ export class ProfilePageComponent implements OnInit {
 
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
-    if (this.currentUser && !this.isEditMode) {
+    // При включении режима редактирования обновляем editedUser
+    if (this.isEditMode) {
       this.resetEditedUser();
     }
   }
@@ -61,6 +55,8 @@ export class ProfilePageComponent implements OnInit {
         middleName: this.currentUser.middleName,
         email: this.currentUser.email
       };
+    } else {
+      this.editedUser = {};
     }
   }
 
@@ -74,16 +70,18 @@ export class ProfilePageComponent implements OnInit {
   }
 
   saveChanges(): void {
-    if (this.currentUser) {
-      const updatedUser: User = {
+    if (this.currentUser && this.isFormValid()) {
+      const updatedUser = {
         ...this.currentUser,
         ...this.editedUser
       };
 
       this.userService.updateUser(updatedUser).subscribe({
         next: (response) => {
-          this.currentUser = response
+          this.currentUser = response;
           this.isEditMode = false;
+          // После успешного сохранения сбрасываем editedUser
+          this.resetEditedUser();
         },
         error: (err) => {
           console.error('Ошибка при обновлении:', err);
