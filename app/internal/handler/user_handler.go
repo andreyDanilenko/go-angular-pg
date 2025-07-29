@@ -96,8 +96,8 @@ func (h *UserHandler) ConfirmCode(w http.ResponseWriter, r *http.Request) {
 	h.telegramNotify.SendMessage(fmt.Sprintf(
 		"✅ Успешная аутентификация\n"+
 			"📧 Email: %s\n"+
-			"🆔 ID: %s\n"+
-			user.Email,
+			"🆔 ID: %s",
+		user.Email,
 		user.ID,
 	))
 }
