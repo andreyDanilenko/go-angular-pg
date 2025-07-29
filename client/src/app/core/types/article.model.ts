@@ -11,10 +11,11 @@ export interface Article {
   authorName: string;
 }
 
-export type ArticleCategory =
-  | 'general'
-  | 'tech'
-  | 'science'
-  | 'politics'
-  | 'health'
-  | string;
+export enum ArticleCategory {
+  General = 'general',
+  Tech = 'tech',
+  Science = 'science',
+  Politics = 'politics',
+  Health = 'health'
+}
+

@@ -59,17 +59,21 @@
         </div>
       </div>
 
-      <div class="PostEditor__FormGroup">
-        <label for="category">Категория</label>
-        <input
-          id="category"
-          type="text"
-          formControlName="category"
-          placeholder="Категория"
-        />
-      </div>
+     <div class="PostEditor__FormGroup">
+      <label for="category">Категория</label>
+      <select
+        id="category"
+        formControlName="category"
+        class="PostEditor__Select"
+      >
+        <option value="" disabled selected>Выберите категорию</option>
+        <option *ngFor="let category of categoryOptions" [value]="category.value">
+          {{ category.label }}
+        </option>
+      </select>
+    </div>
 
-           <div class="PostEditor__Actions">
+      <div class="PostEditor__Actions">
         <button type="submit" [disabled]="postForm.invalid" class="PostEditor__SubmitButton">
           {{ isEditMode ? 'Сохранить' : 'Опубликовать' }}
         </button>

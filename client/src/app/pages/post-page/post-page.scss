@@ -96,6 +96,24 @@
       min-height: 200px;
       resize: vertical;
     }
+
+     select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: white;
+      appearance: none;
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+
+      &:focus {
+        outline: none;
+        border-color: #1976d2;
+      }
+    }
   }
 
   &__ErrorText {

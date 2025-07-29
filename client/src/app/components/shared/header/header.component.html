@@ -1,10 +1,10 @@
-<header class="site-header">
-  <nav class="main-nav">
-    <ul class="nav-list">
-      <li class="nav-item"><a routerLink="/profile">Профиль</a></li>
-      <li class="nav-item"><a routerLink="/posts">Статьи</a></li>
-      <li class="nav-item"><a routerLink="/messages">Сообщения</a></li>
-      <li class="nav-item user-info" *ngIf="currentUser">
+<header class="Header">
+  <nav class="Header__Nav">
+    <ul class="NavList">
+      <li class="NavList__Item"><a class="NavList__Link" routerLink="/profile">Профиль</a></li>
+      <li class="NavList__Item"><a class="NavList__Link" routerLink="/posts">Статьи</a></li>
+      <li class="NavList__Item"><a class="NavList__Link" routerLink="/messages">Сообщения</a></li>
+      <li class="NavList__Item NavList__User" *ngIf="currentUser">
         {{ displayName }}
       </li>
     </ul>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ArticleService } from '../../core/services/article.service';
-import { Article } from '../../core/types/article.model';
+import { Article, ArticleCategory } from '../../core/types/article.model';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 
@@ -46,6 +46,22 @@ export class PostEditorComponent implements OnInit {
     } else {
       this.isEditMode = false;
     }
+  }
+
+  categoryOptions = Object.keys(ArticleCategory).map(key => ({
+    value: ArticleCategory[key as keyof typeof ArticleCategory],
+    label: this.getCategoryLabel(ArticleCategory[key as keyof typeof ArticleCategory])
+  }));
+
+  private getCategoryLabel(category: ArticleCategory): string {
+    const labels = {
+      [ArticleCategory.General]: 'Общие',
+      [ArticleCategory.Tech]: 'Технологии',
+      [ArticleCategory.Science]: 'Наука',
+      [ArticleCategory.Politics]: 'Политика',
+      [ArticleCategory.Health]: 'Здоровье'
+    };
+    return labels[category];
   }
 
   loadPost(postId: string): void {
