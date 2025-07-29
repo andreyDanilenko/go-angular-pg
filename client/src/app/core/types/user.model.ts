@@ -7,5 +7,6 @@ export interface User {
   middleName?: string;
   createdAt: Date | string;
   updatedAt: Date | string;
+  role: 'guest' | 'admin' | 'user';
   email: string;
 }
