@@ -64,10 +64,10 @@ func (r *UserRepository) UpdateUser(ctx context.Context, id string, input model.
 		return nil, err
 	}
 
-	// Обновляем нужные поля
 	user.Username = input.Username
 	user.FirstName = input.FirstName
 	user.LastName = input.LastName
+	user.MiddleName = input.MiddleName
 
 	if err := r.db.WithContext(ctx).Save(&user).Error; err != nil {
 		return nil, err

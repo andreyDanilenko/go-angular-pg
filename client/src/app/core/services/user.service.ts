@@ -33,6 +33,8 @@ export class UserService {
     return this.api.get<User>('users/me').pipe(
       tap({
         next: (user) => {
+          console.log(user);
+
           this.store.setCurrentUser(user);
           this.store.setLoading(false);
         },

@@ -176,7 +176,6 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 		return nil, errors.New("нельзя редактировать другого пользователя")
 	}
 
-	// Если админ, разрешаем менять роль
 	if role == model.RoleAdmin {
 		if input.Role != "" {
 			if !model.UserRole(input.Role).IsValid() {
@@ -184,8 +183,7 @@ func (s *UserService) UpdateUser(ctx context.Context, userID string, input model
 			}
 		}
 	} else {
-		// Обычный пользователь не может менять роль
-		input.Role = "" // или игнорируем роль из input
+		input.Role = ""
 	}
 
 	return s.repo.UpdateUser(ctx, userID, input)
