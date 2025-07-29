@@ -1,4 +1,3 @@
-// user.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { BaseApiService } from './base-api.service';
@@ -23,6 +22,22 @@ export class UserService {
         },
         error: (err) => {
           this.store.setError('Failed to load users');
+          this.store.setLoading(false);
+        }
+      })
+    );
+  }
+
+  getUserMe(): Observable<User> {
+    this.store.setLoading(true);
+    return this.api.get<User>('users/me').pipe(
+      tap({
+        next: (user) => {
+          this.store.setCurrentUser(user);
+          this.store.setLoading(false);
+        },
+        error: (err) => {
+          this.store.setError('Failed to load user');
           this.store.setLoading(false);
         }
       })
@@ -54,7 +69,7 @@ export class UserService {
           this.store.setLoading(false);
         },
         error: (err) => {
-          this.store.setError('Failed to create user');
+          this.store.setError('Ошибка создания');
           this.store.setLoading(false);
         }
       })
@@ -70,14 +85,14 @@ export class UserService {
           this.store.setLoading(false);
         },
         error: (err) => {
-          this.store.setError('Failed to update user');
+          this.store.setError('Ошибка редактирования');
           this.store.setLoading(false);
         }
       })
     );
   }
 
-  deleteUser(id: number): Observable<void> {
+  deleteUser(id: string): Observable<void> {
     this.store.setLoading(true);
     return this.api.delete<void>(`users/${id}`).pipe(
       tap({
@@ -86,7 +101,7 @@ export class UserService {
           this.store.setLoading(false);
         },
         error: (err) => {
-          this.store.setError('Failed to delete user');
+          this.store.setError('Ошиюка удаления');
           this.store.setLoading(false);
         }
       })

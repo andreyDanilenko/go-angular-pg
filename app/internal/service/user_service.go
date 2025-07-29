@@ -128,7 +128,6 @@ func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, er
 		return nil, errors.New("user not found")
 	}
 
-	// Тут надо будет минимизтировать информацию так как это будет для всех
 	fullUser := &model.User{
 		ID:         user.ID,
 		Username:   user.Username,

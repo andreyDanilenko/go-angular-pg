@@ -93,7 +93,11 @@ func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 // Тут информация для самого пользователя
 func (h *UserHandler) GetUserMe(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(middleware.UserIDKey).(string)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
 
 	user, err := h.authService.GetUserMe(r.Context(), userID)
 	if err != nil {
