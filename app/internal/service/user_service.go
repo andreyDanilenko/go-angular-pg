@@ -77,7 +77,7 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*model.User, string, error) {
 	user, err := s.repo.GetByEmail(ctx, email)
 	if err != nil || user == nil {
-		return nil, "", errors.New("user not found")
+		return nil, "", errors.New("user not found from email")
 	}
 
 	storedCode, err := s.repo.GetEmailCode(ctx, user.ID, code)
@@ -125,7 +125,7 @@ func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, er
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found")
+		return nil, errors.New("user not found from me ID")
 	}
 
 	fullUser := &model.User{
@@ -150,7 +150,7 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, 
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found")
+		return nil, errors.New("user not found from by ID")
 	}
 
 	// Тут надо будет минимизтировать информацию так как это будет для всех

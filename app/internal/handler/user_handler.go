@@ -122,7 +122,7 @@ func (h *UserHandler) GetUserMe(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.authService.GetUserMe(r.Context(), userID)
 	if err != nil {
-		h.errorWriter.WriteError(w, http.StatusNotFound, "User not found")
+		h.errorWriter.WriteError(w, http.StatusNotFound, err.Error())
 		return
 	}
 
