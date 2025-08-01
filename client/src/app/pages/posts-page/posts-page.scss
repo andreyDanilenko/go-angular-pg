@@ -1,9 +1,10 @@
 :host {
-  height: calc(100vh - 88px);
-  overflow: auto;
+  display: block;
   max-width: 80rem;
   margin: 0 auto;
   padding: 2rem;
+  height: 100%;
+  overflow: auto;
 }
 
 .PostsPage {
@@ -88,6 +89,7 @@
 
   &__ArticleHeader {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
