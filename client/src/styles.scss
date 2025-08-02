@@ -58,6 +58,11 @@ router-outlet + * {
   height: 100%;
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 :root {
   --app-height: 83px;
   /* Размеры */

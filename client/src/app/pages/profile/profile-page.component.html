@@ -1,98 +1,101 @@
-<h1 class="Title">Профиль</h1>
 
-<div class="UserProfile" *ngIf="currentUser; else loading">
-  <div *ngIf="!isEditMode" class="UserProfile__ViewMode">
-    <div class="UserProfile__Field">
-      <span class="UserProfile__FieldLabel">Логин:</span>
-      <span class="UserProfile__FieldValue">{{ currentUser.username }}</span>
+<div class="container">
+  <h1 class="Title">Профиль</h1>
+
+  <div class="UserProfile" *ngIf="currentUser; else loading">
+    <div *ngIf="!isEditMode" class="UserProfile__ViewMode">
+      <div class="UserProfile__Field">
+        <span class="UserProfile__FieldLabel">Логин:</span>
+        <span class="UserProfile__FieldValue">{{ currentUser.username }}</span>
+      </div>
+
+      <div class="UserProfile__Field">
+        <span class="UserProfile__FieldLabel">Имя:</span>
+        <span class="UserProfile__FieldValue">{{ currentUser.firstName }}</span>
+      </div>
+
+      <div class="UserProfile__Field">
+        <span class="UserProfile__FieldLabel">Фамилия:</span>
+        <span class="UserProfile__FieldValue">{{ currentUser.lastName }}</span>
+      </div>
+
+      <div class="UserProfile__Field">
+        <span class="UserProfile__FieldLabel">Отчество:</span>
+        <span class="UserProfile__FieldValue">{{ currentUser.middleName || '—' }}</span>
+      </div>
+
+      <div class="UserProfile__Field">
+        <span class="UserProfile__FieldLabel">Email:</span>
+        <span class="UserProfile__FieldValue">{{ currentUser.email }}</span>
+      </div>
+
+
+      <div *ngIf="!isEditMode" class="UserProfile__FormActions">
+          <button class="btn-success btn-size-compact" (click)="toggleEditMode()">Редактировать</button>
+          <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
+      </div>
     </div>
 
-    <div class="UserProfile__Field">
-      <span class="UserProfile__FieldLabel">Имя:</span>
-      <span class="UserProfile__FieldValue">{{ currentUser.firstName }}</span>
-    </div>
+    <!-- Режим редактирования -->
+    <form *ngIf="isEditMode" class="UserProfile__Form" (ngSubmit)="saveChanges()">
+      <div class="UserProfile__FormGroup">
+        <label for="username" class="UserProfile__Label">Логин</label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="editedUser.username"
+          name="username"
+          class="UserProfile__Input"
+          required
+        >
+      </div>
 
-    <div class="UserProfile__Field">
-      <span class="UserProfile__FieldLabel">Фамилия:</span>
-      <span class="UserProfile__FieldValue">{{ currentUser.lastName }}</span>
-    </div>
+      <div class="UserProfile__FormGroup">
+        <label for="firstName" class="UserProfile__Label">Имя</label>
+        <input
+          id="firstName"
+          type="text"
+          [(ngModel)]="editedUser.firstName"
+          name="firstName"
+          class="UserProfile__Input"
+          required
+        >
+      </div>
 
-    <div class="UserProfile__Field">
-      <span class="UserProfile__FieldLabel">Отчество:</span>
-      <span class="UserProfile__FieldValue">{{ currentUser.middleName || '—' }}</span>
-    </div>
+      <div class="UserProfile__FormGroup">
+        <label for="lastName" class="UserProfile__Label">Фамилия</label>
+        <input
+          id="lastName"
+          type="text"
+          [(ngModel)]="editedUser.lastName"
+          name="lastName"
+          class="UserProfile__Input"
+          required
+        >
+      </div>
 
-    <div class="UserProfile__Field">
-      <span class="UserProfile__FieldLabel">Email:</span>
-      <span class="UserProfile__FieldValue">{{ currentUser.email }}</span>
-    </div>
+      <div class="UserProfile__FormGroup">
+        <label for="middleName" class="UserProfile__Label">Отчество</label>
+        <input
+          id="middleName"
+          type="text"
+          [(ngModel)]="editedUser.middleName"
+          name="middleName"
+          class="UserProfile__Input"
+        >
+      </div>
 
-
-    <div *ngIf="!isEditMode" class="UserProfile__FormActions">
-        <button class="btn-success btn-size-compact" (click)="toggleEditMode()">Редактировать</button>
-        <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
-    </div>
+      <div class="UserProfile__FormActions">
+        <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
+        <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
+      </div>
+    </form>
   </div>
 
-  <!-- Режим редактирования -->
-  <form *ngIf="isEditMode" class="UserProfile__Form" (ngSubmit)="saveChanges()">
-    <div class="UserProfile__FormGroup">
-      <label for="username" class="UserProfile__Label">Логин</label>
-      <input
-        id="username"
-        type="text"
-        [(ngModel)]="editedUser.username"
-        name="username"
-        class="UserProfile__Input"
-        required
-      >
+  <ng-template #loading>
+    <div class="UserProfile__Loading">
+      <div class="UserProfile__LoadingSpinner"></div>
+      <p class="UserProfile__LoadingText">Загрузка данных пользователя...</p>
     </div>
-
-    <div class="UserProfile__FormGroup">
-      <label for="firstName" class="UserProfile__Label">Имя</label>
-      <input
-        id="firstName"
-        type="text"
-        [(ngModel)]="editedUser.firstName"
-        name="firstName"
-        class="UserProfile__Input"
-        required
-      >
-    </div>
-
-    <div class="UserProfile__FormGroup">
-      <label for="lastName" class="UserProfile__Label">Фамилия</label>
-      <input
-        id="lastName"
-        type="text"
-        [(ngModel)]="editedUser.lastName"
-        name="lastName"
-        class="UserProfile__Input"
-        required
-      >
-    </div>
-
-    <div class="UserProfile__FormGroup">
-      <label for="middleName" class="UserProfile__Label">Отчество</label>
-      <input
-        id="middleName"
-        type="text"
-        [(ngModel)]="editedUser.middleName"
-        name="middleName"
-        class="UserProfile__Input"
-      >
-    </div>
-
-    <div class="UserProfile__FormActions">
-      <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
-      <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
-    </div>
-  </form>
+  </ng-template>
 </div>
-
-<ng-template #loading>
-  <div class="UserProfile__Loading">
-    <div class="UserProfile__LoadingSpinner"></div>
-    <p class="UserProfile__LoadingText">Загрузка данных пользователя...</p>
-  </div>
-</ng-template>

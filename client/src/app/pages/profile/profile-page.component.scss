@@ -1,10 +1,9 @@
 :host {
   height: calc(100vh - var(--app-height));
   overflow: auto;
-  margin: 0 auto;
-  max-width: 1200px;
   padding: 2rem;
 }
+
 .Title {
     font-size: 2rem;
     color: #333;
