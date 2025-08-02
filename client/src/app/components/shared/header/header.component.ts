@@ -3,11 +3,13 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserStore } from '../../../stores/user-store/user.store';
 import { User } from '../../../core/types/user.model';
+import { DrawerComponent } from '../drawer/drawer.component';
+import { DrawerControlComponent } from '../drawer/drawer-control.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, DrawerComponent, DrawerControlComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
