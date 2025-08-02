@@ -29,8 +29,8 @@
 
 
     <div *ngIf="!isEditMode" class="UserProfile__FormActions">
-        <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
         <button class="btn-success btn-size-compact" (click)="toggleEditMode()">Редактировать</button>
+        <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
     </div>
   </div>
 
@@ -84,8 +84,8 @@
     </div>
 
     <div class="UserProfile__FormActions">
-      <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
       <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
+      <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
     </div>
   </form>
 </div>

@@ -59,6 +59,7 @@ router-outlet + * {
 }
 
 :root {
+  --app-height: 83px;
   /* Размеры */
   --space-unit: 8px;
   --space-xs: calc(var(--space-unit) * 0.5);

@@ -7,6 +7,7 @@
         (overlayClick)="isDrawerOpen = false"
       >
         <li *ngIf="currentUser" class="NavList__Item"><a class="NavList__Link" routerLink="/profile">{{ displayName }}</a></li>
+        <li *ngIf="currentUser" class="NavList__Item"><a class="NavList__Link" routerLink="/profile">Профиль</a></li>
         <li class="NavList__Item"><a class="NavList__Link" routerLink="/posts">Статьи</a></li>
         <li class="NavList__Item"><a class="NavList__Link" routerLink="/messages">Сообщения</a></li>
       </app-drawer>
