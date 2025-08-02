@@ -71,6 +71,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     .close-button {
       background: transparent;
       border: none;
+      padding: 8px;
       font-size: 1.5rem;
       cursor: pointer;
       line-height: 1;

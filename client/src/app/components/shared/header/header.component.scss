@@ -16,6 +16,11 @@
   margin: 0;
   gap: 1rem;
 
+  &__Item__Profile {
+    font-weight: 600;
+    padding: 1rem 2rem;
+  }
+
   &__Link {
     cursor: pointer;
     display: block;
@@ -26,11 +31,18 @@
     transition: all 0.2s ease;
     font-weight: 500;
 
-    &:hover {
-      color: #1976d2;
-      background-color: #f0f4f8;
-    }
+      .active-link,
+      &:hover {
+        color: #1976d2;
+        background-color: #f0f4f8;
+      }
   }
+
+  .active-link {
+    color: #1976d2;
+    background-color: #f0f4f8;
+  }
+
 
   &__User {
     margin-left: auto;
