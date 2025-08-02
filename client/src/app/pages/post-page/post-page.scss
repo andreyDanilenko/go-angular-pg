@@ -1,7 +1,6 @@
 :host {
-  height: calc(100vh - var(--app-height));
+  height: calc(100dvh - var(--app-height));
   overflow: auto;
-  margin: 0 auto;
   padding: 2rem;
 }
 
