@@ -4,17 +4,17 @@ import { CommonModule } from '@angular/common';
 import { UserStore } from '../../../stores/user-store/user.store';
 import { User } from '../../../core/types/user.model';
 import { DrawerComponent } from '../drawer/drawer.component';
-import { DrawerControlComponent } from '../drawer/drawer-control.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, CommonModule, DrawerComponent, DrawerControlComponent],
+  imports: [RouterLink, CommonModule, DrawerComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
+  isDrawerOpen = true;
 
   constructor(private userStore: UserStore) {}
 

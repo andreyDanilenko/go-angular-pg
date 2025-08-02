@@ -5,9 +5,6 @@ import { HeaderComponent } from '../../components/shared/header/header.component
 import { UserService } from '../../core/services/user.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { DrawerComponent } from '../../components/shared/drawer/drawer.component';
-import { DrawerService } from '../../core/services/drawer.service';
-import { DrawerControlComponent } from '../../components/shared/drawer/drawer-control.component';
 
 @Component({
   selector: 'main-layout',
@@ -20,14 +17,10 @@ export class MainLayoutComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  constructor(private userService: UserService, public drawerService: DrawerService) {}
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.loadUserData();
-  }
-
-  openDrawer() {
-    this.drawerService.open('Drawer via Service');
   }
 
   private loadUserData(): void {
