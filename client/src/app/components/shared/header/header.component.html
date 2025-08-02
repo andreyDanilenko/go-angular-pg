@@ -1,7 +1,7 @@
 <header class="Header">
   <nav class="Header__Nav">
     <ul class="NavList">
-      <li *ngIf="currentUser" class="NavList__Item"><button class="NavList__Link" (click)="isDrawerOpen = !isDrawerOpen">Menu</button></li>
+      <li *ngIf="currentUser" class="NavList__Item"><button class="NavList__Link NavList__Menu" (click)="isDrawerOpen = !isDrawerOpen">Menu</button></li>
       <app-drawer
         [isOpen]="isDrawerOpen"
         (overlayClick)="isDrawerOpen = false"
