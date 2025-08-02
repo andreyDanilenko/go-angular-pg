@@ -14,7 +14,7 @@ import { DrawerComponent } from '../drawer/drawer.component';
 })
 export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
-  isDrawerOpen = true;
+  isDrawerOpen = false;
 
   constructor(private userStore: UserStore) {}
 

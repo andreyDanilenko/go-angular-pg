@@ -1,13 +1,11 @@
 .Header {
-  height: 88px;
   background-color: #fafafa;
-  padding: 1.5rem 0;
+  padding: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   &__Nav {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
   }
 }
 
@@ -18,15 +16,11 @@
   margin: 0;
   gap: 1rem;
 
-  &__Item {
-    display: flex;
-    align-items: center;
-  }
-
   &__Link {
+    display: block;
     text-decoration: none;
     color: #555;
-    padding: 0.5rem 1rem;
+    padding: 1rem 2rem;
     border-radius: 6px;
     transition: all 0.2s ease;
     font-weight: 500;

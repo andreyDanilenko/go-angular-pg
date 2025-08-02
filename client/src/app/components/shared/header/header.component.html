@@ -1,13 +1,15 @@
 <header class="Header">
   <nav class="Header__Nav">
     <ul class="NavList">
-      <li *ngIf="currentUser" class="NavList__Item"><a class="NavList__Link" routerLink="/profile">{{ displayName }}</a></li>
-      <li class="NavList__Item"><a class="NavList__Link" routerLink="/posts">Статьи</a></li>
-      <li class="NavList__Item"><a class="NavList__Link" routerLink="/messages">Сообщения</a></li>
-
-      <app-drawer [isOpen]="isDrawerOpen">Сообщение</app-drawer>
-      <button (click)="isDrawerOpen = !isDrawerOpen">Toggle Drawer</button>
-
+      <li *ngIf="currentUser" class="NavList__Item"><button class="NavList__Link" (click)="isDrawerOpen = !isDrawerOpen">Menu</button></li>
+      <app-drawer
+        [isOpen]="isDrawerOpen"
+        (overlayClick)="isDrawerOpen = false"
+      >
+        <li *ngIf="currentUser" class="NavList__Item"><a class="NavList__Link" routerLink="/profile">{{ displayName }}</a></li>
+        <li class="NavList__Item"><a class="NavList__Link" routerLink="/posts">Статьи</a></li>
+        <li class="NavList__Item"><a class="NavList__Link" routerLink="/messages">Сообщения</a></li>
+      </app-drawer>
     </ul>
   </nav>
 </header>
