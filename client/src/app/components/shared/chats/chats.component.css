@@ -17,7 +17,7 @@
 }
 
 .chat-list__search {
-  padding: 0 1.5rem 1rem;
+  margin-bottom: 16px;
 }
 
 .chat-list__search .input-container input {

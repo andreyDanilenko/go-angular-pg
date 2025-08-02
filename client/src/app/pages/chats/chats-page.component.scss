@@ -1,3 +1,11 @@
+:host {
+  height: calc(100vh - var(--app-height));
+  overflow: auto;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+
 .ChatsPage {
   &__Header {
     display: flex;
