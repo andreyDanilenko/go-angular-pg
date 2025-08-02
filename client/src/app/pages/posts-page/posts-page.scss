@@ -1,5 +1,5 @@
 :host {
-  height: calc(100vh - 88px);
+  height: calc(100vh - var(--app-height));
   overflow: auto;
   max-width: 80rem;
   margin: 0 auto;
@@ -9,6 +9,8 @@
 .PostsPage {
   &__Header {
     display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
@@ -88,6 +90,7 @@
 
   &__ArticleHeader {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;

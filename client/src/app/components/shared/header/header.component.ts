@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserStore } from '../../../stores/user-store/user.store';
 import { User } from '../../../core/types/user.model';
+import { DrawerComponent } from '../drawer/drawer.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, DrawerComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
+  isDrawerOpen = false;
 
-  constructor(private userStore: UserStore) {}
+  constructor(private userStore: UserStore, private router: Router) {}
 
   ngOnInit(): void {
     this.userStore.state$.subscribe(state => {
       this.currentUser = state.currentUser;
     });
+  }
+
+  isActive(path: string): boolean {
+    return this.router.url === path;
   }
 
   get displayName(): string {

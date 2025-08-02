@@ -78,7 +78,7 @@
           {{ isEditMode ? 'Сохранить' : 'Опубликовать' }}
         </button>
         <button type="button" class="btn-tertiary btn-size-compact" (click)="isEditMode ? toggleEditMode() : router.navigate(['/posts'])">Отмена</button>
-        <button *ngIf="isEditMode && article" type="button" class="btn-danger btn-size-compact" (click)="deleteArticle()">Удалить</button>
+        <!-- <button *ngIf="isEditMode && article" type="button" class="btn-danger btn-size-compact" (click)="deleteArticle()">Удалить</button> -->
       </div>
     </form>
   </div>

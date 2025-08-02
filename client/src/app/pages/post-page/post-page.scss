@@ -1,5 +1,5 @@
 :host {
-  height: calc(100vh - 88px);
+  height: calc(100vh - var(--app-height));
   overflow: auto;
   max-width: 80rem;
   margin: 0 auto;
@@ -116,15 +116,18 @@
 
   &__ViewActions {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
     margin-top: 2rem;
   }
 
   &__Actions {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 1rem;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
   }
 }
