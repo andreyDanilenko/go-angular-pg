@@ -74,11 +74,11 @@ export class ChatsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.loadChats();
-    this.initWebSocket();
+    // this.initWebSocket();
   }
 
   ngOnDestroy(): void {
-    this.wsSubscription?.unsubscribe();
+    // this.wsSubscription?.unsubscribe();
   }
 
   private loadChats(): void {
