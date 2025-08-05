@@ -2,7 +2,6 @@ import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { InputComponent } from '../../uikit/input/input.component';
 import { catchError, of, Subscription } from 'rxjs';
 import { BaseApiService } from '../../../core/services/base-api.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
@@ -48,7 +47,7 @@ interface MessagePayload {
 @Component({
   selector: 'app-chats',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, InputComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './chats.component.html',
   styleUrls: ['./chats.component.css'],
   providers: [BaseApiService]
@@ -172,7 +171,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
       ...chat,
       lastMessage: chat.lastMessage || '',
       time: chat.time || this.formatTime(chat.updatedAt),
-      avatar: chat.avatar || 'assets/avatars/default-user.jpg'
     })).sort((a, b) => {
       const dateA = a.time ? new Date(a.time).getTime() : new Date(a.updatedAt).getTime();
       const dateB = b.time ? new Date(b.time).getTime() : new Date(b.updatedAt).getTime();
@@ -188,7 +186,7 @@ export class ChatsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatTime(dateString: string): string {
+  public formatTime(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }

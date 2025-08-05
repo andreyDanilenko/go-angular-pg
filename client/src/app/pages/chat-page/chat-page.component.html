@@ -1,0 +1,190 @@
+<div class="layout layout-chat">
+  <!-- Список чатов -->
+  <aside class="chat-list">
+    <div class="chat-header">
+      <h2 class="chat-header-title">Чаты</h2>
+      <div class="chat-header-actions">
+        <button class="btn-icon">
+          <span>✏️</span>
+        </button>
+        <button class="btn-icon">
+          <span>⚙️</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Профиль пользователя -->
+    <div class="chat-profile">
+      <div class="chat-profile-header">
+        <div class="chat-profile-avatar">
+          <img src="https://placehold.co/60x60/e5e7eb/6b7280?text=В" alt="Аватар" />
+        </div>
+        <div class="chat-profile-info">
+          <h3 class="chat-profile-name">Василий Петров</h3>
+          <div class="chat-profile-status">
+            <span class="status-dot online"></span>
+            В сети
+          </div>
+        </div>
+      </div>
+      <div class="chat-profile-about">
+        <p>Разработчик, люблю создавать красивые и функциональные приложения. Интересуюсь UX/UI, новыми технологиями и дизайном.</p>
+      </div>
+    </div>
+
+    <!-- Список чатов -->
+    <div class="chat-items">
+      <!-- Активный чат -->
+        <app-chats></app-chats>
+    </div>
+  </aside>
+
+  <!-- Основной чат -->
+  <main class="content">
+    <div class="chat">
+      <!-- Хедер чата -->
+      <div class="chat-header">
+        <div class="d-flex align-center">
+          <div class="chat-avatar">
+            <img src="https://placehold.co/48x48/e5e7eb/6b7280?text=А" alt="Аватар" />
+          </div>
+          <div class="ml-3">
+            <div class="chat-name">Анна Иванова</div>
+            <div class="d-flex align-center">
+              <span class="status-dot online"></span>
+              <span class="text-sm text-success">В сети</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="btn-icon">
+            <span>📞</span>
+          </button>
+          <button class="btn-icon">
+            <span>📹</span>
+          </button>
+          <button class="btn-icon">
+            <span>👤</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Сообщения -->
+      <div class="chat-messages">
+        <!-- Сообщения от получателя -->
+        <div class="message-group received">
+          <div class="message-sender">Анна Иванова</div>
+          <div class="message received">
+            <div class="message-content">Привет! Как прошёл день?</div>
+            <div class="message-time">10:30</div>
+          </div>
+        </div>
+
+        <!-- Сообщения от отправителя -->
+        <div class="message-group sent">
+          <div class="message-sender">Вы</div>
+          <div class="message sent">
+            <div class="message-content">Привет! День прошёл отлично, спасибо! Работаю над новым проектом, всё идёт по плану.</div>
+            <div class="message-time">10:32</div>
+            <div class="message-status read"></div>
+          </div>
+        </div>
+
+        <!-- Сообщения от получателя -->
+        <div class="message-group received">
+          <div class="message received">
+            <div class="message-content">Отлично! А я вот сегодня столкнулась с интересной задачей по дизайну интерфейса. Хочу сделать что-то необычное.</div>
+            <div class="message-time">10:35</div>
+          </div>
+        </div>
+
+        <!-- Сообщения от отправителя -->
+        <div class="message-group sent">
+          <div class="message sent">
+            <div class="message-content">О, это интересно! А что за проект? Расскажи подробнее.</div>
+            <div class="message-time">10:36</div>
+            <div class="message-status read"></div>
+          </div>
+        </div>
+
+        <!-- Сообщения от получателя -->
+        <div class="message-group received">
+          <div class="message received">
+            <div class="message-content">Это приложение для фитнеса. Хочу сделать интерфейс более мотивирующим, с анимациями и персонализацией. Может, у тебя есть идеи?</div>
+            <div class="message-time">10:40</div>
+          </div>
+        </div>
+
+        <!-- Сообщения от отправителя -->
+        <div class="message-group sent">
+          <div class="message sent">
+            <div class="message-content">Конечно! Вот несколько идей: 1) Прогресс-бары с анимацией 2) Персонализированные рекомендации 3) Эффекты при достижении целей 4) Темная тема с неоновыми элементами</div>
+            <div class="message-time">10:42</div>
+            <div class="message-status read"></div>
+          </div>
+        </div>
+
+        <!-- Сообщения от получателя -->
+        <div class="message-group received">
+          <div class="message received">
+            <div class="message-content">Вау, звучит круто! Особенно понравилась идея с неоновыми элементами. А как думаешь, стоит ли добавлять геймификацию?</div>
+            <div class="message-time">10:45</div>
+          </div>
+        </div>
+
+        <!-- Сообщения от отправителя -->
+        <div class="message-group sent">
+          <div class="message sent">
+            <div class="message-content">Безусловно! Геймификация — отличная идея. Можно добавить: - Достижения - Уровни - Баллы - Награды за регулярные тренировки</div>
+            <div class="message-time">10:48</div>
+            <div class="message-status read"></div>
+          </div>
+        </div>
+
+        <!-- Сообщения от получателя -->
+        <div class="message-group received">
+          <div class="message received">
+            <div class="message-content">Отлично! Я уже начала делать мокапы. Вот, посмотри:</div>
+            <div class="message-time">10:50</div>
+          </div>
+          <div class="message received">
+            <div class="message-content">
+              <img src="https://placehold.co/300x200/3b82f6/ffffff?text=App+Mockup" alt="Мокап приложения" style="border-radius: var(--radius-lg); max-width: 100%;" />
+            </div>
+            <div class="message-time">10:50</div>
+          </div>
+        </div>
+
+        <!-- Сообщения от отправителя -->
+        <div class="message-group sent">
+          <div class="message sent">
+            <div class="message-content">Очень круто! Особенно понравился неоновый стиль. А как насчёт анимации при достижении цели? Можно сделать что-то вроде фейерверка или всплывающего сообщения "Отлично!"</div>
+            <div class="message-time">10:55</div>
+            <div class="message-status sent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ввод сообщения -->
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <button class="chat-action-btn">
+            <span>📎</span>
+          </button>
+          <button class="chat-action-btn">
+            <span>😊</span>
+          </button>
+          <input type="text" class="chat-input" placeholder="Напишите сообщение..." />
+          <div class="chat-actions">
+            <button class="chat-action-btn">
+              <span>🎤</span>
+            </button>
+            <button class="chat-action-btn primary">
+              <span>➤</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

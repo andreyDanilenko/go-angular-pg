@@ -10,6 +10,8 @@
         <li *ngIf="currentUser" class="NavList__Item"><a class="NavList__Link" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
         <li class="NavList__Item"><a class="NavList__Link" routerLink="/posts" [class.active-link]="isActive('/posts')">Статьи</a></li>
         <li class="NavList__Item"><a class="NavList__Link" routerLink="/messages"  [class.active-link]="isActive('/messages')">Сообщения</a></li>
+        <li class="NavList__Item"><a class="NavList__Link" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Чат</a></li>
+
       </app-drawer>
     </ul>
   </nav>

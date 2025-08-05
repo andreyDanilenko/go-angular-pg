@@ -10,6 +10,7 @@ import { ChatPageComponent } from './pages/chat/chat-page.component';
 import { PostsPageComponent } from './pages/posts-page/posts-page';
 import { PostEditorComponent } from './pages/post-page/post-page';
 import { ProfilePageComponent } from './pages/profile/profile-page.component';
+import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,16 @@ export const routes: Routes = [
     children: [
       { path: '', component: ChatsPageComponent },
       { path: ':id', component: ChatPageComponent },
+    ]
+  },
+
+    {
+    path: 'messenger',
+    // component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: MessengerPageComponent },
+      // { path: ':id', component: ChatPageComponent },
     ]
   },
   {
