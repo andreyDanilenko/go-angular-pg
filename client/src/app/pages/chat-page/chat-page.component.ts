@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ChatsComponent } from '../../components/messenger/chats/chats.component';
 import { ChatComponent } from "../../components/messenger/chat/chat.component";
 import { ChatPlaceholderComponent } from '../../components/messenger/chat/chat-placeholder.component';
@@ -24,6 +24,12 @@ export class MessengerPageComponent {
   constructor(
     private userStore: UserStore,
   ) {}
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: Event) {
+    const keyboardEvent = event as KeyboardEvent;
+    this.selectedChatId = null;
+  }
 
   ngOnInit(): void {
     this.userStore.state$.subscribe(state => {
