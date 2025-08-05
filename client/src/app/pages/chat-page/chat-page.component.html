@@ -35,7 +35,7 @@
     <!-- Список чатов -->
     <div class="chat-items">
       <!-- Активный чат -->
-        <app-chats></app-chats>
+        <app-chats (chatSelected)="onChatSelected($event)"></app-chats>
     </div>
   </aside>
 
@@ -69,9 +69,13 @@
         </div>
       </div>
 
-      <!-- Список сообщений -->
-      <app-chat></app-chat>
-      <!-- Ввод сообщения -->
+      @if (selectedChatId) {
+        <app-chat [chatId]="selectedChatId"></app-chat>
+      } @else {
+        <app-chat-placeholder></app-chat-placeholder>
+      }
+
+      <!-- <app-chat [chatId]="selectedChatId"></app-chat> -->
     </div>
   </main>
 </div>

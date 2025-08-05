@@ -2,7 +2,9 @@
 <div *ngIf="error()" class="error">{{ error() }}</div>
 <div class="chat-items">
   @for (chat of allChats(); track trackByChatId($index, chat)) {
-    <div class="chat-item">
+    <div class="chat-item"
+      [class.active]="false"
+      (click)="selectChat(chat.id)">
       <div class="chat-avatar">
         <img *ngIf="chat.avatar" [src]="chat.avatar" [alt]="getChatName(chat)" />
         <div *ngIf="!chat.avatar">А</div>

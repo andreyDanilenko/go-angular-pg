@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, HostListener } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
 import { environment } from '../../../../environments/environment.prod';
-import { InputComponent } from '../../uikit/input/input.component';
-import { ButtonComponent } from '../../uikit/button/button.component';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -23,6 +21,12 @@ import { ActivatedRoute } from '@angular/router';
   providers: [WebSocketService],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @Input() set chatId(value: string | null) {
+    if (value) {
+      this.currentChatId = value;
+      this.loadChatHistory();
+    }
+  }
   messages: any[] = [];
   newMessage = new FormControl('');
   currentChatId: string | null = null;
@@ -84,6 +88,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       error: (error) => console.error('Route param error:', error)
     });
   }
+
+    @HostListener('document:keydown.escape')
+    handleEscapeKey() {
+      this.currentChatId = null;
+    }
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll && this.messagesContainer?.nativeElement) {

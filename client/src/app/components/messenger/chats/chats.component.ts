@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -53,6 +53,7 @@ interface MessagePayload {
   providers: [BaseApiService]
 })
 export class ChatsComponent implements OnInit, OnDestroy {
+  @Output() chatSelected = new EventEmitter<string>();
   search = new FormControl('');
   private wsSubscription!: Subscription;
 
@@ -65,6 +66,9 @@ export class ChatsComponent implements OnInit, OnDestroy {
     private wsService: WebSocketService
   ) {}
 
+  selectChat(chatId: string) {
+    this.chatSelected.emit(chatId);
+  }
   ngOnInit(): void {
     this.loadChats();
     this.initWebSocket();

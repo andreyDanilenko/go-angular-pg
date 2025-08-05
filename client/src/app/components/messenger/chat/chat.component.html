@@ -1,5 +1,5 @@
-<div class="chat-container"  #messagesContainer>
-  <div class="chat-messages" #messagesContainer>
+<div class="chat-container" #messagesContainer>
+  <div class="chat-messages">
     <ng-container *ngFor="let message of messages">
       <div *ngIf="message.senderId !== currentUserId" class="message-group received">
         <div class="message-sender">{{ message.sender?.username || message.sender?.firstName || message.sender.email }}</div>
@@ -40,3 +40,4 @@
     </div>
   </div>
 </div>
+
