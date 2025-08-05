@@ -36,14 +36,12 @@ export class ProfilePageComponent implements OnInit {
   ngOnInit(): void {
     this.userStore.state$.subscribe(state => {
       this.currentUser = state.currentUser;
-      // Сбрасываем editedUser при каждом изменении currentUser
       this.resetEditedUser();
     });
   }
 
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
-    // При включении режима редактирования обновляем editedUser
     if (this.isEditMode) {
       this.resetEditedUser();
     }

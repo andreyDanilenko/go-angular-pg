@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { ChatsComponent } from '../../components/messenger/chats/chats.component';
 import { ChatComponent } from "../../components/messenger/chat/chat.component";
 import { ChatPlaceholderComponent } from '../../components/messenger/chat/chat-placeholder.component';
+import { UserStore } from '../../stores/user-store/user.store';
+import { UserService } from '../../core/services/user.service';
+import { User } from '../../core/types/user.model';
 
 @Component({
   selector: 'app-chat-page',
@@ -12,10 +15,29 @@ import { ChatPlaceholderComponent } from '../../components/messenger/chat/chat-p
 })
 export class MessengerPageComponent {
   selectedChatId: string | null = null;
+  currentUser: User | null = null;
 
   onChatSelected(chatId: string) {
-    console.log('chatId', chatId);
-
     this.selectedChatId = chatId;
   }
+
+  constructor(
+    private userStore: UserStore,
+  ) {}
+
+  ngOnInit(): void {
+    this.userStore.state$.subscribe(state => {
+      this.currentUser = state.currentUser;
+    });
+  }
+
+  get displayName(): string {
+    if (!this.currentUser) return '';
+    if (this.currentUser.firstName && this.currentUser.lastName) {
+      return `${this.currentUser.lastName} ${this.currentUser.firstName}`;
+    }
+
+    return `${this.currentUser.email}`;
+  }
+
 }

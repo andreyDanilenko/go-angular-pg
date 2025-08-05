@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { UserService } from './core/services/user.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +10,37 @@ import { RouterOutlet } from '@angular/router';
   template: `<router-outlet></router-outlet>`,
   styles: `:host { display: block; height: 100%; }`
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('client');
+  isLoading = true;
+  error: string | null = null;
+
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.loadUserData();
+  }
+
+  private loadUserData(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.userService.getUserMe().pipe(
+      catchError((err) => {
+        this.error = 'Failed to load user data';
+        console.error('Error loading user data:', err);
+        return of(null);
+      })
+    ).subscribe({
+      next: (userData) => {
+        // Здесь можно обработать полученные данные пользователя
+        // Например, сохранить их в сервисе или в локальном состоянии
+        console.log('User data loaded:', userData);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
 }
