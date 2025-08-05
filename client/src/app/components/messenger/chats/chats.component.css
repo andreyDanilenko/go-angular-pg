@@ -52,8 +52,16 @@
   min-width: 48px;
   min-height: 48px;
   border-radius: var(--radius-full);
-  overflow: hidden;
   margin-right: var(--space-3);
+}
+
+.chat-avatar img {
+  display: block;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: var(--radius-full);
 }
 
 .chat-avatar::after {

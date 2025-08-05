@@ -8,9 +8,6 @@
   grid-template-columns: var(--sidebar-width) 1fr;
 }
 
-.layout-chat {
-}
-
 .header {
   height: var(--header-height);
   background-color: var(--color-white);
@@ -18,7 +15,6 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  /* grid-row-start: 1; */
   grid-column-start: 1;
   grid-column-end: 3;
 }
@@ -371,11 +367,12 @@
   margin-bottom: var(--space-4);
 }
 
-.chat-profile-avatar {
+.chat-profile-avatar,
+.chat-profile-avatar img {
+  position: relative;
   width: 60px;
   height: 60px;
   border-radius: var(--radius-full);
-  overflow: hidden;
   margin-right: var(--space-3);
 }
 

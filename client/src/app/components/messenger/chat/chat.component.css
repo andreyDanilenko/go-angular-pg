@@ -8,6 +8,7 @@
 }
 
 .chat-messages {
+  position: relative;
   flex-grow: 1;
   overflow-y: auto;
   padding: var(--space-4);
@@ -113,4 +114,63 @@
   .message {
     max-width: 80%;
   }
+}
+
+
+/* Ввод сообщения */
+.chat-input-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-gray-100);
+  border-radius: var(--radius-full);
+  padding: var(--space-2);
+}
+
+.chat-input {
+  flex-grow: 1;
+  border: none;
+  background: none;
+  outline: none;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  color: var(--color-gray-800);
+}
+
+.chat-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.chat-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-600);
+  transition: all 0.2s ease;
+}
+
+.chat-action-btn:hover {
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+.chat-action-btn.primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.chat-action-btn.primary:hover {
+  background-color: var(--color-primary-dark);
 }
