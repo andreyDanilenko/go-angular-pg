@@ -1,0 +1,22 @@
+<div class="chat-container">
+  <div class="chat-messages" #messagesContainer>
+    <ng-container *ngFor="let message of messages">
+      <div *ngIf="message.senderId !== currentUserId" class="message-group received">
+        <div class="message-sender">{{ message.sender?.username || message.sender?.firstName || message.sender.email }}</div>
+        <div class="message received">
+          <div class="message-content">{{ message.text }}</div>
+          <div class="message-time">{{ message.sentAt | date:'HH:mm' }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="message.senderId === currentUserId" class="message-group sent">
+        <div class="message-sender">Вы</div>
+        <div class="message sent">
+          <div class="message-content">{{ message.text }}</div>
+          <div class="message-time">{{ message.sentAt | date:'HH:mm' }}</div>
+          <div class="message-status read"></div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -16,8 +16,7 @@ import { ActivatedRoute } from '@angular/router';
   imports: [
     CommonModule,
     FormsModule,
-    InputComponent,
-    ButtonComponent
+
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
@@ -47,7 +46,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnInit(): void {
     this.routeSubscription = this.route.paramMap.subscribe({
       next: (params) => {
-        this.currentChatId = params.get('id');
+        this.currentChatId = 'GNfpxF1r4vR5';
 
         if (!this.currentChatId) {
           console.error('Chat ID not found in URL');

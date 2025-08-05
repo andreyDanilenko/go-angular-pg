@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ChatsComponent } from '../../components/shared/chats/chats.component';
+import { ChatsComponent } from '../../components/messenger/chats/chats.component';
 
 @Component({
   selector: 'app-chats-page',
