@@ -3,7 +3,7 @@
 <div class="chat-items">
   @for (chat of allChats(); track trackByChatId($index, chat)) {
     <div class="chat-item"
-      [class.active]="false"
+      [class.active]="chat.id === currentChatId"
       (click)="selectChat(chat.id)">
       <div class="chat-avatar">
         <img *ngIf="chat.avatar" [src]="chat.avatar" [alt]="getChatName(chat)" />

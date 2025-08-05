@@ -3,10 +3,9 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../core/services/auth.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
 import { environment } from '../../../../environments/environment.prod';
-import { ActivatedRoute } from '@angular/router';
+import { UserStore } from '../../../stores/user-store/user.store';
 
 @Component({
   selector: 'app-chat',
@@ -42,57 +41,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   constructor(
     private wsService: WebSocketService,
-    private authService: AuthService,
     private http: HttpClient,
-    private route: ActivatedRoute
+    private userStore: UserStore,
   ) {}
 
   ngOnInit(): void {
-    this.routeSubscription = this.route.paramMap.subscribe({
-      next: (params) => {
-        this.currentChatId = 'GNfpxF1r4vR5';
-
-        if (!this.currentChatId) {
-          console.error('Chat ID not found in URL');
-          return;
-        }
-
-        this.currentUserId = this.getUserIdFromToken();
-        this.wsService.connect();
-
-        this.connectionSubscription = this.wsService.getConnectionStatus().subscribe({
-          next: (connected: boolean) => {
-            this.isConnected = connected;
-            if (connected) {
-              this.loadChatHistory();
-            }
-          },
-          error: (error) => console.error('Connection error:', error)
-        });
-
-        this.messageSubscription = this.wsService.getChatMessages(this.currentChatId).subscribe({
-          next: (message: any) => {
-            const exists = this.messages.some(m => m.id === message.payload.id);
-
-            if (!exists) {
-              this.messages.push(message.payload);
-              this.sortMessages();
-              this.shouldScroll = true;
-            }
-          },
-          error: (error: any) => {
-            console.error('Error receiving message:', error);
-          }
-        });
-      },
-      error: (error) => console.error('Route param error:', error)
+    this.wsService.connect();
+    this.userStore.state$.subscribe(state => {
+      this.currentUserId = state.currentUser?.id || '';
     });
   }
-
-    @HostListener('document:keydown.escape')
-    handleEscapeKey() {
-      this.currentChatId = null;
-    }
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll && this.messagesContainer?.nativeElement) {
@@ -149,18 +107,5 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
     );
     this.shouldScroll = true;
-  }
-
-  private getUserIdFromToken(): string | null {
-    const token = this.authService.getToken();
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.sub || payload.userId || null;
-    } catch (e) {
-      console.error('Error parsing token:', e);
-      return null;
-    }
   }
 }

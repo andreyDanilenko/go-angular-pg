@@ -55,6 +55,8 @@ interface MessagePayload {
 export class ChatsComponent implements OnInit, OnDestroy {
   @Output() chatSelected = new EventEmitter<string>();
   search = new FormControl('');
+  currentChatId: string | null = null;
+
   private wsSubscription!: Subscription;
 
   protected readonly allChats = signal<Chat[]>([]);
@@ -67,6 +69,7 @@ export class ChatsComponent implements OnInit, OnDestroy {
   ) {}
 
   selectChat(chatId: string) {
+    this.currentChatId = chatId;
     this.chatSelected.emit(chatId);
   }
   ngOnInit(): void {
