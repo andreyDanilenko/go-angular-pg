@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
 import { environment } from '../../../../environments/environment.prod';
@@ -13,7 +13,7 @@ import { UserStore } from '../../../stores/user-store/user.store';
   imports: [
     CommonModule,
     FormsModule,
-
+    ReactiveFormsModule
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],

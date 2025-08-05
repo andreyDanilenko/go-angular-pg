@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { UserService } from './core/services/user.service';
 import { catchError, of } from 'rxjs';
+import { WebSocketService } from './core/services/web-socket-service.service';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +16,10 @@ export class App implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private wsService: WebSocketService) {}
 
   ngOnInit(): void {
+    this.wsService.connect();
     this.loadUserData();
   }
 
