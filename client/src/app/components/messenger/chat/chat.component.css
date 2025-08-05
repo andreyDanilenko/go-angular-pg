@@ -1,6 +1,10 @@
 :host {
-  height: calc(100dvh - var(--app-height));
-  overflow: auto;
+  overflow: hidden;
+}
+
+.chat-container {
+  height: calc(100dvh - var(--chat-header-height));
+  overflow: scroll;
 }
 
 .chat-messages {
@@ -10,6 +14,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  padding-bottom: 96px;
 }
 
 .message {
