@@ -1,12 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, HostListener, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../core/services/auth.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
 import { environment } from '../../../../environments/environment.prod';
-import { ActivatedRoute } from '@angular/router';
 import { UserStore } from '../../../stores/user-store/user.store';
 
 @Component({
@@ -21,15 +19,11 @@ import { UserStore } from '../../../stores/user-store/user.store';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @Input() set chatId(value: string | null) {
-    if (value) {
-      this.currentChatId = value;
-      this.loadChatHistory();
-    }
-  }
+  @Input() chatId: string | null = null; // просто поле, без сеттера
+
+
   messages: any[] = [];
   newMessage = new FormControl('');
-  currentChatId: string | null = null;
   currentUserId: string | null = null;
   isConnected = false;
 
@@ -42,9 +36,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   constructor(
     private wsService: WebSocketService,
-    private authService: AuthService,
     private http: HttpClient,
-    private route: ActivatedRoute,
     private userStore: UserStore,
   ) {}
 
@@ -56,9 +48,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.connectionSubscription = this.wsService.getConnectionStatus().subscribe({
       next: (connected: boolean) => {
-        console.log(connected);
         this.isConnected = connected;
-        if (connected && this.currentChatId) {
+        if (connected && this.chatId) {
           this.loadChatHistory();
           this.subscribeToMessages();
         }
@@ -68,10 +59,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['chatId'] && changes['chatId'].currentValue) {
+    if (changes['chatId'] && changes['chatId'].currentValue !== changes['chatId'].previousValue) {
       this.resetChat();
-      if (this.isConnected) {
-        console.log('this.isConnected', this.isConnected);
+      if (this.isConnected && this.chatId) {
         this.loadChatHistory();
         this.subscribeToMessages();
       }
@@ -86,13 +76,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private subscribeToMessages(): void {
-    if (!this.currentChatId) return;
-    this.messageSubscription = this.wsService.getChatMessages(this.currentChatId).subscribe({
+    if (!this.chatId) return;
+    this.messageSubscription = this.wsService.getChatMessages(this.chatId).subscribe({
       next: (message: any) => {
-        console.log(this.messages);
-
-        const exists = this.messages.some(m => m.id === message.payload.chatId);
-        console.log('exists', exists);
+        const exists = this.messages.some(m => m.id === message.payload.id);
 
         if (!exists) {
           this.messages.push(message.payload);
@@ -122,27 +109,24 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-   ngOnDestroy(): void {
-    // this.messageSubscription?.unsubscribe();
-    // this.connectionSubscription?.unsubscribe();
+  ngOnDestroy(): void {
     this.userStoreSubscription?.unsubscribe();
-    // this.wsService.disconnect();
+    this.connectionSubscription?.unsubscribe();
+    this.messageSubscription?.unsubscribe();
   }
 
   sendMessage(): void {
-    if (!this.currentChatId) return;
-
+    if (!this.chatId) return;
     const messageText = this.newMessage.value?.trim();
     if (messageText && this.isConnected) {
-      this.wsService.sendMessage(this.currentChatId, messageText);
+      this.wsService.sendMessage(this.chatId, messageText);
       this.newMessage.reset('');
     }
   }
 
   loadChatHistory(): void {
-    if (!this.currentChatId) return;
-
-    const baseUrl = `${environment.apiUrl}/chat/messages?chatId=${this.currentChatId}&offsets=2`;
+    if (!this.chatId) return;
+    const baseUrl = `${environment.apiUrl}/chat/messages?chatId=${this.chatId}&offsets=2`;
 
     this.http.get<any[]>(baseUrl).subscribe({
       next: (history: any[]) => {
