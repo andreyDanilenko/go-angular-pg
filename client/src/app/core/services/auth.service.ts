@@ -1,11 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
+  private authState = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(private http: HttpClient) {}
+
+  get authState$(): Observable<boolean> {
+    return this.authState.asObservable();
+  }
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
@@ -27,12 +33,13 @@ export class AuthService {
     }
   }
 
-
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
+    this.authState.next(true); // Уведомляем об успешной авторизации
   }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    this.authState.next(false); // Уведомляем о выходе
   }
 }

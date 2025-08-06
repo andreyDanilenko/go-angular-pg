@@ -52,7 +52,7 @@ interface MessagePayload {
   styleUrls: ['./chats.component.css'],
   providers: [BaseApiService]
 })
-export class ChatsComponent implements OnInit, OnDestroy {
+export class ChatsComponent implements OnInit {
   @Output() chatSelected = new EventEmitter<string>();
   search = new FormControl('');
   currentChatId: string | null = null;
@@ -74,11 +74,7 @@ export class ChatsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.loadChats();
-    // this.initWebSocket();
-  }
-
-  ngOnDestroy(): void {
-    // this.wsSubscription?.unsubscribe();
+    this.initWebSocket()
   }
 
   private loadChats(): void {
@@ -100,7 +96,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
   }
 
   private initWebSocket(): void {
-    this.wsService.connect();
     this.wsSubscription = this.wsService.getMessages().subscribe({
       next: (message) => this.handleSocketMessage(message),
       error: (err) => console.error('WebSocket error:', err)

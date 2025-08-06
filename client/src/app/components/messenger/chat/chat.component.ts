@@ -19,7 +19,6 @@ import { UserStore } from '../../../stores/user-store/user.store';
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
-  // providers: [],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input() set chatId(value: string | null) {
@@ -58,7 +57,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.connectionSubscription = this.wsService.getConnectionStatus().subscribe({
       next: (connected: boolean) => {
         console.log(connected);
-
         this.isConnected = connected;
         if (connected && this.currentChatId) {
           this.loadChatHistory();
@@ -70,13 +68,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('1231231231321');
-
     if (changes['chatId'] && changes['chatId'].currentValue) {
       this.resetChat();
       if (this.isConnected) {
-        console.log('his.isConnected', this.isConnected);
-
+        console.log('this.isConnected', this.isConnected);
         this.loadChatHistory();
         this.subscribeToMessages();
       }
