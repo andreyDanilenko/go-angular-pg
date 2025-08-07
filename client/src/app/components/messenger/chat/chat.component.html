@@ -1,5 +1,5 @@
-<div class="chat-container" #messagesContainer>
-  <div class="chat-messages">
+<div class="chat-container" >
+  <div class="chat-messages" #messagesContainer>
     @for (message of messages; track message.id) {
       @if (message.senderId !== currentUserId) {
         <div class="message-group received">

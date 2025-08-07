@@ -28,8 +28,8 @@ import { CommonModule } from '@angular/common';
         #tooltip
         class="tooltip-box"
           [ngStyle]="{
-            top: (position?.top || 0) + 'px',
-            left: (position?.left || 0) + 'px'
+            top: (position?.top || 40) + 'px',
+            right: (position?.left || 20) + 'px'
           }"
       >
         <ng-container *ngTemplateOutlet="tooltipContent"></ng-container>
@@ -47,22 +47,22 @@ import { CommonModule } from '@angular/common';
       cursor: pointer;
     }
 
-.tooltip-box {
-  position: fixed !important;
-  z-index: 9999 !important;
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  max-width: 300px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  /* Защита от обрезания */
-  transform: none !important;
-  will-change: unset !important;
-  contain: none !important;
-  clip-path: none !important;
-}
+    .tooltip-box {
+      position: absolute !important;
+      z-index: 9999 !important;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      max-width: 300px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      /* Защита от обрезания */
+      transform: none !important;
+      will-change: unset !important;
+      contain: none !important;
+      clip-path: none !important;
+    }
   `]
 })
 export class TooltipComponent implements AfterViewInit {
@@ -89,9 +89,6 @@ export class TooltipComponent implements AfterViewInit {
     if (!this.visible) {
       this.closed.emit();
     }
-    if (this.visible) {
-      setTimeout(() => this.updatePosition(), 0);
-    }
   }
 
   closeTooltip() {
@@ -100,38 +97,6 @@ export class TooltipComponent implements AfterViewInit {
       this.cdr.detectChanges();
       this.closed.emit();
     }
-  }
-
-  updatePosition() {
-    const triggerEl = this.triggerRef.nativeElement as HTMLElement;
-    const tooltipEl = this.tooltipRef?.nativeElement as HTMLElement;
-    if (!tooltipEl) return;
-
-    const triggerRect = triggerEl.getBoundingClientRect();
-    const tooltipRect = tooltipEl.getBoundingClientRect();
-
-    let top = (triggerRect.bottom + 8);
-    let left = (triggerRect.left + (triggerRect.width - tooltipRect.width) / 2);
-
-    const padding = 8;
-
-    if (left < padding) {
-      left = padding;
-    } else if (left + tooltipRect.width > window.innerWidth - padding) {
-      left = window.innerWidth - tooltipRect.width - padding;
-    }
-
-    if (top + tooltipRect.height > window.innerHeight - padding) {
-      top = triggerRect.top - tooltipRect.height - padding;
-    }
-
-    this.position = { top, left };
-    this.cdr.detectChanges();
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    if (this.visible) this.updatePosition();
   }
 
   @HostListener('document:mousedown', ['$event'])
