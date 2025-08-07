@@ -7,9 +7,9 @@ import { Component } from '@angular/core';
 })
 export class ChatHeaderComponent {
   user = {
-    name: 'Анна Иванова',
+    name: 'Имя Фамилия',
     status: 'В сети',
-    avatarUrl: 'https://placehold.co/48x48/e5e7eb/6b7280?text=А'
+    avatarUrl: 'https://placehold.co/48x48/e5e7eb/6b7280?text=И'
   };
 
   call() {

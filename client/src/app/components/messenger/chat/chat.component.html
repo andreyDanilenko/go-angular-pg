@@ -14,7 +14,7 @@
         <div class="message sent">
           <div class="message-content">{{ message.text }}</div>
           <div class="message-time">{{ message.sentAt | date:'HH:mm' }}</div>
-          <div class="message-status read"></div>
+          <!-- <div class="message-status read"></div> -->
         </div>
       </div>
     </ng-container>
@@ -23,15 +23,45 @@
   <div class="chat-input-container">
     <div class="chat-input-wrapper">
       <button class="chat-action-btn">
-        <span>📎</span>
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16.5 6V15.5C16.5 18 14.5 20 12 20C9.5 20 7.5 18 7.5 15.5V5C7.5 3.625 8.625 2.5 10 2.5C11.375 2.5 12.5 3.625 12.5 5V14.5C12.5 15.0625 12.0625 15.5 11.5 15.5C10.9375 15.5 10.5 15.0625 10.5 14.5V6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
       </button>
       <button class="chat-action-btn">
-        <span>😊</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10"
+                  stroke="currentColor"
+                  stroke-width="2"/>
+          <circle cx="8" cy="10" r="1"
+                  fill="currentColor"/>
+          <circle cx="16" cy="10" r="1"
+                  fill="currentColor"/>
+          <path d="M8 16C8 16 10 14 12 14C14 14 16 16 16 16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"/>
+        </svg>
       </button>
       <input type="text" class="chat-input" placeholder="Напишите сообщение..."  [formControl]="newMessage"  (keydown.enter)="sendMessage()"/>
       <div class="chat-actions">
         <button class="chat-action-btn">
-          <span>🎤</span>
+         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 16C14.2091 16 16 14.2091 16 12V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V12C8 14.2091 9.79086 16 12 16Z"
+                stroke="currentColor"
+                stroke-width="2"/>
+          <path d="M4 12V13C4 16.3137 6.68629 19 10 19H14C17.3137 19 20 16.3137 20 13V12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"/>
+          <path d="M12 19V22"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"/>
+        </svg>
         </button>
         <button class="chat-action-btn primary" [disabled]="!newMessage.value?.trim() || !isConnected"  (click)="sendMessage()">
           <span>➤</span>

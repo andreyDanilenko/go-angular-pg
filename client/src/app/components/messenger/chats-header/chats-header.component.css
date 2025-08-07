@@ -24,3 +24,28 @@
   stroke: var(--md-sys-color-on-surface);
 }
 
+/* Переиспользоваь */
+.chat-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: all 0.2s ease;
+}
+.chat-action-btn:hover {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+.chat-action-btn.primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.chat-action-btn.primary:hover {
+  background-color: var(--md-sys-color-primary-container);
+}
+/* Переиспользоваь */
+
+
