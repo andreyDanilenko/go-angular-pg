@@ -10,12 +10,11 @@ import { RouterLink } from '@angular/router';
     RouterLink
   ],
   templateUrl: './chats-edit.component.html',
-  styleUrls: ['./chats-edit.component.scss'] // или .css в зависимости от вашего стиля
+  styleUrls: ['./chats-edit.component.css']
 })
 export class ChatsEditComponent {
   @Output() backToChats = new EventEmitter<void>();
 
-  // Пример данных для редактирования - можно заменить на реальные
   editOptions = [
     { id: 4, name: 'Чаты', icon: 'forum' }
   ];

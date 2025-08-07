@@ -42,6 +42,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
 
   ngOnInit(): void {
+        console.log('4545');
+
     this.userStoreSubscription = this.userStore.state$.subscribe(state => {
       this.currentUserId = state.currentUser?.id || "";
     });
@@ -59,7 +61,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('123');
+
     if (changes['chatId'] && changes['chatId'].currentValue !== changes['chatId'].previousValue) {
+      console.log('update');
+
       this.resetChat();
       if (this.isConnected && this.chatId) {
         this.loadChatHistory();

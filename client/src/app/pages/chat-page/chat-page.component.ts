@@ -6,7 +6,7 @@ import { UserStore } from '../../stores/user-store/user.store';
 import { User } from '../../core/types/user.model';
 import { ChatsHeaderComponent } from '../../components/messenger/chats-header/chats-header.component';
 import { ChatHeaderComponent } from '../../components/messenger/chat-header/chat-header.component';
-import { DrawerComponent } from '../../components/shared/drawer/drawer.component';
+// import { DrawerComponent } from '../../components/shared/drawer/drawer.component';
 import { CommonModule } from '@angular/common';
 import { ChatsEditComponent } from '../../components/messenger/chats-edit/chats-edit.component';
 
@@ -19,7 +19,7 @@ import { ChatsEditComponent } from '../../components/messenger/chats-edit/chats-
     ChatPlaceholderComponent,
     ChatsHeaderComponent,
     ChatHeaderComponent,
-    DrawerComponent,
+    // DrawerComponent,
     CommonModule,
     ChatsEditComponent
   ],
@@ -43,7 +43,6 @@ export class MessengerPageComponent {
 
   @HostListener('document:keydown.escape', ['$event'])
   handleEscapeKey(event: Event) {
-    const keyboardEvent = event as KeyboardEvent;
     this.selectedChatId = null;
   }
 

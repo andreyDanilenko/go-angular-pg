@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -53,9 +53,9 @@ interface MessagePayload {
   providers: [BaseApiService]
 })
 export class ChatsComponent implements OnInit {
+  @Input() currentChatId: string | null = null;
   @Output() chatSelected = new EventEmitter<string>();
   search = new FormControl('');
-  currentChatId: string | null = null;
 
   private wsSubscription!: Subscription;
 

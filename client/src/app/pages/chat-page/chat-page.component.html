@@ -7,6 +7,7 @@
 
     <app-chats
       *ngIf="!isEditMode"
+      [currentChatId]="selectedChatId"
       (chatSelected)="onChatSelected($event)">
     </app-chats>
 
@@ -24,11 +25,4 @@
         <app-chat-placeholder></app-chat-placeholder>
       }
   </main>
-
-      <app-drawer
-        [isOpen]="isDrawerOpen"
-        (overlayClick)="isDrawerOpen = false"
-      >
-        <li class="NavList__Item"><a class="NavList__Link" routerLink="/">Выйти</a></li>
-      </app-drawer>
 </div>

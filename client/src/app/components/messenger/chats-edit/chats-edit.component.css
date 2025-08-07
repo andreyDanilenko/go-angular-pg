@@ -1,5 +1,6 @@
 .edit-container {
   padding: 16px;
+  display: calc(100dvh - var(--));
   display: flex;
   flex-direction: column;
 }
