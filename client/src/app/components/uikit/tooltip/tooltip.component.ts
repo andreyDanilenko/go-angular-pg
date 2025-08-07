@@ -37,23 +37,32 @@ import { CommonModule } from '@angular/common';
     }
   `,
   styles: [`
+    :host {
+      position: relative;
+    }
+
     .tooltip-trigger {
       align-items: center;
       display: flex;
       cursor: pointer;
     }
 
-    .tooltip-box {
-      position: fixed;
-      background-color: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface);
-      padding: 10px;
-      border-radius: 6px;
-      z-index: 1000;
-      font-size: 14px;
-      max-width: 300px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
+.tooltip-box {
+  position: fixed !important;
+  z-index: 9999 !important;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  max-width: 300px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  /* Защита от обрезания */
+  transform: none !important;
+  will-change: unset !important;
+  contain: none !important;
+  clip-path: none !important;
+}
   `]
 })
 export class TooltipComponent implements AfterViewInit {

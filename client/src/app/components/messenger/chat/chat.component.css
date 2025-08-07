@@ -1,12 +1,12 @@
 :host {
   background-color: var(--md-sys-color-surface);
-  position: relative;
   overflow: hidden;
 }
 
 .chat-container {
   background-color: var(--md-sys-color-surface);
   height: calc(100dvh - var(--chat-header-height));
+  position: relative;
   overflow: scroll;
 }
 
