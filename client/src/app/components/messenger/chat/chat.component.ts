@@ -19,7 +19,7 @@ import { UserStore } from '../../../stores/user-store/user.store';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @Input() chatId: string | null = null; // просто поле, без сеттера
+  @Input() chatId: string | null = null;
 
 
   messages: any[] = [];

@@ -1,19 +1,34 @@
-<div class="layout layout-chat">
+<div class="layout layout-chat light">
   <aside class="chat-list">
-    <app-chats-header></app-chats-header>
-    <div class="chat-items">
-        <app-chats (chatSelected)="onChatSelected($event)"></app-chats>
-    </div>
+    <app-chats-header
+      (burgerClick)="handleEditClick()"
+      (editClick)="handleEditClick()">
+    </app-chats-header>
+
+    <app-chats
+      *ngIf="!isEditMode"
+      (chatSelected)="onChatSelected($event)">
+    </app-chats>
+
+    <app-chats-edit
+      *ngIf="isEditMode"
+      (backToChats)="handleBackToChats()">
+    </app-chats-edit>
   </aside>
 
-  <main class="content">
-    <div class="chat">
+  <main class="chat">
       <app-chat-header></app-chat-header>
       @if (selectedChatId) {
         <app-chat [chatId]="selectedChatId"></app-chat>
       } @else {
         <app-chat-placeholder></app-chat-placeholder>
       }
-    </div>
   </main>
+
+      <app-drawer
+        [isOpen]="isDrawerOpen"
+        (overlayClick)="isDrawerOpen = false"
+      >
+        <li class="NavList__Item"><a class="NavList__Link" routerLink="/">Выйти</a></li>
+      </app-drawer>
 </div>
