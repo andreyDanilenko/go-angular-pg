@@ -92,17 +92,20 @@ func (r *ChatRepository) UpdateChatTimestamp(ctx context.Context, chatID string)
 }
 
 func (r *ChatRepository) CreatePrivateChat(user1ID, user2ID string) (*model.ChatRoom, error) {
+	existingID, err := r.FindPrivateChat(user1ID, user2ID)
+	if err != nil {
+		return nil, fmt.Errorf("error checking existing chat: %w", err)
+	}
+	if existingID != "" {
+		// Возвращаем существующий чат
+		return &model.ChatRoom{ID: existingID}, nil
+	}
+
 	chat := &model.ChatRoom{
 		Name:    "",
 		IsGroup: false,
 	}
-
-	existingID, _ := r.FindPrivateChat(user1ID, user2ID)
-	if existingID != "" {
-		return nil, fmt.Errorf("chat already exists")
-	}
-
-	err := r.db.Transaction(func(tx *gorm.DB) error {
+	err = r.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(chat).Error; err != nil {
 			return err
 		}

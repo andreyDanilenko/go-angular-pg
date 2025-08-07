@@ -24,6 +24,15 @@
   stroke: var(--md-sys-color-on-surface);
 }
 
+.chat-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: var(--md-sys-color-on-surface);
+}
+
 /* Переиспользоваь */
 .chat-action-btn {
   width: 40px;

@@ -21,7 +21,6 @@ import { UserStore } from '../../../stores/user-store/user.store';
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input() chatId: string | null = null;
 
-
   messages: any[] = [];
   newMessage = new FormControl('');
   currentUserId: string | null = null;

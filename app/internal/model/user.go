@@ -9,11 +9,12 @@ import (
 )
 
 type UserShort struct {
-	ID        string `json:"id"`
-	Username  string `json:"username"`
-	FirstName string `json:"firstName,omitempty"`
-	LastName  string `json:"lastName,omitempty"`
-	Email     string `json:"email"`
+	ID        string   `json:"id"`
+	Username  string   `json:"username"`
+	FirstName string   `json:"firstName,omitempty"`
+	LastName  string   `json:"lastName,omitempty"`
+	Email     string   `json:"email"`
+	Role      UserRole `gorm:"size:20;default:'guest'" json:"role"`
 }
 
 type User struct {

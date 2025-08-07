@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-
+import { TooltipComponent } from '../../uikit/tooltip/tooltip.component';
 @Component({
   selector: 'app-chats-header',
   standalone: true,
+  imports: [TooltipComponent],
   templateUrl: './chats-header.component.html',
   styleUrls: ['./chats-header.component.css']
 })
@@ -11,12 +12,11 @@ export class ChatsHeaderComponent {
   @Output() editClick = new EventEmitter<void>();
 
   onBurgerClick() {
-    console.log('Бургер нажат');
     this.burgerClick.emit();
   }
 
-  onEditClick() {
-    console.log('Редактировать чат');
+  createAdminChat() {
     this.editClick.emit();
+    console.log('123');
   }
 }
