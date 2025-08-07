@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Макет списка статей с фасетами</title>
+  <style>
+    /* CSS переменные */
+    :root {
+      /* Типографика */
+      --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 1.875rem;
+      /* Интервалы */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      /* Радиусы */
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --radius-2xl: 1rem;
+      /* Тени */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      /* Высоты */
+      --header-height: 64px;
+      --sidebar-width: 320px;
+      --facet-panel-width: 300px;
+    }
+
+    .light {
+      --md-sys-color-primary: rgb(0 100 149);
+      --md-sys-color-surface-tint: rgb(0 100 149);
+      --md-sys-color-on-primary: rgb(255 255 255);
+      --md-sys-color-primary-container: rgb(71 157 216);
+      --md-sys-color-on-primary-container: rgb(0 50 77);
+      --md-sys-color-secondary: rgb(0 109 62);
+      --md-sys-color-on-secondary: rgb(255 255 255);
+      --md-sys-color-secondary-container: rgb(11 192 114);
+      --md-sys-color-on-secondary-container: rgb(0 71 38);
+      --md-sys-color-tertiary: rgb(91 95 98);
+      --md-sys-color-on-tertiary: rgb(255 255 255);
+      --md-sys-color-tertiary-container: rgb(176 179 182);
+      --md-sys-color-on-tertiary-container: rgb(66 69 72);
+      --md-sys-color-error: rgb(186 26 26);
+      --md-sys-color-on-error: rgb(255 255 255);
+      --md-sys-color-error-container: rgb(255 218 214);
+      --md-sys-color-on-error-container: rgb(147 0 10);
+      --md-sys-color-background: rgb(247 249 255);
+      --md-sys-color-on-background: rgb(24 28 32);
+      --md-sys-color-surface: rgb(247 249 255);
+      --md-sys-color-on-surface: rgb(24 28 32);
+      --md-sys-color-surface-variant: rgb(219 227 237);
+      --md-sys-color-on-surface-variant: rgb(64 72 79);
+      --md-sys-color-outline: rgb(112 120 128);
+      --md-sys-color-outline-variant: rgb(191 199 209);
+      --md-sys-color-shadow: rgb(0 0 0);
+      --md-sys-color-scrim: rgb(0 0 0);
+      --md-sys-color-inverse-surface: rgb(45 49 53);
+      --md-sys-color-inverse-on-surface: rgb(238 241 246);
+      --md-sys-color-inverse-primary: rgb(143 205 255);
+      --md-sys-color-primary-fixed: rgb(203 230 255);
+      --md-sys-color-on-primary-fixed: rgb(0 30 48);
+      --md-sys-color-primary-fixed-dim: rgb(143 205 255);
+      --md-sys-color-on-primary-fixed-variant: rgb(0 75 113);
+      --md-sys-color-secondary-fixed: rgb(104 253 168);
+      --md-sys-color-on-secondary-fixed: rgb(0 33 15);
+      --md-sys-color-secondary-fixed-dim: rgb(70 224 142);
+      --md-sys-color-on-secondary-fixed-variant: rgb(0 82 45);
+      --md-sys-color-tertiary-fixed: rgb(224 227 230);
+      --md-sys-color-on-tertiary-fixed: rgb(24 28 30);
+      --md-sys-color-tertiary-fixed-dim: rgb(196 199 202);
+      --md-sys-color-on-tertiary-fixed-variant: rgb(68 71 74);
+      --md-sys-color-surface-dim: rgb(215 218 223);
+      --md-sys-color-surface-bright: rgb(247 249 255);
+      --md-sys-color-surface-container-lowest: rgb(255 255 255);
+      --md-sys-color-surface-container-low: rgb(241 244 249);
+      --md-sys-color-surface-container: rgb(235 238 243);
+      --md-sys-color-surface-container-high: rgb(230 232 237);
+      --md-sys-color-surface-container-highest: rgb(224 227 232);
+    }
+
+    .dark {
+      --md-sys-color-primary: rgb(143 205 255);
+      --md-sys-color-surface-tint: rgb(143 205 255);
+      --md-sys-color-on-primary: rgb(0 52 80);
+      --md-sys-color-primary-container: rgb(71 157 216);
+      --md-sys-color-on-primary-container: rgb(0 50 77);
+      --md-sys-color-secondary: rgb(70 224 142);
+      --md-sys-color-on-secondary: rgb(0 57 30);
+      --md-sys-color-secondary-container: rgb(11 192 114);
+      --md-sys-color-on-secondary-container: rgb(0 71 38);
+      --md-sys-color-tertiary: rgb(204 206 209);
+      --md-sys-color-on-tertiary: rgb(45 49 51);
+      --md-sys-color-tertiary-container: rgb(176 179 182);
+      --md-sys-color-on-tertiary-container: rgb(66 69 72);
+      --md-sys-color-error: rgb(255 180 171);
+      --md-sys-color-on-error: rgb(105 0 5);
+      --md-sys-color-error-container: rgb(147 0 10);
+      --md-sys-color-on-error-container: rgb(255 218 214);
+      --md-sys-color-background: rgb(16 20 23);
+      --md-sys-color-on-background: rgb(224 227 232);
+      --md-sys-color-surface: rgb(16 20 23);
+      --md-sys-color-on-surface: rgb(224 227 232);
+      --md-sys-color-surface-variant: rgb(64 72 79);
+      --md-sys-color-on-surface-variant: rgb(191 199 209);
+      --md-sys-color-outline: rgb(137 146 154);
+      --md-sys-color-outline-variant: rgb(64 72 79);
+      --md-sys-color-shadow: rgb(0 0 0);
+      --md-sys-color-scrim: rgb(0 0 0);
+      --md-sys-color-inverse-surface: rgb(224 227 232);
+      --md-sys-color-inverse-on-surface: rgb(45 49 53);
+      --md-sys-color-inverse-primary: rgb(0 100 149);
+      --md-sys-color-primary-fixed: rgb(203 230 255);
+      --md-sys-color-on-primary-fixed: rgb(0 30 48);
+      --md-sys-color-primary-fixed-dim: rgb(143 205 255);
+      --md-sys-color-on-primary-fixed-variant: rgb(0 75 113);
+      --md-sys-color-secondary-fixed: rgb(104 253 168);
+      --md-sys-color-on-secondary-fixed: rgb(0 33 15);
+      --md-sys-color-secondary-fixed-dim: rgb(70 224 142);
+      --md-sys-color-on-secondary-fixed-variant: rgb(0 82 45);
+      --md-sys-color-tertiary-fixed: rgb(224 227 230);
+      --md-sys-color-on-tertiary-fixed: rgb(24 28 30);
+      --md-sys-color-tertiary-fixed-dim: rgb(196 199 202);
+      --md-sys-color-on-tertiary-fixed-variant: rgb(68 71 74);
+      --md-sys-color-surface-dim: rgb(16 20 23);
+      --md-sys-color-surface-bright: rgb(54 58 62);
+      --md-sys-color-surface-container-lowest: rgb(11 15 18);
+      --md-sys-color-surface-container-low: rgb(24 28 32);
+      --md-sys-color-surface-container: rgb(28 32 36);
+      --md-sys-color-surface-container-high: rgb(39 42 46);
+      --md-sys-color-surface-container-highest: rgb(49 53 57);
+    }
+
+    /* Базовые стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family-base);
+      font-size: var(--font-size-base);
+      line-height: 1.5;
+      color: var(--md-sys-color-on-surface);
+      background-color: var(--md-sys-color-background);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font-family-base);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    /* Флекс-утилиты */
+    .d-flex {
+      display: flex;
+    }
+
+    .flex-column {
+      flex-direction: column;
+    }
+
+    .flex-grow {
+      flex-grow: 1;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .align-center {
+      align-items: center;
+    }
+
+    .gap-2 {
+      gap: var(--space-2);
+    }
+
+    .gap-3 {
+      gap: var(--space-3);
+    }
+
+    .gap-4 {
+      gap: var(--space-4);
+    }
+
+    .gap-6 {
+      gap: var(--space-6);
+    }
+
+    /* Паддинги */
+    .p-2 {
+      padding: var(--space-2);
+    }
+
+    .p-3 {
+      padding: var(--space-3);
+    }
+
+    .p-4 {
+      padding: var(--space-4);
+    }
+
+    .p-6 {
+      padding: var(--space-6);
+    }
+
+    .pt-2 {
+      padding-top: var(--space-2);
+    }
+
+    .pb-2 {
+      padding-bottom: var(--space-2);
+    }
+
+    .pl-2 {
+      padding-left: var(--space-2);
+    }
+
+    .pr-2 {
+      padding-right: var(--space-2);
+    }
+
+    .py-2 {
+      padding: var(--space-2) 0;
+    }
+
+    .py-3 {
+      padding: var(--space-3) 0;
+    }
+
+    .py-4 {
+      padding: var(--space-4) 0;
+    }
+
+    .px-2 {
+      padding: 0 var(--space-2);
+    }
+
+    .px-3 {
+      padding: 0 var(--space-3);
+    }
+
+    .px-4 {
+      padding: 0 var(--space-4);
+    }
+
+    .mt-2 {
+      margin-top: var(--space-2);
+    }
+
+    .mt-3 {
+      margin-top: var(--space-3);
+    }
+
+    .mt-4 {
+      margin-top: var(--space-4);
+    }
+
+    .mt-6 {
+      margin-top: var(--space-6);
+    }
+
+    .mb-2 {
+      margin-bottom: var(--space-2);
+    }
+
+    .mb-3 {
+      margin-bottom: var(--space-3);
+    }
+
+    .mb-4 {
+      margin-bottom: var(--space-4);
+    }
+
+    .mb-6 {
+      margin-bottom: var(--space-6);
+    }
+
+    .ml-2 {
+      margin-left: var(--space-2);
+    }
+
+    .mr-2 {
+      margin-right: var(--space-2);
+    }
+
+    /* Текст */
+    .text-xs {
+      font-size: var(--font-size-xs);
+    }
+
+    .text-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    .text-base {
+      font-size: var(--font-size-base);
+    }
+
+    .text-lg {
+      font-size: var(--font-size-lg);
+    }
+
+    .text-xl {
+      font-size: var(--font-size-xl);
+    }
+
+    .text-2xl {
+      font-size: var(--font-size-2xl);
+    }
+
+    .text-3xl {
+      font-size: var(--font-size-3xl);
+    }
+
+    .font-normal {
+      font-weight: var(--font-weight-normal);
+    }
+
+    .font-medium {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .font-semibold {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .font-bold {
+      font-weight: var(--font-weight-bold);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-primary {
+      color: var(--md-sys-color-primary);
+    }
+
+    .text-secondary {
+      color: var(--md-sys-color-secondary);
+    }
+
+    .text-success {
+      color: var(--md-sys-color-tertiary);
+    }
+
+    .text-warning {
+      color: var(--md-sys-color-tertiary);
+    }
+
+    .text-danger {
+      color: var(--md-sys-color-error);
+    }
+
+    .text-gray-500 {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .text-gray-600 {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .text-gray-700 {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .text-gray-800 {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* Фон */
+    .bg-white {
+      background-color: var(--md-sys-color-surface-container-lowest);
+    }
+
+    .bg-gray-50 {
+      background-color: var(--md-sys-color-surface-container-low);
+    }
+
+    .bg-gray-100 {
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    .bg-primary {
+      background-color: var(--md-sys-color-primary);
+    }
+
+    .bg-primary-dark {
+      background-color: var(--md-sys-color-primary-container);
+    }
+
+    /* Границы */
+    .border {
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .border-top {
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .border-bottom {
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .border-left {
+      border-left: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .border-right {
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .rounded {
+      border-radius: var(--radius-md);
+    }
+
+    .rounded-lg {
+      border-radius: var(--radius-lg);
+    }
+
+    .rounded-xl {
+      border-radius: var(--radius-xl);
+    }
+
+    .rounded-2xl {
+      border-radius: var(--radius-2xl);
+    }
+
+    /* Тени */
+    .shadow {
+      box-shadow: var(--shadow);
+    }
+
+    .shadow-md {
+      box-shadow: var(--shadow-md);
+    }
+
+    .shadow-lg {
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Видимость */
+    .hidden {
+      display: none;
+    }
+
+    /* Кнопки */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--md-sys-color-primary-container);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--md-sys-color-primary);
+      border: 1px solid var(--md-sys-color-primary);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .btn-sm {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Заголовки */
+    .h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.2;
+    }
+
+    .h2 {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+    }
+
+    .h3 {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+    }
+
+    .h4 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.4;
+    }
+
+    /* Структура страницы */
+    .layout {
+      min-height: 100vh;
+      display: grid;
+    }
+
+    .layout-sidebar {
+      grid-template-columns: var(--sidebar-width) 1fr;
+    }
+
+    .layout-facets {
+      /* grid-template-columns: var(--facet-panel-width) 1fr; */
+    }
+
+    .layout-sidebar-facets {
+      grid-template-columns: var(--sidebar-width) var(--facet-panel-width) 1fr;
+    }
+
+    .header {
+      height: var(--header-height);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      position: sticky;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+    }
+
+    .facet-panel {
+      width: var(--facet-panel-width);
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      position: absolute;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+    }
+
+    .main-content {
+      padding: var(--space-6) 0;
+    }
+
+    .content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    /* Навигация */
+    .nav-logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--md-sys-color-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .nav-link {
+      color: var(--md-sys-color-on-surface-variant);
+      font-weight: var(--font-weight-medium);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    .nav-link.active {
+      color: var(--md-sys-color-on-primary);
+      background-color: var(--md-sys-color-primary);
+    }
+
+    /* Поиск */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2) var(--space-3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-input {
+      flex-grow: 1;
+      border: none;
+      background: none;
+      outline: none;
+      font-size: var(--font-size-sm);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .search-icon {
+      color: var(--md-sys-color-on-surface-variant);
+      margin-right: var(--space-2);
+    }
+
+    /* Фасеты */
+    .facets {
+      padding: var(--space-4);
+    }
+
+    .facet {
+      margin-bottom: var(--space-6);
+    }
+
+    .facet-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--md-sys-color-on-surface);
+      margin-bottom: var(--space-3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .facet-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .facet-option {
+      display: flex;
+      align-items: center;
+      padding: var(--space-2) 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .facet-option:hover {
+      color: var(--md-sys-color-primary);
+    }
+
+    .facet-checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--md-sys-color-on-surface-variant);
+      border-radius: var(--radius-sm);
+      margin-right: var(--space-2);
+      flex-shrink: 0;
+    }
+
+    .facet-checkbox.checked {
+      background-color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .facet-checkbox.checked::after {
+      content: '✓';
+      color: var(--md-sys-color-on-primary);
+      font-size: 0.625rem;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .facet-count {
+      font-size: var(--font-size-xs);
+      color: var(--md-sys-color-on-surface-variant);
+      margin-left: auto;
+      background-color: var(--md-sys-color-surface-container);
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .clear-filters {
+      display: flex;
+      align-items: center;
+      color: var(--md-sys-color-primary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      padding: var(--space-2) 0;
+    }
+
+    .clear-filters:hover {
+      text-decoration: underline;
+    }
+
+    /* Список статей */
+    .articles-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-6);
+      padding: 0 var(--space-4);
+    }
+
+    .article-card {
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .article-image {
+      height: 200px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .article-content {
+      padding: var(--space-4);
+    }
+
+    .article-tag {
+      display: inline-block;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    .article-tag.tech {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .article-tag.design {
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    .article-tag.business {
+      background-color: var(--md-sys-color-tertiary-container);
+      color: var(--md-sys-color-on-tertiary-container);
+    }
+
+    .article-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.4;
+      margin-bottom: var(--space-2);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .article-excerpt {
+      font-size: var(--font-size-sm);
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.5;
+      margin-bottom: var(--space-3);
+    }
+
+    .article-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--font-size-xs);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .article-author {
+      display: flex;
+      align-items: center;
+    }
+
+    .article-author-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: var(--space-2);
+      object-fit: cover;
+    }
+
+    .article-date {
+      display: flex;
+      align-items: center;
+    }
+
+    .article-date-icon {
+      margin-right: var(--space-1);
+    }
+
+    /* Пагинация */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-6);
+    }
+
+    .pagination-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pagination-item:hover {
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    .pagination-item.active {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .pagination-item.disabled {
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: not-allowed;
+    }
+
+    /* Детальная страница */
+    .article-detail {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .article-detail-header {
+      position: relative;
+    }
+
+    .article-detail-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .article-detail-content {
+      padding: var(--space-6);
+    }
+
+    .article-detail-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+      color: var(--md-sys-color-on-surface);
+      margin-bottom: var(--space-3);
+    }
+
+    .article-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: var(--font-size-sm);
+    }
+
+    .article-detail-author {
+      display: flex;
+      align-items: center;
+    }
+
+    .article-detail-author-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: var(--space-2);
+    }
+
+    .article-detail-date {
+      display: flex;
+      align-items: center;
+    }
+
+    .article-detail-tags {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+
+    .article-detail-tag {
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .article-detail-body {
+      font-size: var(--font-size-base);
+      line-height: 1.8;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .article-detail-body p {
+      margin-bottom: var(--space-4);
+    }
+
+    .article-detail-body h2 {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      margin: var(--space-6) 0 var(--space-4);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .article-detail-body h3 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin: var(--space-4) 0 var(--space-3);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .article-detail-body ul {
+      margin: var(--space-3) 0 var(--space-4);
+      padding-left: var(--space-4);
+    }
+
+    .article-detail-body li {
+      margin-bottom: var(--space-2);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .article-detail-body blockquote {
+      border-left: 4px solid var(--md-sys-color-primary);
+      padding: var(--space-3) var(--space-4);
+      margin: var(--space-4) 0;
+      background-color: var(--md-sys-color-surface-container-low);
+      font-style: italic;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .article-detail-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--space-6);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    /* Прогресс чтения */
+    .reading-progress {
+      position: sticky;
+      top: var(--header-height);
+      height: 4px;
+      width: 100%;
+      background-color: var(--md-sys-color-surface-container);
+      z-index: 99;
+    }
+
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--md-sys-color-primary);
+      transition: width 0.1s ease;
+    }
+
+    /* Переключатель темы */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--md-sys-color-surface-container-high);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 1024px) {
+      :root {
+        --sidebar-width: 280px;
+        --facet-panel-width: 280px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --sidebar-width: 240px;
+        --facet-panel-width: 240px;
+        --header-height: 56px;
+      }
+      .layout, .layout-sidebar, .layout-facets, .layout-sidebar-facets {
+        grid-template-columns: 1fr;
+      }
+      .sidebar, .facet-panel {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      }
+      .articles-list {
+        grid-template-columns: 1fr;
+        padding: 0 var(--space-3);
+      }
+      .article-card {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .nav-links {
+        display: none;
+      }
+      .search-bar {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 var(--space-3);
+      }
+      .p-6 {
+        padding: var(--space-4);
+      }
+      .article-detail-content {
+        padding: var(--space-4);
+      }
+      .article-detail-title {
+        font-size: var(--font-size-xl);
+      }
+    }
+  </style>
+</head>
+<body class="light">
+  <!-- Макет 1: Список статей с фасетами -->
+  <div class="layout layout-facets">
+    <!-- Хедер -->
+    <header class="header">
+      <div class="container d-flex justify-between align-center">
+        <div class="nav-logo">ArticleHub</div>
+        <div class="d-flex align-center gap-4">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Поиск статей..." />
+          </div>
+          <button class="btn btn-primary">Написать статью</button>
+          <button class="theme-toggle" id="theme-toggle">🌙</button>
+        </div>
+      </div>
+    </header>
+    <!-- Фасеты -->
+    <aside class="facet-panel">
+      <div class="facets">
+        <h3 class="facet-title">Категории</h3>
+        <div class="facet-options">
+          <label class="facet-option">
+            <span class="facet-checkbox checked"></span>
+            <span>Все категории</span>
+            <span class="facet-count">42</span>
+          </label>
+          <label class="facet-option">
+            <span class="facet-checkbox"></span>
+            <span>Технологии</span>
+            <span class="facet-count">18</span>
+          </label>
+          <label class="facet-option">
+            <span class="facet-checkbox"></span>
+            <span>Дизайн</span>
+            <span class="facet-count">12</span>
+          </label>
+          <label class="facet-option">
+            <span class="facet-checkbox"></span>
+            <span>Бизнес</span>
+            <span class="facet-count">8</span>
+          </label>
+          <label class="facet-option">
+            <span class="facet-checkbox"></span>
+            <span>Маркетинг</span>
+            <span class="facet-count">4</span>
+          </label>
+        </div>
+        <div class="facet">
+          <h3 class="facet-title">Темы</h3>
+          <div class="facet-options">
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>UI/UX</span>
+              <span class="facet-count">15</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Frontend</span>
+              <span class="facet-count">12</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Backend</span>
+              <span class="facet-count">10</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Мобильные приложения</span>
+              <span class="facet-count">8</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Искусственный интеллект</span>
+              <span class="facet-count">6</span>
+            </label>
+          </div>
+        </div>
+        <div class="facet">
+          <h3 class="facet-title">Уровень</h3>
+          <div class="facet-options">
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Новичок</span>
+              <span class="facet-count">20</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Средний</span>
+              <span class="facet-count">15</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Продвинутый</span>
+              <span class="facet-count">7</span>
+            </label>
+          </div>
+        </div>
+        <div class="facet">
+          <h3 class="facet-title">Дата публикации</h3>
+          <div class="facet-options">
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>За последнюю неделю</span>
+              <span class="facet-count">5</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>За последний месяц</span>
+              <span class="facet-count">12</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>За последние 3 месяца</span>
+              <span class="facet-count">18</span>
+            </label>
+            <label class="facet-option">
+              <span class="facet-checkbox"></span>
+              <span>Более 3 месяцев назад</span>
+              <span class="facet-count">7</span>
+            </label>
+          </div>
+        </div>
+        <button class="clear-filters">Сбросить фильтры</button>
+      </div>
+    </aside>
+    <!-- Основное содержимое -->
+    <main class="content">
+      <div class="container">
+        <div class="d-flex justify-between align-center mb-4">
+          <h1 class="h2">Статьи</h1>
+          <div class="d-flex align-center gap-2">
+            <span class="text-sm text-gray-600">Сортировать по:</span>
+            <select class="btn btn-outline btn-sm">
+              <option>Сначала новые</option>
+              <option>Сначала старые</option>
+              <option>По популярности</option>
+              <option>По алфавиту</option>
+            </select>
+          </div>
+        </div>
+        <div class="articles-list">
+          <!-- Статья 1 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/3b82f6/ffffff?text=UI+Design" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag design">Дизайн</span>
+              <h3 class="article-title">Современные тренды в UI/UX дизайне 2024 года</h3>
+              <p class="article-excerpt">Разбираем самые актуальные тенденции в пользовательском интерфейсе и опыте взаимодействия с продуктами.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=А" alt="Аватар" class="article-author-avatar" />
+                  <span>Анна Петрова</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>15 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <!-- Статья 2 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/10b981/ffffff?text=React+Dev" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag tech">Технологии</span>
+              <h3 class="article-title">Оптимизация производительности React-приложений</h3>
+              <p class="article-excerpt">Практические советы и инструменты для ускорения работы ваших React-приложений и улучшения пользовательского опыта.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=И" alt="Аватар" class="article-author-avatar" />
+                  <span>Иван Сидоров</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>12 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <!-- Статья 3 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/f59e0b/ffffff?text=AI+Future" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag tech">Технологии</span>
+              <h3 class="article-title">Как искусственный интеллект меняет веб-разработку</h3>
+              <p class="article-excerpt">Анализ влияния ИИ на процессы разработки, тестирования и поддержки веб-приложений в 2024 году.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=М" alt="Аватар" class="article-author-avatar" />
+                  <span>Мария Козлова</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>10 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <!-- Статья 4 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/ef4444/ffffff?text=Marketing" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag business">Бизнес</span>
+              <h3 class="article-title">Эффективные стратегии контент-маркетинга для стартапов</h3>
+              <p class="article-excerpt">Пошаговое руководство по созданию и реализации контент-стратегии, которая привлекает и удерживает аудиторию.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=Д" alt="Аватар" class="article-author-avatar" />
+                  <span>Дмитрий Волков</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>8 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <!-- Статья 5 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/7c3aed/ffffff?text=Mobile+App" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag tech">Технологии</span>
+              <h3 class="article-title">Разработка кроссплатформенных мобильных приложений с React Native</h3>
+              <p class="article-excerpt">Сравнение подходов, инструментов и лучших практик при создании мобильных приложений для iOS и Android.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=Е" alt="Аватар" class="article-author-avatar" />
+                  <span>Елена Морозова</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>5 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <!-- Статья 6 -->
+          <article class="article-card">
+            <img src="https://placehold.co/400x200/06b6d4/ffffff?text=Web+Security" alt="Обложка статьи" class="article-image" />
+            <div class="article-content">
+              <span class="article-tag tech">Технологии</span>
+              <h3 class="article-title">Основы веб-безопасности для разработчиков</h3>
+              <p class="article-excerpt">Комплексный обзор наиболее распространенных уязвимостей и методов их предотвращения в современных веб-приложениях.</p>
+              <div class="article-meta">
+                <div class="article-author">
+                  <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=К" alt="Аватар" class="article-author-avatar" />
+                  <span>Константин Лебедев</span>
+                </div>
+                <div class="article-date">
+                  <span class="article-date-icon">📅</span>
+                  <span>3 мая 2024</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <!-- Пагинация -->
+        <div class="pagination">
+          <div class="pagination-item disabled">←</div>
+          <div class="pagination-item active">1</div>
+          <div class="pagination-item">2</div>
+          <div class="pagination-item">3</div>
+          <div class="pagination-item">4</div>
+          <div class="pagination-item">5</div>
+          <div class="pagination-item">→</div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <!-- Макет 2: Детальная страница статьи -->
+  <div style="margin-top: var(--space-12); padding: 0 var(--space-4) var(--space-12);">
+    <div class="reading-progress">
+      <div class="reading-progress-bar" style="width: 25%;"></div>
+    </div>
+    <div class="container">
+      <article class="article-detail">
+        <div class="article-detail-header">
+          <img src="https://placehold.co/800x400/3b82f6/ffffff?text=Modern+UI+Design" alt="Обложка статьи" class="article-detail-image" />
+        </div>
+        <div class="article-detail-content">
+          <h1 class="article-detail-title">Современные тренды в UI/UX дизайне 2024 года</h1>
+          <div class="article-detail-meta">
+            <div class="article-detail-author">
+              <img src="https://placehold.co/32x32/e5e7eb/6b7280?text=А" alt="Аватар автора" class="article-detail-author-avatar" />
+              <span>Анна Петрова</span>
+            </div>
+            <div class="article-detail-date">
+              <span>📅</span>
+              <span>15 мая 2024</span>
+            </div>
+            <div>
+              <span>⏱️</span>
+              <span>8 минут чтения</span>
+            </div>
+          </div>
+          <div class="article-detail-tags">
+            <span class="article-detail-tag">UI/UX</span>
+            <span class="article-detail-tag">Дизайн</span>
+            <span class="article-detail-tag">Тренды</span>
+            <span class="article-detail-tag">2024</span>
+          </div>
+          <div class="article-detail-body">
+            <p>В 2024 году мир UI/UX дизайна продолжает эволюционировать, адаптируясь к меняющимся потребностям пользователей и технологическим инновациям. В этой статье мы подробно рассмотрим самые актуальные тренды, которые определяют направление развития пользовательского интерфейса и опыта взаимодействия с цифровыми продуктами.</p>
+            <h2>Неоморфизм и глубокая реалистичность</h2>
+            <p>Одним из самых заметных трендов 2024 года стал неоморфизм — стиль, который сочетает в себе элементы неоморфизма и глубокой реалистичности. Этот подход создает иллюзию трехмерности, где элементы интерфейса仿佛 выступают из фона или погружаются в него, создавая ощущение настоящего физического взаимодействия.</p>
+            <p>Ключевые характеристики неоморфного дизайна:</p>
+            <ul>
+              <li>Тонкие тени и свечения, создающие эффект глубины</li>
+              <li>Полупрозрачные элементы с размытием фона (glassmorphism)</li>
+              <li>Естественные градиенты и текстуры</li>
+              <li>Симуляция физических свойств материалов</li>
+            </ul>
+            <h3>Адаптивные интерфейсы</h3>
+            <p>С ростом разнообразия устройств и экранов, адаптивность стала не просто желательной, а обязательной характеристикой современного дизайна. Современные интерфейсы должны не просто масштабироваться, но и адаптироваться к контексту использования.</p>
+            <blockquote>
+              "Лучший дизайн — это тот, который незаметен для пользователя. Он просто работает интуитивно и эффективно."
+            </blockquote>
+            <p>Адаптивные интерфейсы 2024 года учитывают:</p>
+            <ul>
+              <li>Размер и разрешение экрана</li>
+              <li>Ориентацию устройства</li>
+              <li>Контекст использования (дома, в пути, на работе)</li>
+              <li>Предпочтения пользователя</li>
+              <li>Доступность и инклюзивность</li>
+            </ul>
+            <h2>Персонализация и контекстное проектирование</h2>
+            <p>Персонализация вышла на новый уровень благодаря развитию искусственного интеллекта и машинного обучения. Современные интерфейсы анализируют поведение пользователя и адаптируют контент, навигацию и функциональность под его индивидуальные предпочтения и привычки.</p>
+            <p>Эффективная персонализация включает:</p>
+            <ul>
+              <li>Адаптивные рекомендации контента</li>
+              <li>Интеллектуальную навигацию</li>
+              <li>Контекстные подсказки и помощь</li>
+              <li>Динамическое изменение интерфейса</li>
+              <li>Прогнозирование действий пользователя</li>
+            </ul>
+            <p>В заключение, UI/UX дизайн 2024 года продолжает движение в сторону более естественного, интуитивного и персонализированного взаимодействия. Успешные продукты того времени будут теми, которые смогут создать по-настоящему человеческий опыт, где технологии служат людям, а не наоборот.</p>
+          </div>
+          <div class="article-detail-actions">
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline">❤️ Нравится</button>
+              <button class="btn btn-outline">💬 Комментировать</button>
+              <button class="btn btn-outline">📤 Поделиться</button>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary">Подписаться на автора</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // Переключение темы
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Проверяем сохраненную тему или используем светлую по умолчанию
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.className = savedTheme;
+    themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+
+    themeToggle.addEventListener('click', () => {
+      if (body.classList.contains('dark')) {
+        body.className = 'light';
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        body.className = 'dark';
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>

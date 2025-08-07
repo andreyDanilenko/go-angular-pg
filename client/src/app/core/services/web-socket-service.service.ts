@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, Observable, Subject } from 'rxjs';
+import { filter, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
@@ -8,7 +8,8 @@ import { environment } from '../../../environments/environment.prod';
 export class WebSocketService {
   private socket!: WebSocket;
   private messageSubject = new Subject<any>();
-  private connectionSubject = new Subject<boolean>();
+  private connectionSubject = new BehaviorSubject<boolean>(false); // ✅
+
   private token: string;
 
   constructor() {
@@ -16,20 +17,24 @@ export class WebSocketService {
   }
 
   connect(): void {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
-  console.log('Current environment:', environment);
+    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+      console.log('[WebSocketService] Already connected or connecting');
+      return;
+    }
 
     const wsUrl = `${environment.socketUrl}/ws?token=${this.token}`;
+    console.log('[WebSocketService] Connecting to:', wsUrl);
+
     this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {
+      console.log('[WebSocketService] Connected');
       this.connectionSubject.next(true);
     };
 
     this.socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        console.log(message);
         this.messageSubject.next(message);
       } catch (error) {
         console.error('Error parsing message:', error);
@@ -37,20 +42,20 @@ export class WebSocketService {
     };
 
     this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('[WebSocketService] WebSocket error:', error);
       this.connectionSubject.next(false);
     };
 
     this.socket.onclose = () => {
+      console.warn('[WebSocketService] Connection closed, reconnecting...');
       this.connectionSubject.next(false);
       setTimeout(() => this.connect(), 5000);
     };
   }
 
   sendMessage(chatId: string, text: string): void {
-    if (this.socket.readyState === WebSocket.OPEN) {
+    if (this.socket?.readyState === WebSocket.OPEN) {
       const message = { chatId, text };
-      console.log('Sending message:', message);
       this.socket.send(JSON.stringify(message));
     } else {
       console.warn('WebSocket is not open.');

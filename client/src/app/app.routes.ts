@@ -5,11 +5,10 @@ import { AuthGuard } from './pages/guard/auth-guard';
 import { AuthComponent } from './pages/auth/auth.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HomeComponent } from './pages/main/main.component';
-import { ChatsPageComponent } from './pages/chats/chats-page.component';
-import { ChatPageComponent } from './pages/chat/chat-page.component';
 import { PostsPageComponent } from './pages/posts-page/posts-page';
 import { PostEditorComponent } from './pages/post-page/post-page';
 import { ProfilePageComponent } from './pages/profile/profile-page.component';
+import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
 
 export const routes: Routes = [
   {
@@ -30,12 +29,10 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'messages',
-    component: MainLayoutComponent,
+    path: 'messenger',
     canActivate: [AuthGuard],
     children: [
-      { path: '', component: ChatsPageComponent },
-      { path: ':id', component: ChatPageComponent },
+      { path: '', component: MessengerPageComponent },
     ]
   },
   {
@@ -55,9 +52,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: ProfilePageComponent },
-      // { path: 'create', component: PostEditorComponent },
-      // { path: ':id', component: PostEditorComponent },
-      // { path: ':id/edit', component: PostEditorComponent }
     ]
   },
   { path: '**', redirectTo: '' }

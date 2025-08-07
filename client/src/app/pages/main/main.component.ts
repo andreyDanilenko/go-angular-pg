@@ -6,17 +6,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './main.component.html',
-  styles: [`
-    h2 {
-      color: #4a90e2;
-      border-bottom: 2px solid #4a90e2;
-      padding-bottom: 0.5rem;
-      border-radius: 4px;
-    }
-    p {
-      font-size: 1.1rem;
-      color: #555;
-    }
-  `]
+  styles: []
 })
-export class HomeComponent {}
+export class HomeComponent {
+
+
+
+    onOptionClick1() {
+      console.log('Выбрана опци 1');
+    }
+    onOptionClick2() {
+      console.log('Выбрана опци 2');
+    }
+}

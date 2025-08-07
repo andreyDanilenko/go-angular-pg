@@ -7,6 +7,7 @@ import { User } from '../../core/types/user.model';
 export class UserStore {
   private initialState: UserState = {
     users: [],
+    adminUsers: [],
     currentUser: null,
     loading: false,
     error: null
@@ -32,6 +33,10 @@ export class UserStore {
 
   setUsers(users: User[]): void {
     this.setState({ users, error: null });
+  }
+
+  setAdminUsers(adminUsers: User[]): void {
+    this.setState({ adminUsers, error: null });
   }
 
   setCurrentUser(user: User): void {

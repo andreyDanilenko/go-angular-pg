@@ -1,0 +1,31 @@
+<div class="layout layout-chat light">
+  <aside class="chat-list" [class.visible-mobile]="!selectedChatId" [class.hidden-mobile]="selectedChatId">
+    <app-chats-header
+      [users]="users"
+      (burgerClick)="handleEditClick()"
+      (editClick)="handleCreateClick($event)">
+    </app-chats-header>
+
+    @if (!isEditMode) {
+      <app-chats
+        [currentChatId]="selectedChatId"
+        (chatSelected)="onChatSelected($event)">
+      </app-chats>
+    }
+
+    @if (isEditMode) {
+      <app-chats-edit
+        (backToChats)="handleBackToChats()">
+      </app-chats-edit>
+    }
+  </aside>
+
+  <main class="chat" [class.visible-mobile]="selectedChatId" [class.hidden-mobile]="!selectedChatId">
+      <app-chat-header (returnClick)="handleReturnClick()"></app-chat-header>
+      @if (selectedChatId) {
+        <app-chat [chatId]="selectedChatId"></app-chat>
+      } @else {
+        <app-chat-placeholder></app-chat-placeholder>
+      }
+  </main>
+</div>

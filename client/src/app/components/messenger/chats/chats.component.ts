@@ -1,8 +1,7 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { InputComponent } from '../../uikit/input/input.component';
 import { catchError, of, Subscription } from 'rxjs';
 import { BaseApiService } from '../../../core/services/base-api.service';
 import { WebSocketService } from '../../../core/services/web-socket-service.service';
@@ -48,13 +47,16 @@ interface MessagePayload {
 @Component({
   selector: 'app-chats',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, InputComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './chats.component.html',
   styleUrls: ['./chats.component.css'],
   providers: [BaseApiService]
 })
-export class ChatsComponent implements OnInit, OnDestroy {
+export class ChatsComponent implements OnInit {
+  @Input() currentChatId: string | null = null;
+  @Output() chatSelected = new EventEmitter<string>();
   search = new FormControl('');
+
   private wsSubscription!: Subscription;
 
   protected readonly allChats = signal<Chat[]>([]);
@@ -66,13 +68,13 @@ export class ChatsComponent implements OnInit, OnDestroy {
     private wsService: WebSocketService
   ) {}
 
+  selectChat(chatId: string) {
+    this.currentChatId = chatId;
+    this.chatSelected.emit(chatId);
+  }
   ngOnInit(): void {
     this.loadChats();
-    this.initWebSocket();
-  }
-
-  ngOnDestroy(): void {
-    this.wsSubscription?.unsubscribe();
+    this.initWebSocket()
   }
 
   private loadChats(): void {
@@ -94,7 +96,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
   }
 
   private initWebSocket(): void {
-    this.wsService.connect();
     this.wsSubscription = this.wsService.getMessages().subscribe({
       next: (message) => this.handleSocketMessage(message),
       error: (err) => console.error('WebSocket error:', err)
@@ -172,7 +173,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
       ...chat,
       lastMessage: chat.lastMessage || '',
       time: chat.time || this.formatTime(chat.updatedAt),
-      avatar: chat.avatar || 'assets/avatars/default-user.jpg'
     })).sort((a, b) => {
       const dateA = a.time ? new Date(a.time).getTime() : new Date(a.updatedAt).getTime();
       const dateB = b.time ? new Date(b.time).getTime() : new Date(b.updatedAt).getTime();
@@ -188,7 +188,7 @@ export class ChatsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatTime(dateString: string): string {
+  public formatTime(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }

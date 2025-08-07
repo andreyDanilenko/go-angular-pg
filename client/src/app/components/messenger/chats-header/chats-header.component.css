@@ -1,0 +1,61 @@
+.chat-header {
+  height: var(--chat-header-height);
+  background-color: var(--md-sys-color-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.chat-header-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--md-sys-color-on-surface);
+}
+
+.chat-header .chat-header-burger rect {
+  fill: var(--md-sys-color-on-surface);
+}
+
+.chat-header .chat-header-edit rect,
+.chat-header .chat-header-edit path {
+  stroke: var(--md-sys-color-on-surface);
+}
+
+.chat-btn {
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Переиспользоваь */
+.chat-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: all 0.2s ease;
+}
+.chat-action-btn:hover {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+.chat-action-btn.primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.chat-action-btn.primary:hover {
+  background-color: var(--md-sys-color-primary-container);
+}
+/* Переиспользоваь */
+
+

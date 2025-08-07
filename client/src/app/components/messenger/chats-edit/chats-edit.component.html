@@ -1,0 +1,12 @@
+<div class="edit-container">
+  <ul class="edit-list">
+    @for (option of editOptions; track option.id) {
+      <li
+        class="edit-item"
+        (click)="onEditOptionSelected(option)">
+        <span class="edit-name">{{option.name}}</span>
+      </li>
+    }
+    <li class="edit-item"><a class="NavList__Link" routerLink="/" >Выйти из мессенджера</a></li>
+  </ul>
+</div>

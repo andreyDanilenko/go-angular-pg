@@ -114,6 +114,7 @@ func (s *UserService) GetUsers(ctx context.Context) ([]model.UserShort, error) {
 			FirstName: u.FirstName,
 			LastName:  u.LastName,
 			Email:     u.Email,
+			Role:      u.Role,
 		})
 	}
 	return shortUsers, nil

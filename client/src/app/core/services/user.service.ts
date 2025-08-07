@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 import { UserStore } from '../../stores/user-store/user.store';
 import { User } from '../types/user.model';
@@ -24,6 +24,27 @@ export class UserService {
           this.store.setError('Failed to load users');
           this.store.setLoading(false);
         }
+      })
+    );
+  }
+
+  loadUsersOnlyAdmins(): Observable<User[]> {
+    this.store.setLoading(true);
+    return this.api.get<User[]>('users').pipe(
+      map(users => users.filter(user => user.role === 'admin')),
+      tap({
+        next: (admins) => {
+          this.store.setAdminUsers(admins);
+          this.store.setLoading(false);
+        },
+        error: (err) => {
+          this.store.setError('Failed to load admins');
+          this.store.setLoading(false);
+        }
+      }),
+      catchError(err => {
+        console.error('Error fetching admins:', err);
+        return of([]);
       })
     );
   }

@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Макет страницы профиля</title>
+  <style>
+    /* CSS переменные */
+    :root {
+      /* Цвета */
+      --color-primary: #3b82f6;
+      --color-primary-dark: #2563eb;
+      --color-secondary: #7c3aed;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-gray-50: #f9fafb;
+      --color-gray-100: #f3f4f6;
+      --color-gray-200: #e5e7eb;
+      --color-gray-300: #d1d5db;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+      --color-gray-600: #4b5563;
+      --color-gray-700: #374151;
+      --color-gray-800: #1f2937;
+      --color-gray-900: #111827;
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-online: #10b981;
+      --color-away: #f59e0b;
+      --color-offline: #6b7280;
+
+      /* Типографика */
+      --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 1.875rem;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+
+      /* Интервалы */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Радиусы */
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --radius-2xl: 1rem;
+      --radius-full: 9999px;
+
+      /* Тени */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+      /* Высоты */
+      --header-height: 64px;
+      --sidebar-width: 300px;
+      --profile-sidebar-width: 280px;
+    }
+
+    /* Базовые стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family-base);
+      font-size: var(--font-size-base);
+      line-height: 1.5;
+      color: var(--color-gray-800);
+      background-color: var(--color-gray-50);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font-family-base);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    /* Формы */
+    input, textarea, select {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-base);
+      color: var(--color-gray-700);
+      transition: all 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Флекс-утилиты */
+    .d-flex {
+      display: flex;
+    }
+
+    .flex-column {
+      flex-direction: column;
+    }
+
+    .flex-grow {
+      flex-grow: 1;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .justify-center {
+      justify-content: center;
+    }
+
+    .align-center {
+      align-items: center;
+    }
+
+    .align-end {
+      align-items: flex-end;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .gap-1 {
+      gap: var(--space-1);
+    }
+
+    .gap-2 {
+      gap: var(--space-2);
+    }
+
+    .gap-3 {
+      gap: var(--space-3);
+    }
+
+    .gap-4 {
+      gap: var(--space-4);
+    }
+
+    .gap-6 {
+      gap: var(--space-6);
+    }
+
+    .gap-8 {
+      gap: var(--space-8);
+    }
+
+    /* Паддинги */
+    .p-1 {
+      padding: var(--space-1);
+    }
+
+    .p-2 {
+      padding: var(--space-2);
+    }
+
+    .p-3 {
+      padding: var(--space-3);
+    }
+
+    .p-4 {
+      padding: var(--space-4);
+    }
+
+    .p-6 {
+      padding: var(--space-6);
+    }
+
+    .pt-2 {
+      padding-top: var(--space-2);
+    }
+
+    .pb-2 {
+      padding-bottom: var(--space-2);
+    }
+
+    .pl-2 {
+      padding-left: var(--space-2);
+    }
+
+    .pr-2 {
+      padding-right: var(--space-2);
+    }
+
+    .py-1 {
+      padding: var(--space-1) 0;
+    }
+
+    .py-2 {
+      padding: var(--space-2) 0;
+    }
+
+    .py-3 {
+      padding: var(--space-3) 0;
+    }
+
+    .py-4 {
+      padding: var(--space-4) 0;
+    }
+
+    .px-1 {
+      padding: 0 var(--space-1);
+    }
+
+    .px-2 {
+      padding: 0 var(--space-2);
+    }
+
+    .px-3 {
+      padding: 0 var(--space-3);
+    }
+
+    .px-4 {
+      padding: 0 var(--space-4);
+    }
+
+    .mt-1 {
+      margin-top: var(--space-1);
+    }
+
+    .mt-2 {
+      margin-top: var(--space-2);
+    }
+
+    .mt-3 {
+      margin-top: var(--space-3);
+    }
+
+    .mt-4 {
+      margin-top: var(--space-4);
+    }
+
+    .mt-6 {
+      margin-top: var(--space-6);
+    }
+
+    .mt-8 {
+      margin-top: var(--space-8);
+    }
+
+    .mb-1 {
+      margin-bottom: var(--space-1);
+    }
+
+    .mb-2 {
+      margin-bottom: var(--space-2);
+    }
+
+    .mb-3 {
+      margin-bottom: var(--space-3);
+    }
+
+    .mb-4 {
+      margin-bottom: var(--space-4);
+    }
+
+    .mb-6 {
+      margin-bottom: var(--space-6);
+    }
+
+    .mb-8 {
+      margin-bottom: var(--space-8);
+    }
+
+    .ml-1 {
+      margin-left: var(--space-1);
+    }
+
+    .ml-2 {
+      margin-left: var(--space-2);
+    }
+
+    .mr-1 {
+      margin-right: var(--space-1);
+    }
+
+    .mr-2 {
+      margin-right: var(--space-2);
+    }
+
+    /* Текст */
+    .text-xs {
+      font-size: var(--font-size-xs);
+    }
+
+    .text-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    .text-base {
+      font-size: var(--font-size-base);
+    }
+
+    .text-lg {
+      font-size: var(--font-size-lg);
+    }
+
+    .text-xl {
+      font-size: var(--font-size-xl);
+    }
+
+    .text-2xl {
+      font-size: var(--font-size-2xl);
+    }
+
+    .text-3xl {
+      font-size: var(--font-size-3xl);
+    }
+
+    .font-normal {
+      font-weight: var(--font-weight-normal);
+    }
+
+    .font-medium {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .font-semibold {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .font-bold {
+      font-weight: var(--font-weight-bold);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-primary {
+      color: var(--color-primary);
+    }
+
+    .text-secondary {
+      color: var(--color-secondary);
+    }
+
+    .text-success {
+      color: var(--color-success);
+    }
+
+    .text-warning {
+      color: var(--color-warning);
+    }
+
+    .text-danger {
+      color: var(--color-danger);
+    }
+
+    .text-gray-500 {
+      color: var(--color-gray-500);
+    }
+
+    .text-gray-600 {
+      color: var(--color-gray-600);
+    }
+
+    .text-gray-700 {
+      color: var(--color-gray-700);
+    }
+
+    .text-gray-800 {
+      color: var(--color-gray-800);
+    }
+
+    /* Фон */
+    .bg-white {
+      background-color: var(--color-white);
+    }
+
+    .bg-gray-50 {
+      background-color: var(--color-gray-50);
+    }
+
+    .bg-gray-100 {
+      background-color: var(--color-gray-100);
+    }
+
+    .bg-primary {
+      background-color: var(--color-primary);
+    }
+
+    .bg-primary-dark {
+      background-color: var(--color-primary-dark);
+    }
+
+    /* Границы */
+    .border {
+      border: 1px solid var(--color-gray-200);
+    }
+
+    .border-top {
+      border-top: 1px solid var(--color-gray-200);
+    }
+
+    .border-bottom {
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .border-left {
+      border-left: 1px solid var(--color-gray-200);
+    }
+
+    .border-right {
+      border-right: 1px solid var(--color-gray-200);
+    }
+
+    .border-primary {
+      border-color: var(--color-primary);
+    }
+
+    /* Радиусы */
+    .rounded {
+      border-radius: var(--radius-md);
+    }
+
+    .rounded-lg {
+      border-radius: var(--radius-lg);
+    }
+
+    .rounded-xl {
+      border-radius: var(--radius-xl);
+    }
+
+    .rounded-2xl {
+      border-radius: var(--radius-2xl);
+    }
+
+    .rounded-full {
+      border-radius: var(--radius-full);
+    }
+
+    /* Тени */
+    .shadow {
+      box-shadow: var(--shadow);
+    }
+
+    .shadow-md {
+      box-shadow: var(--shadow-md);
+    }
+
+    .shadow-lg {
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Видимость */
+    .hidden {
+      display: none;
+    }
+
+    /* Кнопки */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-primary-dark);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    .btn-sm {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-icon-lg {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+    }
+
+    /* Заголовки */
+    .h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.2;
+    }
+
+    .h2 {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+    }
+
+    .h3 {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+    }
+
+    .h4 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.4;
+    }
+
+    /* Структура страницы */
+    .layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: var(--header-height) 1fr;
+      grid-template-columns: 1fr;
+    }
+
+    .layout-sidebar {
+      grid-template-columns: var(--sidebar-width) 1fr;
+    }
+
+    .layout-profile {
+      /* grid-template-columns: var(--profile-sidebar-width) 1fr; */
+    }
+
+    .header {
+      height: var(--header-height);
+      background-color: var(--color-white);
+      border-bottom: 1px solid var(--color-gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--color-white);
+      border-right: 1px solid var(--color-gray-200);
+      position: sticky;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+    }
+
+    .profile-sidebar {
+      width: var(--profile-sidebar-width);
+      background-color: var(--color-white);
+      border-right: 1px solid var(--color-gray-200);
+      position: fixed;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+    }
+
+    .main-content {
+      padding: var(--space-6) 0;
+    }
+
+    .content {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    /* Навигация */
+    .nav-logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .nav-link {
+      color: var(--color-gray-700);
+      font-weight: var(--font-weight-medium);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--color-primary);
+      background-color: var(--color-gray-100);
+    }
+
+    .nav-link.active {
+      color: var(--color-primary);
+      background-color: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    /* Поиск */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background-color: var(--color-gray-100);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2) var(--space-3);
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .search-input {
+      flex-grow: 1;
+      border: none;
+      background: none;
+      outline: none;
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-700);
+    }
+
+    .search-icon {
+      color: var(--color-gray-500);
+      margin-right: var(--space-2);
+    }
+
+    /* Профиль */
+    .profile-header {
+      text-align: center;
+      padding: var(--space-6) var(--space-4) var(--space-4);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .profile-avatar {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin: 0 auto var(--space-3);
+      border: 4px solid var(--color-white);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .profile-avatar-upload {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background-color: var(--color-primary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-white);
+      cursor: pointer;
+      border: 2px solid var(--color-white);
+    }
+
+    .profile-name {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-2);
+    }
+
+    .profile-title {
+      font-size: var(--font-size-lg);
+      color: var(--color-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .profile-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-1);
+      font-size: var(--font-size-sm);
+      color: var(--color-success);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background-color: var(--color-success);
+    }
+
+    /* Навигация профиля */
+    .profile-nav {
+      padding: var(--space-4) 0;
+    }
+
+    .profile-nav-item {
+      display: flex;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-gray-700);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .profile-nav-item:hover {
+      background-color: var(--color-gray-50);
+      color: var(--color-primary);
+    }
+
+    .profile-nav-item.active {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    .profile-nav-icon {
+      margin-right: var(--space-3);
+      font-size: var(--font-size-lg);
+    }
+
+    .profile-nav-item.active .profile-nav-icon {
+      color: var(--color-white);
+    }
+
+    /* Форма профиля */
+    .profile-form {
+      padding: var(--space-6);
+    }
+
+    .form-section {
+      margin-bottom: var(--space-8);
+    }
+
+    .form-section-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-help {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-4);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-gray-200);
+    }
+
+    /* Панель навыков */
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-gray-100);
+      color: var(--color-gray-700);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .skill-tag.remove {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      cursor: pointer;
+    }
+
+    .add-skill {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border: 1px dashed var(--color-gray-300);
+      border-radius: var(--radius-full);
+      color: var(--color-gray-500);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .add-skill:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    /* Опыт работы */
+    .experience-item {
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+
+    .experience-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-3);
+    }
+
+    .experience-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-gray-800);
+    }
+
+    .experience-company {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+    }
+
+    .experience-date {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .experience-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .experience-description {
+      color: var(--color-gray-700);
+      line-height: 1.6;
+    }
+
+    .add-experience {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      padding: var(--space-3);
+      border: 1px dashed var(--color-primary);
+      border-radius: var(--radius-lg);
+      transition: all 0.2s ease;
+    }
+
+    .add-experience:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Аватар в форме */
+    .avatar-preview {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: var(--space-3);
+    }
+
+    .avatar-upload-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background-color: var(--color-primary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-white);
+      cursor: pointer;
+      border: 2px solid var(--color-white);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 1024px) {
+      :root {
+        --sidebar-width: 280px;
+        --profile-sidebar-width: 260px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --sidebar-width: 240px;
+        --profile-sidebar-width: 100%;
+        --header-height: 56px;
+      }
+
+      .layout, .layout-sidebar, .layout-profile {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar, .profile-sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--color-gray-200);
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-form {
+        padding: var(--space-4);
+      }
+
+      .profile-header {
+        padding: var(--space-4);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 var(--space-3);
+      }
+
+      .p-4 {
+        padding: var(--space-3);
+      }
+
+      .profile-form {
+        padding: var(--space-3);
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Макет страницы профиля -->
+  <div class="layout layout-profile">
+    <!-- Хедер -->
+    <header class="header">
+      <div class="container d-flex justify-between align-center">
+        <div class="nav-logo">ProfileApp</div>
+        <div class="d-flex align-center gap-4">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Поиск..." />
+          </div>
+          <button class="btn btn-primary">Сохранить</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Боковая панель профиля -->
+    <aside class="profile-sidebar">
+      <!-- Заголовок профиля -->
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="https://placehold.co/120x120/e5e7eb/6b7280?text=В" alt="Аватар" />
+          <div class="profile-avatar-upload">✎</div>
+        </div>
+        <h1 class="profile-name">Василий Петров</h1>
+        <div class="profile-title">Ведущий разработчик</div>
+        <div class="profile-status">
+          <span class="status-dot"></span>
+          В сети
+        </div>
+      </div>
+
+      <!-- Навигация профиля -->
+      <nav class="profile-nav">
+        <div class="profile-nav-item active">
+          <span class="profile-nav-icon">👤</span>
+          Общая информация
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">💼</span>
+          Опыт работы
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">🎓</span>
+          Образование
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">🏆</span>
+          Навыки
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">🔒</span>
+          Конфиденциальность
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">🔔</span>
+          Уведомления
+        </div>
+        <div class="profile-nav-item">
+          <span class="profile-nav-icon">⚙️</span>
+          Настройки
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Основное содержимое -->
+    <main class="content">
+      <div class="profile-form">
+        <!-- Общая информация -->
+        <section class="form-section">
+          <h2 class="form-section-title">Общая информация</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Имя</label>
+              <input type="text" value="Василий" placeholder="Введите имя" />
+              <div class="form-help">Имя, которое будет отображаться в вашем профиле</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Фамилия</label>
+              <input type="text" value="Петров" placeholder="Введите фамилию" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Должность</label>
+              <input type="text" value="Ведущий разработчик" placeholder="Введите должность" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Компания</label>
+              <input type="text" value="TechCorp" placeholder="Введите название компании" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" value="vasily.petrov@techcorp.com" placeholder="Введите email" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Телефон</label>
+              <input type="tel" value="+7 (999) 123-45-67" placeholder="Введите телефон" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">О себе</label>
+            <textarea placeholder="Расскажите о себе, своих интересах и профессиональных достижениях">Разработчик с 5-летним опытом, специализируюсь на frontend-разработке. Люблю создавать красивые и функциональные интерфейсы. Интересуюсь UX/UI, новыми технологиями и дизайном.</textarea>
+            <div class="form-help">Краткая информация о вас, вашем опыте и интересах</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Социальные сети</label>
+            <div class="form-row">
+              <div class="form-group">
+                <input type="text" value="https://linkedin.com/in/vasilypetrov" placeholder="LinkedIn" />
+              </div>
+              <div class="form-group">
+                <input type="text" value="https://github.com/vasilypetrov" placeholder="GitHub" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Опыт работы -->
+        <section class="form-section">
+          <h2 class="form-section-title">Опыт работы</h2>
+
+          <!-- Текущий опыт -->
+          <div class="experience-item">
+            <div class="experience-header">
+              <div>
+                <div class="experience-title">Ведущий разработчик</div>
+                <div class="experience-company">TechCorp</div>
+              </div>
+              <div class="experience-actions">
+                <button class="btn-icon">
+                  <span>✎</span>
+                </button>
+                <button class="btn-icon">
+                  <span>🗑️</span>
+                </button>
+              </div>
+            </div>
+            <div class="experience-date">Июнь 2020 — настоящее время</div>
+            <div class="experience-description">
+              Отвечаю за разработку и поддержку frontend-части веб-приложений. Руковожу командой из 5 разработчиков, провожу код-ревью, разрабатываю архитектуру приложений.
+              Участвую в проектировании пользовательского интерфейса и UX.
+            </div>
+          </div>
+
+          <!-- Предыдущий опыт -->
+          <div class="experience-item">
+            <div class="experience-header">
+              <div>
+                <div class="experience-title">Frontend-разработчик</div>
+                <div class="experience-company">Digital Solutions</div>
+              </div>
+              <div class="experience-actions">
+                <button class="btn-icon">
+                  <span>✎</span>
+                </button>
+                <button class="btn-icon">
+                  <span>🗑️</span>
+                </button>
+              </div>
+            </div>
+            <div class="experience-date">Март 2018 — Май 2020</div>
+            <div class="experience-description">
+              Разрабатывал веб-интерфейсы для клиентских проектов. Работал с React, Vue.js, TypeScript. Участвовал в создании SPA-приложений, адаптивных интерфейсов,
+              интеграции с API. Проводил оптимизацию производительности и улучшение пользовательского опыта.
+            </div>
+          </div>
+
+          <!-- Добавить опыт -->
+          <div class="add-experience">
+            <span>+</span>
+            <span>Добавить место работы</span>
+          </div>
+        </section>
+
+        <!-- Навыки -->
+        <section class="form-section">
+          <h2 class="form-section-title">Навыки и компетенции</h2>
+
+          <div class="form-group">
+            <label class="form-label">Технические навыки</label>
+            <div class="skills-list">
+              <span class="skill-tag remove">JavaScript</span>
+              <span class="skill-tag remove">TypeScript</span>
+              <span class="skill-tag remove">React</span>
+              <span class="skill-tag remove">Vue.js</span>
+              <span class="skill-tag remove">Node.js</span>
+              <span class="skill-tag remove">HTML/CSS</span>
+              <span class="skill-tag remove">Webpack</span>
+              <span class="skill-tag remove">REST API</span>
+              <span class="skill-tag remove">GraphQL</span>
+            </div>
+            <div class="add-skill">
+              <span>+</span>
+              <span>Добавить навык</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Soft skills</label>
+            <div class="skills-list">
+              <span class="skill-tag remove">Руководство командой</span>
+              <span class="skill-tag remove">Коммуникация</span>
+              <span class="skill-tag remove">Презентации</span>
+              <span class="skill-tag remove">Менторство</span>
+            </div>
+            <div class="add-skill">
+              <span>+</span>
+              <span>Добавить soft skill</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Языки</label>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Русский</label>
+                <select>
+                  <option selected>Родной</option>
+                  <option>Свободно</option>
+                  <option>Средний</option>
+                  <option>Начальный</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Английский</label>
+                <select>
+                  <option>Свободно</option>
+                  <option selected>Продвинутый</option>
+                  <option>Средний</option>
+                  <option>Начальный</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Контактная информация -->
+        <section class="form-section">
+          <h2 class="form-section-title">Контактная информация</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Город</label>
+              <input type="text" value="Москва" placeholder="Введите город" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Страна</label>
+              <input type="text" value="Россия" placeholder="Введите страну" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Адрес</label>
+              <input type="text" value="ул. Ленина, д. 15, кв. 42" placeholder="Введите адрес" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Почтовый индекс</label>
+              <input type="text" value="123456" placeholder="Введите индекс" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Временная зона</label>
+            <select>
+              <option>Москва (UTC+3)</option>
+              <option>Санкт-Петербург (UTC+3)</option>
+              <option>Екатеринбург (UTC+5)</option>
+              <option>Владивосток (UTC+10)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Действия формы -->
+        <div class="form-actions">
+          <button class="btn btn-outline">Отмена</button>
+          <button class="btn btn-primary">Сохранить изменения</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
