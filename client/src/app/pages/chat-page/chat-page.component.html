@@ -1,74 +1,14 @@
 <div class="layout layout-chat">
-  <!-- Список чатов -->
   <aside class="chat-list">
-    <div class="chat-header">
-      <h2 class="chat-header-title">Чаты</h2>
-      <div class="chat-header-actions">
-        <button class="btn-icon">
-          <span>✏️</span>
-        </button>
-        <button class="btn-icon">
-          <span>⚙️</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Профиль пользователя -->
-    <div class="chat-profile">
-      <div class="chat-profile-header">
-        <div class="chat-profile-avatar">
-          <img src="https://placehold.co/60x60/e5e7eb/6b7280?text=В" alt="Аватар" />
-        </div>
-        <div class="chat-profile-info">
-          <h3 class="chat-profile-name">{{ displayName }}</h3>
-          <div class="chat-profile-status">
-            <span class="status-dot online"></span>
-            В сети
-          </div>
-        </div>
-      </div>
-      <div class="chat-profile-about">
-        <p>Разработчик, люблю создавать красивые и функциональные приложения. Интересуюсь UX/UI, новыми технологиями и дизайном.</p>
-      </div>
-    </div>
-
-    <!-- Список чатов -->
+    <app-chats-header></app-chats-header>
     <div class="chat-items">
-      <!-- Активный чат -->
         <app-chats (chatSelected)="onChatSelected($event)"></app-chats>
     </div>
   </aside>
 
-  <!-- Основной чат -->
   <main class="content">
     <div class="chat">
-      <!-- Хедер чата -->
-      <div class="chat-header">
-        <div class="d-flex align-center">
-          <div class="chat-avatar">
-            <img src="https://placehold.co/48x48/e5e7eb/6b7280?text=А" alt="Аватар" />
-          </div>
-          <div class="ml-3">
-            <div class="chat-name">Анна Иванова</div>
-            <div class="d-flex align-center">
-              <span class="status-dot online"></span>
-              <span class="text-sm text-success">В сети</span>
-            </div>
-          </div>
-        </div>
-        <div class="chat-header-actions">
-          <button class="btn-icon">
-            <span>📞</span>
-          </button>
-          <button class="btn-icon">
-            <span>📹</span>
-          </button>
-          <button class="btn-icon">
-            <span>👤</span>
-          </button>
-        </div>
-      </div>
-
+      <app-chat-header></app-chat-header>
       @if (selectedChatId) {
         <app-chat [chatId]="selectedChatId"></app-chat>
       } @else {

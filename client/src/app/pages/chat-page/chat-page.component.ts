@@ -3,13 +3,14 @@ import { ChatsComponent } from '../../components/messenger/chats/chats.component
 import { ChatComponent } from "../../components/messenger/chat/chat.component";
 import { ChatPlaceholderComponent } from '../../components/messenger/chat/chat-placeholder.component';
 import { UserStore } from '../../stores/user-store/user.store';
-import { UserService } from '../../core/services/user.service';
 import { User } from '../../core/types/user.model';
+import { ChatsHeaderComponent } from '../../components/messenger/chats-header/chats-header.component';
+import { ChatHeaderComponent } from '../../components/messenger/chat-header/chat-header.component';
 
 @Component({
   selector: 'app-chat-page',
   standalone: true,
-  imports: [ChatsComponent, ChatComponent, ChatPlaceholderComponent],
+  imports: [ChatsComponent, ChatComponent, ChatPlaceholderComponent, ChatsHeaderComponent, ChatHeaderComponent],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.css'
 })

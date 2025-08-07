@@ -7,7 +7,6 @@ import { Component } from '@angular/core';
     <div class="chat-placeholder">
       <div class="placeholder-content">
         <div class="placeholder-icon">💬</div>
-        <h3>Выберите чат</h3>
         <p>Выберите чат из списка слева или создайте новый</p>
       </div>
     </div>
@@ -21,7 +20,7 @@ import { Component } from '@angular/core';
       align-items: center;
       justify-content: center;
       height: 100%;
-      background-color: var(--background-color);
+      background-color: var(--md-sys-color-surface);
     }
 
     .placeholder-content {
@@ -34,13 +33,8 @@ import { Component } from '@angular/core';
       margin-bottom: 16px;
     }
 
-    h3 {
-      margin-bottom: 8px;
-      color: var(--text-primary);
-    }
-
     p {
-      color: var(--text-secondary);
+      color: var(--md-sys-color-on-surface);
     }
   `]
 })

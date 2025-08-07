@@ -2,24 +2,22 @@
   display: flex;
   align-items: center;
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-gray-100);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .chat-item:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--md-sys-color-surface-container-low);
 }
-
 .chat-item.active {
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
 .chat-item.active .chat-info .chat-name,
 .chat-item.active .chat-info .chat-last-message,
 .chat-item.active .chat-time {
-  color: var(--color-white);
+  color: var(--md-sys-color-on-primary);
 }
 
 .chat-item.active .chat-avatar::after {
@@ -27,11 +25,7 @@
 }
 
 .chat-item.active .chat-name {
-  color: var(--color-white);
-}
-
-.chat-item.active .chat-last-message {
-  color: var(--color-white);
+  color: var(--md-sys-color-on-primary);
 }
 
 .chat-item.active .chat-time {
@@ -39,13 +33,13 @@
 }
 
 .chat-avatar {
-  background-color: var(--color-gray-200);
+  background-color: var(--md-sys-color-tertiary-fixed);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-gray-500);
+  color: var(--md-sys-color-outline);
   font-size: 20px;
   width: 48px;
   height: 48px;
@@ -71,9 +65,9 @@
   right: 0;
   width: 12px;
   height: 12px;
-  border: 2px solid var(--color-white);
+  border: 1px solid var(--md-sys-color-surface);
   border-radius: var(--radius-full);
-  background-color: var(--color-online);
+  background-color: var(--md-sys-color-primary);
 }
 
 .chat-info {
@@ -83,27 +77,33 @@
 .chat-name {
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--space-1);
-  color: var(--color-gray-800);
+  color: var(--md-sys-color-on-surface);
 }
 
 .chat-last-message {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
+  color: var(--md-sys-color-on-surface-variant);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
 }
+.chat-item.active .chat-last-message {
+  color: var(--md-sys-color-on-primary);
+}
 
 .chat-time {
   font-size: var(--font-size-xs);
-  color: var(--color-gray-500);
+  color: var(--md-sys-color-on-surface-variant);
   white-space: nowrap;
+}
+.chat-item.active .chat-time {
+  color: var(--md-sys-color-on-primary);
 }
 
 .chat-unread {
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   min-width: 20px;
   height: 20px;
   border-radius: var(--radius-full);
@@ -146,4 +146,3 @@
     padding: var(--space-1);
   }
 }
-

@@ -7,7 +7,7 @@
       (click)="selectChat(chat.id)">
       <div class="chat-avatar">
         <img *ngIf="chat.avatar" [src]="chat.avatar" [alt]="getChatName(chat)" />
-        <div *ngIf="!chat.avatar">А</div>
+        <div *ngIf="!chat.avatar">C</div>
       </div>
       <div class="chat-info">
         <div class="chat-name">{{ getChatName(chat) }}</div>
@@ -21,18 +21,4 @@
       </div>
     </div>
   }
-
-  <div class="chat-item">
-    <div class="chat-avatar">
-      <img src="https://placehold.co/48x48/f3f4f6/6b7280?text=Р" alt="Аватар" />
-    </div>
-    <div class="chat-info">
-      <div class="chat-name">Разработка проекта</div>
-      <div class="chat-last-message">Анна: Нужно обсудить...</div>
-    </div>
-    <div class="d-flex flex-column align-end">
-      <div class="chat-time">12:15</div>
-      <div class="chat-unread">1</div>
-    </div>
-  </div>
 </div>
