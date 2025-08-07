@@ -25,9 +25,12 @@
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.2s;
+      color: var(--md-sys-color-on-surface);
+
 
   &:hover {
-    background-color: #f5f5f5;
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container);
   }
 }
 
@@ -38,8 +41,7 @@
 
 .edit-name {
   font-size: 1rem;
-  color: #333;
-}
+  }
 
 .back-button {
   align-self: flex-start;

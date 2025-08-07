@@ -47,3 +47,20 @@
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 }
+
+
+@media (max-width: 767px) {
+  .visible-mobile {
+    display: block;
+  }
+
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .visible-mobile, .hidden-mobile {
+    display: block;
+  }
+}

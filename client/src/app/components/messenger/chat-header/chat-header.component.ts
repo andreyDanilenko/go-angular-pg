@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-chat-header',
@@ -6,6 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./chat-header.component.css']
 })
 export class ChatHeaderComponent {
+  @Output() returnClick = new EventEmitter<void>();
+
   user = {
     name: 'Имя Фамилия',
     status: 'В сети',
@@ -14,6 +16,11 @@ export class ChatHeaderComponent {
 
   call() {
     console.log('Звонок');
+  }
+
+  onReturnClick() {
+    console.log('yfpfl');
+     this.returnClick.emit();
   }
 
   videoCall() {

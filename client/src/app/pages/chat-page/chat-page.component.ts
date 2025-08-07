@@ -46,6 +46,10 @@ export class MessengerPageComponent {
     this.selectedChatId = null;
   }
 
+  handleReturnClick() {
+    this.selectedChatId = null;
+  }
+
   ngOnInit(): void {
     this.userStore.state$.subscribe(state => {
       this.currentUser = state.currentUser;

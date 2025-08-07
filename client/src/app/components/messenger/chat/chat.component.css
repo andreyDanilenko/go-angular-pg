@@ -109,10 +109,6 @@
 }
 
 @media (max-width: 768px) {
-  .chat-messages {
-    padding: var(--space-3);
-  }
-
   .message {
     max-width: 80%;
   }

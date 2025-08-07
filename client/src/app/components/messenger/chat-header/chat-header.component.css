@@ -62,6 +62,9 @@
   color: var(--md-sys-color-on-surface);
 }
 
+.chat-header-actions-return {
+  display: none;
+}
 
 /* Переиспользоваь */
 .chat-action-btn {
@@ -86,3 +89,10 @@
   background-color: var(--md-sys-color-primary-container);
 }
 /* Переиспользоваь */
+
+
+@media (max-width: 768px) {
+  .chat-header-actions-return {
+    display: block;
+  }
+}

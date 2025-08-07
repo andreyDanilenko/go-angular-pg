@@ -1,5 +1,5 @@
 <div class="layout layout-chat light">
-  <aside class="chat-list">
+  <aside class="chat-list" [class.visible-mobile]="!selectedChatId" [class.hidden-mobile]="selectedChatId">
     <app-chats-header
       (burgerClick)="handleEditClick()"
       (editClick)="handleEditClick()">
@@ -17,8 +17,8 @@
     </app-chats-edit>
   </aside>
 
-  <main class="chat">
-      <app-chat-header></app-chat-header>
+  <main class="chat" [class.visible-mobile]="selectedChatId" [class.hidden-mobile]="!selectedChatId">
+      <app-chat-header (returnClick)="handleReturnClick()"></app-chat-header>
       @if (selectedChatId) {
         <app-chat [chatId]="selectedChatId"></app-chat>
       } @else {
