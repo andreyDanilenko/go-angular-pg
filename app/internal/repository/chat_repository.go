@@ -4,6 +4,8 @@ package repository
 import (
 	"admin/panel/internal/model"
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -161,7 +163,12 @@ func (r *ChatRepository) FindPrivateChat(user1ID, user2ID string) (string, error
 		Scan(&chatID)
 
 	if err != nil {
-		return "", fmt.Errorf("chat not found")
+		if errors.Is(err, sql.ErrNoRows) {
+			// Чат не найден - это не ошибка, возвращаем пустую строку
+			return "", nil
+		}
+		// Произошла реальная ошибка при выполнении запроса
+		return "", fmt.Errorf("failed to find private chat: %w", err)
 	}
 	return chatID, nil
 }

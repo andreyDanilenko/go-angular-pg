@@ -1,5 +1,6 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { TooltipComponent } from '../../uikit/tooltip/tooltip.component';
+import { User } from '../../../core/types/user.model';
 @Component({
   selector: 'app-chats-header',
   standalone: true,
@@ -8,15 +9,15 @@ import { TooltipComponent } from '../../uikit/tooltip/tooltip.component';
   styleUrls: ['./chats-header.component.css']
 })
 export class ChatsHeaderComponent {
+  @Input() users: User[] = [];
   @Output() burgerClick = new EventEmitter<void>();
-  @Output() editClick = new EventEmitter<void>();
+  @Output() editClick = new EventEmitter<string>();
 
   onBurgerClick() {
     this.burgerClick.emit();
   }
 
-  createAdminChat() {
-    this.editClick.emit();
-    console.log('123');
+  createAdminChat(adminId: string) {
+    this.editClick.emit(adminId);
   }
 }

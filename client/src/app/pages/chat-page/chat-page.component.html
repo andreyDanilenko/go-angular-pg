@@ -1,20 +1,23 @@
 <div class="layout layout-chat light">
   <aside class="chat-list" [class.visible-mobile]="!selectedChatId" [class.hidden-mobile]="selectedChatId">
     <app-chats-header
+      [users]="users"
       (burgerClick)="handleEditClick()"
-      (editClick)="handleCreateClick()">
+      (editClick)="handleCreateClick($event)">
     </app-chats-header>
 
-    <app-chats
-      *ngIf="!isEditMode"
-      [currentChatId]="selectedChatId"
-      (chatSelected)="onChatSelected($event)">
-    </app-chats>
+    @if (!isEditMode) {
+      <app-chats
+        [currentChatId]="selectedChatId"
+        (chatSelected)="onChatSelected($event)">
+      </app-chats>
+    }
 
-    <app-chats-edit
-      *ngIf="isEditMode"
-      (backToChats)="handleBackToChats()">
-    </app-chats-edit>
+    @if (isEditMode) {
+      <app-chats-edit
+        (backToChats)="handleBackToChats()">
+      </app-chats-edit>
+    }
   </aside>
 
   <main class="chat" [class.visible-mobile]="selectedChatId" [class.hidden-mobile]="!selectedChatId">

@@ -25,6 +25,7 @@
 }
 
 .chat-btn {
+  padding: 4px 8px;
   display: flex;
   align-items: center;
   cursor: pointer;

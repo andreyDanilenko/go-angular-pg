@@ -10,7 +10,7 @@ import { ChatHeaderComponent } from '../../components/messenger/chat-header/chat
 import { CommonModule } from '@angular/common';
 import { ChatsEditComponent } from '../../components/messenger/chats-edit/chats-edit.component';
 import { ChatService } from '../../core/services/chat.service';
-import { Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { UserService } from '../../core/services/user.service';
 
 @Component({
@@ -58,17 +58,17 @@ export class MessengerPageComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    this.userStore.state$.subscribe(state => {
+    this.userStore.state$.pipe(
+      distinctUntilChanged((prev, curr) => prev.currentUser?.role === curr.currentUser?.role)
+    ).subscribe(state => {
       this.currentUser = state.currentUser;
 
       if (state.currentUser?.role === 'admin') {
-        this.loadUsers()
+        this.loadUsers();
       } else {
-        this.loadAdminUsers()
+        this.loadAdminUsers();
       }
     });
-
-
   }
 
   ngOnDestroy(): void {
@@ -80,13 +80,9 @@ export class MessengerPageComponent implements OnDestroy {
     this.isEditMode = true
   }
 
-  handleCreateClick() {
-    const otherUserId = 'FIuHTv9uNOTV';
-
-    this.chatService.createPrivateChat(otherUserId).subscribe({
+  handleCreateClick(userId: string) {
+    this.chatService.createPrivateChat(userId).subscribe({
       next: (chat) => {
-        console.log(chat);
-
         this.selectedChatId = chat.id;
         this.isEditMode = false;
       },

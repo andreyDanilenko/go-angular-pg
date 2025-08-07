@@ -19,7 +19,14 @@
       </svg>
     </button>
     <ng-template>
-          <button class="chat-btn" (click)="createAdminChat(); tooltip.closeTooltip()">Написать админу</button>
+      @for (admin of users; track admin.id) {
+        <button
+          class="chat-btn"
+          (click)="createAdminChat(admin.id); tooltip.closeTooltip()"
+        >
+          {{ admin.email }}
+        </button>
+      }
     </ng-template>
   </app-tooltip>
 
