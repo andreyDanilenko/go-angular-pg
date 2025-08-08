@@ -9,9 +9,6 @@ import { CommonModule } from '@angular/common';
   styles: []
 })
 export class HomeComponent {
-
-
-
     onOptionClick1() {
       console.log('Выбрана опци 1');
     }

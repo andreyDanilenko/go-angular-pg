@@ -1,0 +1,36 @@
+<article class="article-card">
+  @if (article.image) {
+    <app-article-image
+      [text]="article.image.text"
+      [bgColor]="article.image.bgColor"
+      [textColor]="article.image.textColor"
+      [widthPercent]="article.image.widthPercent || 100"
+      [height]="article.image.height || 200"
+    ></app-article-image>
+  }
+
+  <div class="article-content">
+    <span class="article-tag" [class]="article.tagClass || ''">{{ article.tag }}</span>
+    <h3 class="article-title">{{ article.title }}</h3>
+    <p class="article-excerpt">{{ article.excerpt }}</p>
+    <div class="article-meta">
+      <div class="article-author">
+        @if (article.author.avatar) {
+          <img [src]="article.author.avatar" alt="Аватар" class="article-author-avatar" />
+        }
+        <span>{{ article.author.name }}</span>
+      </div>
+      <div class="article-date">
+        <span class="article-date-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="5" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M4 9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 5V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 5V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>{{ formattedDate }}</span>
+      </div>
+    </div>
+  </div>
+</article>
