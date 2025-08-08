@@ -2,7 +2,10 @@
   cursor: pointer;
   background-color: var(--md-sys-color-surface-container-lowest);
   border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  height: 100%;
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
 }
@@ -19,6 +22,9 @@
 }
 
 .article-content {
+  flex: 1; /* Растягивает контент, оставляя место для article-meta внизу */
+  display: flex;
+  flex-direction: column;
   padding: var(--space-4);
 }
 
@@ -28,6 +34,7 @@
   font-weight: var(--font-weight-semibold);
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-sm);
+  margin-right: auto;
   margin-bottom: var(--space-3);
 }
 
@@ -67,6 +74,7 @@
 }
 
 .article-meta {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
