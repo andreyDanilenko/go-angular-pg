@@ -1,4 +1,5 @@
 .article-card {
+  cursor: pointer;
   background-color: var(--md-sys-color-surface-container-lowest);
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -30,19 +31,24 @@
   margin-bottom: var(--space-3);
 }
 
-.article-tag.tech {
+.article-tag.health,
+.article-tag.politics {
   background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-tertiary-fixed);
+  color: white;
+  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
-.article-tag.design {
+.article-tag.tech,
+.article-tag.general {
   background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-tertiary-fixed);
+  color: white;
+  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
-.article-tag.business {
+.article-tag.science {
   background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-tertiary-fixed);
+  color: white;
+  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
 .article-title {

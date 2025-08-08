@@ -1,25 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArticleListComponent } from '../../components/articles/article-list/article-list.component';
+import { Article, ArticleCategory } from '../../core/types/article.model';
+import { ArticleService } from '../../core/services/article.service';
+import { Router } from '@angular/router';
 
-interface Article {
-  title: string;
-  excerpt: string;
-  tag: string;
-  tagClass?: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  date: Date | string;
-  image?: {
-    text: string;
-    bgColor: string;
-    textColor: string;
-    widthPercent?: number;
-    height?: number;
-  };
-}
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -29,37 +14,43 @@ interface Article {
   styles: []
 })
 export class ArticlesPageComponent {
-    articlesData: Article[] = [{
-      title: 'Современные тренды в UI/UX дизайне 2024 года',
-      excerpt: 'Разбираем самые актуальные тенденции в пользовательском интерфейсе и опыте взаимодействия с продуктами.',
-      tag: 'Дизайн',
-      tagClass: 'design',
-      author: {
-        name: 'Анна Петрова',
-        avatar: 'https://placehold.co/24x24/e5e7eb/6b7280?text=А'
+  articles: Article[] = [];
+  isLoading = true;
+  error: string | null = null;
+
+
+  constructor(private articleService: ArticleService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loadArticles();
+  }
+
+  loadArticles(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.articleService.getAllArticles().subscribe({
+      next: (articles) => {
+        this.articles = articles;
+        this.isLoading = false;
       },
-      date: new Date(2024, 4, 15),
-      image: {
-        text: 'Modern UI Design',
-        bgColor: '3b82f6',
-        textColor: 'ffffff',
+      error: (err) => {
+        this.error = 'Не удалось загрузить статьи';
+        this.isLoading = false;
+        console.error(err);
       }
-    },
-    {
-      title: 'Современные тренды в UI/UX дизайне 2024 года',
-      excerpt: 'Разбираем самые актуальные тенденции в пользовательском интерфейсе и опыте взаимодействия с продуктами.',
-      tag: 'Дизайн',
-      tagClass: 'design',
-      author: {
-        name: 'Анна Петрова',
-        avatar: 'https://placehold.co/24x24/e5e7eb/6b7280?text=А'
-      },
-      date: new Date(2024, 4, 15),
-      image: {
-        text: 'Modern UI Design',
-        bgColor: '3b82f6',
-        textColor: 'ffffff',
-      }
-    }
-  ];
+    });
+  }
+
+  formatDate(date: string | Date): string {
+    return new Date(date).toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  viewArticle(articleId: string) {
+    this.router.navigate(['/posts', articleId]);
+  }
 }

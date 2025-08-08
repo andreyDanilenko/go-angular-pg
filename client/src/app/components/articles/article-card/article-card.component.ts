@@ -1,27 +1,9 @@
-// article-card.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArticleImageComponent } from '../article-image/article-image.component';
 import { DatePipe } from '@angular/common';
+import { Article } from '../../../core/types/article.model';
 
-interface Article {
-  title: string;
-  excerpt: string;
-  tag: string;
-  tagClass?: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  date: Date | string;
-  image?: {
-    text: string;
-    bgColor: string;
-    textColor: string;
-    widthPercent?: number;
-    height?: number;
-  };
-}
 
 @Component({
   selector: 'app-article-card',
@@ -37,6 +19,6 @@ export class ArticleCardComponent {
   constructor(private datePipe: DatePipe) {}
 
   get formattedDate(): string {
-    return this.datePipe.transform(this.article.date, 'd MMMM y') || '';
+    return this.datePipe.transform(this.article.createdAt, 'd MMMM y') || '';
   }
 }

@@ -1,5 +1,3 @@
-import { User } from "./user.model";
-
 export interface Article {
   id: string;
   authorId: string;
