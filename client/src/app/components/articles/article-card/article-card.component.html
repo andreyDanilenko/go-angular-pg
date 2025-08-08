@@ -1,16 +1,16 @@
 <article class="article-card">
     <app-article-image
-      text="Modern UI Design"
-      bgColor="3b82f6"
+      [text]="categories[article.category].metaTitle"
+      [bgColor]="categories[article.category].bgColor"
       textColor="ffffff"
       [widthPercent]="100"
       [height]="200"
     ></app-article-image>
 
   <div class="article-content">
-    <span class="article-tag" [class]="article.category || ''">{{ article.category }}</span>
-    <h3 class="article-title">{{ article.title | truncate:30 }}</h3>
-    <p class="article-excerpt">{{ article.content | truncate:50 }}</p>
+    <span class="article-tag" [class]="article.category || ''">{{ categories[article.category].name }}</span>
+    <h3 class="article-title">{{ article.title | truncate:50 }}</h3>
+    <p class="article-excerpt">{{ article.content | truncate:100 }}</p>
     <div class="article-meta">
       <div class="article-author">
         @if (false) { <img src="https://placehold.co/24x24/e5e7eb/6b7280?text=И" alt="Аватар" class="article-author-avatar" /> }

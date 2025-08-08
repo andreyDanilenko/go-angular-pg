@@ -17,6 +17,39 @@ export class ArticleCardComponent {
 
   constructor(private datePipe: DatePipe) {}
 
+  categories = {
+    general: {
+      id: 'General',
+      name: 'Общее',
+      metaTitle: 'Общее',
+      bgColor: '10b981',
+    },
+    tech: {
+      id: 'Tech',
+      name: 'Технологии',
+      metaTitle: 'Технологии',
+      bgColor: '3b82f6',
+    },
+    science: {
+      id: 'Science',
+      name: 'Наука',
+      metaTitle: 'Наука',
+      bgColor: 'ef4444',
+    },
+    politics: {
+      id: 'Politics',
+      name: 'Политика',
+      metaTitle: 'Политика',
+      bgColor: 'f59e0b',
+    },
+    health: {
+      id: 'Health',
+      name: 'Здоровье',
+      metaTitle: 'Здоровье',
+      bgColor: '7c3aed',
+    },
+  };
+
   get formattedDate(): string {
     return this.datePipe.transform(this.article.createdAt, 'd MMMM y') || '';
   }
