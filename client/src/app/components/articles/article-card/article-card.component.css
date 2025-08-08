@@ -22,10 +22,12 @@
 }
 
 .article-content {
-  flex: 1; /* Растягивает контент, оставляя место для article-meta внизу */
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding: var(--space-4);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-outline-variant);
 }
 
 .article-tag {
@@ -42,20 +44,17 @@
 .article-tag.politics {
   background-color: var(--md-sys-color-secondary-container);
   color: white;
-  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
 .article-tag.tech,
 .article-tag.general {
   background-color: var(--md-sys-color-primary-container);
   color: white;
-  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
 .article-tag.science {
   background-color: var(--md-sys-color-tertiary-container);
   color: white;
-  /* color: var(--md-sys-color-tertiary-fixed); */
 }
 
 .article-title {
