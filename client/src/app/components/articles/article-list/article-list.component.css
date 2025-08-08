@@ -2,6 +2,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-auto-rows: 1fr;
+  padding: var(--space-2);
   gap: var(--space-6);
-  padding: var(--space-4);
+}
+
+@media (max-width: 468px) {
+  .articles-list {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    padding: var(--space-2);
+  }
 }
