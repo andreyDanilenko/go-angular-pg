@@ -2,11 +2,13 @@
   display: flex;
   flex-direction: column;
   font-family: inherit;
+  color: var(--md-sys-color-on-background);
 }
 
 .input-wrapper label {
   margin-bottom: 6px;
   font-weight: 500;
+  color: var(--md-sys-color-on-background);
 }
 
 .input-container {
@@ -18,17 +20,23 @@
 .input-container input {
   width: 100%;
   padding: 0 40px 0 12px;
-  border: 1.5px solid #cbd3e6;
-  box-shadow: 0 0 5px rgba(124, 144, 243, 0.5);
-  background-color: #fff;
-  border-radius: 8px;
+  border: 1.5px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--radius-lg);
   font-size: 14px;
+  color: var(--md-sys-color-on-surface);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-container input:focus {
+  border-color: var(--md-sys-color-primary);
 }
 
 .input-container input.has-error {
-  border-color: #ff4d4f;
+  border-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error-container);
+  background-color: var(--md-sys-color-error-container);
 }
 
 .icon-btn {
@@ -38,7 +46,12 @@
   font-size: 16px;
   cursor: pointer;
   padding: 0;
-  color: #888;
+  color: var(--md-sys-color-outline);
+  transition: color 0.2s;
+}
+
+.icon-btn:hover {
+  color: var(--md-sys-color-primary);
 }
 
 .icon-btn.clear {
@@ -46,6 +59,7 @@
 }
 
 .icon-btn.eye {
+  width: fit-content;
   right: 32px;
 }
 
@@ -55,11 +69,11 @@
 }
 
 .error-message {
-  color: #ff4d4f;
+  color: var(--md-sys-color-error);
   font-size: 12px;
 }
 
-/* Размерности */
+/* Размеры */
 .input-wrapper.sm input {
   height: 32px;
 }

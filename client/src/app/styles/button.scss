@@ -2,9 +2,10 @@
 // 1231312323123123123123123123123123123123123121231231231231231212312312
 /* Базовые стили */
 button, .btn, .link-btn {
+  width: 100%;
   font-family: inherit;
   font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   line-height: 1;

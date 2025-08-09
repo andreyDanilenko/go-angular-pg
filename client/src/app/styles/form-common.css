@@ -1,11 +1,9 @@
-/* form-common.css */
-
 :host {
   display: block;
   width: 100%;
   margin: 2rem auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #444;
+  color: var(--md-sys-color-on-background);
 }
 
 .auth, .register {
@@ -16,29 +14,28 @@
 .title {
   margin-bottom: 20px;
   font-size: 32px;
-  font-weight: bold;
   text-align: center;
+  color: var(--md-sys-color-primary);
 }
 
 form {
-  background: #f9faff;
+  background: var(--md-sys-color-surface-container);
   padding: 1.5rem 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(100, 100, 150, 0.1);
-  border: 1px solid #e0e6f2;
+  border: 1px solid var(--md-sys-color-outline-variant);
   width: 100%;
   max-width: 400px;
 }
 
 .error {
   font-size: 12px;
-  color: red;
+  color: var(--md-sys-color-error);
 }
 
 .api-error {
-  background-color: #ffe3e3;
-  border: 1px solid #ffbcbc;
-  color: #a70000;
+  background-color: var(--md-sys-color-error-container);
+  border: 1px solid var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error-container);
   padding: 0.8rem 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
