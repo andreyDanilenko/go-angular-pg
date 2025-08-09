@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { UserService } from './core/services/user.service';
-import { catchError, of, Subject, takeUntil } from 'rxjs';
+import { catchError, of, Subject, takeUntil, tap } from 'rxjs';
 import { WebSocketService } from './core/services/web-socket-service.service';
 import { AuthService } from './core/services/auth.service';
 
@@ -36,29 +36,35 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private initUserSession(): void {
+    this.loadUserData().pipe(
+      tap(() => {
+        const token = this.authService.getToken();
+        if (token) {
+          this.wsService.updateToken(token);
+          this.wsService.connect();
+        }
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe();
   }
 
-  private initUserSession(): void {
-    this.wsService.connect();
-    this.loadUserData();
+  private loadUserData() {
+    return this.userService.getUserMe().pipe(
+      catchError(err => {
+        console.error('Error loading user data:', err);
+        this.cleanUserSession();
+        return of(null);
+      })
+    );
   }
 
   private cleanUserSession(): void {
     this.wsService.disconnect();
   }
 
-  private loadUserData(): void {
-    this.userService.getUserMe().pipe(
-      catchError(err => {
-        console.error('Error loading user data:', err);
-        return of(null);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe(userData => {
-      console.log('User data loaded:', userData);
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

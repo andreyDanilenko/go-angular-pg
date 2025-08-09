@@ -16,6 +16,21 @@ export class WebSocketService {
     this.token = localStorage.getItem('auth_token') || '';
   }
 
+
+  public updateToken(newToken: string): void {
+    this.token = newToken;
+    localStorage.setItem('auth_token', newToken);
+
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.reconnectWithNewToken();
+    }
+  }
+
+  private reconnectWithNewToken(): void {
+    this.disconnect();
+    this.connect();
+  }
+
   connect(): void {
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       console.log('[WebSocketService] Already connected or connecting');

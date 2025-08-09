@@ -1,0 +1,216 @@
+
+/* Базовые стили */
+button, .btn, .link-btn {
+  width: 100%;
+  font-family: inherit;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid transparent; /* базовый border, чтобы размеры не скакали */
+  text-decoration: none;
+}
+
+/* .btn по умолчанию (добавлен, чтобы не ломать существующие вызовы) */
+.btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+/* btn модификаторы (маленькая / средняя / большая) */
+.btn-sm, .btn-sm.btn { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); height: 32px; min-width: 32px; }
+.btn-md, .btn-md.btn { font-size: var(--font-size-sm); padding: 0 var(--space-4); height: 40px; min-width: 40px; }
+.btn-lg, .btn-lg.btn { font-size: var(--font-size-md); padding: 0 20px; height: 48px; min-width: 48px; }
+
+/* Иконка-only */
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+/* ------------------------------
+   Варианты кнопок (все ранее обсуждённые)
+   - заполненные (filled)
+   - outline / прозрачные
+   - text (как обычный текст)
+   - link (для сайдбаров/навигаций)
+   ------------------------------ */
+
+/* PRIMARY (filled) */
+.btn-primary,
+button.btn-primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+}
+.btn-primary:hover { background-color: var(--md-sys-color-primary-container); }
+.btn-primary:active { background-color: var(--md-sys-color-on-primary-container); }
+.btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(0,100,149,0.14); outline: none; }
+
+/* PRIMARY outline (универсальный .btn-outline) */
+.btn-outline {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-primary);
+}
+.btn-outline:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.btn-outline:focus-visible { box-shadow: 0 0 0 3px rgba(0,100,149,0.12); outline: none; }
+
+/* SECONDARY — зелёный (filled) */
+.btn-secondary {
+  background-color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary);
+  border-color: var(--md-sys-color-secondary);
+}
+.btn-secondary:hover { background-color: var(--md-sys-color-secondary-container); }
+.btn-secondary:active { background-color: var(--md-sys-color-on-secondary-container); }
+
+/* SECONDARY — красный (вариант) */
+.btn-secondary-red {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  border: 1px solid var(--md-sys-color-error);
+}
+.btn-secondary-red:hover { background-color: var(--md-sys-color-on-error-container); }
+.btn-secondary-red:active { background-color: var(--md-sys-color-on-error-container); }
+
+/* SECONDARY — серый (вариант) */
+.btn-secondary-gray {
+  background-color: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
+}
+.btn-secondary-gray:hover { background-color: var(--md-sys-color-tertiary-container); }
+.btn-secondary-gray:active { background-color: var(--md-sys-color-on-tertiary-container); }
+
+/* ERROR — прозрачная с бордером + текстом (outline look) */
+.btn-error {
+  background-color: transparent;
+  color: var(--md-sys-color-error);
+  border: 1px solid var(--md-sys-color-error);
+}
+.btn-error:hover { background-color: rgba(186,26,26,0.08); }
+.btn-error:active { background-color: rgba(186,26,26,0.16); }
+.btn-error:focus-visible { box-shadow: 0 0 0 3px rgba(186,26,26,0.12); outline: none; }
+
+/* Gray outline — прозрачная с серым бордером и текстом (серый прозрачный с бордером и текстом) */
+.btn-gray-outline {
+  background-color: transparent;
+  color: var(--md-sys-color-tertiary);
+  border: 1px solid var(--md-sys-color-tertiary);
+}
+.btn-gray-outline:hover { background-color: rgba(91,95,98,0.08); }
+.btn-gray-outline:active { background-color: rgba(91,95,98,0.16); }
+
+/* TEXT — как текст (без отступов, без подчеркиваний) */
+.btn-text,
+button.btn-text {
+  background-color: transparent;
+  border: none;
+  color: var(--md-sys-color-primary);
+  padding: 0;
+  height: auto;
+  font-weight: var(--font-weight-regular);
+  text-decoration: none; /* важное требование: без подчёркиваний */
+  display: inline;
+}
+.btn-text:hover { color: var(--md-sys-color-primary-container); }
+.btn-text:active { color: var(--md-sys-color-on-primary-container); }
+
+/* LINK — для сайдбаров/навигаций */
+.link-btn {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background-color: transparent;
+  border: none;
+  color: var(--md-sys-color-on-surface);
+  text-align: left;
+  padding: 8px 12px;
+  width: 100%;
+  text-decoration: none;
+}
+.link-btn:hover { background-color: var(--md-sys-color-surface-container); }
+.link-btn.active {
+  color: var(--md-sys-color-primary-container);
+}
+
+/* Disabled state helper */
+.btn[disabled], .link-btn[aria-disabled="true"] {
+  opacity: 0.48;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ------------------------------
+   Демонстрационные сетки и палитра
+   ------------------------------ */
+.section {
+  margin: 18px 0;
+}
+
+.h1 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+/* grid для кнопок */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* подпись размера */
+.size-label {
+  grid-column: 1 / -1;
+  font-weight: 700;
+  margin: 12px 0 6px;
+}
+
+/* палитра (palette swatches) */
+.palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.02);
+}
+.swatch .sample {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.swatch .meta { font-size: 13px; color: var(--md-sys-color-on-surface); }
+.small { font-size: 12px; color: var(--md-sys-color-on-surface); opacity: 0.85; }
+
+/* удобный контейнер для демки */
+.card {
+  background: var(--md-sys-color-surface-container-low);
+  padding: 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(11,24,40,0.04);
+  border: 1px solid var(--md-sys-color-surface-container);
+}

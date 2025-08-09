@@ -1,32 +1,39 @@
 <div class="auth">
   <h1 class="title">{{ isCodeVerification ? 'Введите код подтверждения' : 'Авторизация' }}</h1>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div *ngIf="apiError" class="api-error">
-      {{ apiError }}
-    </div>
+  <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    @if (apiError) {
+      <div class="api-error">
+        {{ apiError }}
+      </div>
+    }
 
-    <div *ngIf="!isCodeVerification">
-      <app-input
-        label="Email"
-        [control]="form.controls['email']"
-        type="email"
-        placeholder="example@mail.com"
-        size="md"
-        errorText="Корректный email обязателен"
-      ></app-input>
+    @if (!isCodeVerification) {
+      <div class="auth-input">
+        <app-input
+          label="Email"
+          [control]="form.controls['email']"
+          class="auth-input"
+          type="email"
+          placeholder="example@mail.com"
+          size="md"
+          errorText="Корректный email обязателен"
+        ></app-input>
 
-      <app-input
-        label="Пароль"
-        [control]="form.controls['password']"
-        type="password"
-        placeholder="Введите пароль"
-        size="md"
-        errorText="Минимум 8 символов"
-      ></app-input>
-    </div>
+        <app-input
+          label="Пароль"
+          [control]="form.controls['password']"
+          class="auth-input"
+          type="password"
+          placeholder="Введите пароль"
+          size="md"
+          errorText="Минимум 8 символов"
+        ></app-input>
+      </div>
+    }
 
-    <div *ngIf="isCodeVerification" class="code-verification">
+  @if (isCodeVerification) {
+    <div class="code-verification">
       <p class="code-instruction">Мы отправили 6-значный код на {{ form.value.email }}</p>
 
       <app-input
@@ -39,13 +46,8 @@
         maxlength="6"
       ></app-input>
     </div>
+  }
 
-    <app-button
-      type="primary"
-      [disabled]="form.invalid"
-      typeButton="submit"
-    >
-      {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}
-    </app-button>
+    <button class="btn-primary btn-md" [disabled]="form.invalid"> {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
   </form>
 </div>

@@ -17,13 +17,13 @@
     <div class="ml-3">
       <div class="chat-name">{{ user.name }}</div>
       <div class="d-flex align-center">
-        <span class="text-sm text-success">{{ user.status }}</span>
+        <span class="text-sm chat-status">{{ user.status }}</span>
       </div>
     </div>
   </div>
 
   <div class="chat-header-actions">
-    <button class="chat-action-btn" (click)="call()">
+    <!-- <button class="chat-action-btn" (click)="call()">
      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 4H9L11 9L8 10C9 12 11 14 13 15L14 12L19 13V18C19 19.1046 18.1046 20 17 20C12.8748 20 8.45593 17.978 5.9237 14.0763C3.39147 10.1746 3.29518 5.87283 5 4Z"
               stroke="currentColor"
@@ -43,7 +43,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"/>
       </svg>
-    </button>
+    </button> -->
     <button class="chat-action-btn" (click)="openProfile()">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="8" r="4"

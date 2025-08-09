@@ -1,7 +1,106 @@
-<!-- <app-tooltip #tooltip="app-tooltip">
-  <button tooltip-trigger>Открыть меню</button>
-  <ng-template>
-    <button (click)="onOptionClick1(); tooltip.closeTooltip()">Опция 1</button>
-    <button (click)="onOptionClick2(); tooltip.closeTooltip()">Опция 2</button>
-  </ng-template>
-</app-tooltip> -->
+
+  <h2 class="h1">Palette — основные цвета темы</h2>
+  <div class="card">
+    <div class="palette">
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-primary)"></div><div class="meta">--md-sys-color-primary<br><span class="small">on: var(--md-sys-color-on-primary)</span></div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-primary-container)"></div><div class="meta">--md-sys-color-primary-container</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-secondary)"></div><div class="meta">--md-sys-color-secondary</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-secondary-container)"></div><div class="meta">--md-sys-color-secondary-container</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-tertiary)"></div><div class="meta">--md-sys-color-tertiary</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-tertiary-container)"></div><div class="meta">--md-sys-color-tertiary-container</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-error)"></div><div class="meta">--md-sys-color-error</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-error-container)"></div><div class="meta">--md-sys-color-error-container</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-surface)"></div><div class="meta">--md-sys-color-surface</div></div>
+      <div class="swatch"><div class="sample" style="background:var(--md-sys-color-surface-container)"></div><div class="meta">--md-sys-color-surface-container</div></div>
+    </div>
+  </div>
+
+  <h2 class="h1">Все варианты и размеры — демонстрация</h2>
+
+  <!-- SMALL -->
+  <div class="section card">
+    <div class="size-label">Small (32px)</div>
+    <div class="button-grid">
+      <button class="btn-primary btn-sm">Primary</button>
+      <button class="btn-outline btn-sm">Primary Outline</button>
+      <button class="btn-secondary btn-sm">Secondary (green)</button>
+      <button class="btn-secondary-red btn-sm">Secondary Red</button>
+      <button class="btn-secondary-gray btn-sm">Secondary Gray</button>
+      <button class="btn-error btn-sm">Error</button>
+      <button class="btn-gray-outline btn-sm">Gray Outline</button>
+      <button class="btn-text btn-sm">Text</button>
+    </div>
+
+    <div style="margin:8px 0;">
+      <a href="#" class="link-btn btn-sm">Sidebar Link</a>
+    </div>
+  </div>
+
+  <!-- MEDIUM -->
+  <div class="section card">
+    <div class="size-label">Medium (40px)</div>
+    <div class="button-grid">
+      <button class="btn-primary btn-md">Primary</button>
+      <button class="btn-outline btn-md">Primary Outline</button>
+      <button class="btn-secondary btn-md">Secondary (green)</button>
+      <button class="btn-secondary-red btn-md">Secondary Red</button>
+      <button class="btn-secondary-gray btn-md">Secondary Gray</button>
+      <button class="btn-error btn-md">Error</button>
+      <button class="btn-gray-outline btn-md">Gray Outline</button>
+      <button class="btn-text btn-md">Text</button>
+    </div>
+
+    <div style="margin:8px 0; display:flex; gap:8px;">
+      <a href="#" class="link-btn btn-md active" aria-current="page">Active Nav Link</a>
+      <a href="#" class="link-btn btn-md">Nav Link</a>
+    </div>
+  </div>
+
+  <!-- LARGE -->
+  <div class="section card">
+    <div class="size-label">Large (48px)</div>
+    <div class="button-grid">
+      <button class="btn-primary btn-lg">Primary</button>
+      <button class="btn-outline btn-lg">Primary Outline</button>
+      <button class="btn-secondary btn-lg">Secondary (green)</button>
+      <button class="btn-secondary-red btn-lg">Secondary Red</button>
+      <button class="btn-secondary-gray btn-lg">Secondary Gray</button>
+      <button class="btn-error btn-lg">Error</button>
+      <button class="btn-gray-outline btn-lg">Gray Outline</button>
+      <button class="btn-text btn-lg">Text</button>
+    </div>
+
+    <div style="margin:8px 0; display:flex; gap:8px; align-items:center;">
+      <button class="btn btn-primary">.btn primary (default padding)</button>
+      <button class="btn btn-outline">.btn outline</button>
+      <button class="btn btn-primary btn-sm btn-icon" aria-label="star">★</button>
+      <button class="btn btn-outline btn-icon" aria-label="menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6L9 12L15 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn btn-outline btn-icon" aria-label="menu">
+          <svg class="chat-header-burger" width="30" height="15" viewBox="0 0 30 20">
+            <rect width="30" height="3" fill="currentColor" y="0"></rect>
+            <rect width="30" height="3" fill="currentColor" y="8.5"></rect>
+            <rect width="30" height="3" fill="currentColor" y="17"></rect>
+          </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Extra: иконки и disabled -->
+  <div class="section card">
+    <div class="size-label">Icon-only / Disabled</div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <button class="btn-primary btn-icon" aria-label="like">❤</button>
+      <button class="btn-secondary btn-icon" aria-label="check">✓</button>
+      <button class="btn-error btn-icon" aria-label="close">✕</button>
+      <button class="btn-primary btn-md" disabled>Disabled</button>
+      <button class="btn-gray-outline btn-md" disabled>Disabled</button>
+    </div>
+  </div>

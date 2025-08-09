@@ -27,7 +27,7 @@ import { Component } from '@angular/core';
       align-items: center;
       justify-content: center;
       height: 100%;
-      background-color: var(--md-sys-color-surface);
+      background-color: var(--md-sys-color-background);
     }
 
     .placeholder-content {

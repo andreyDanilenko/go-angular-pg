@@ -6,12 +6,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './main.component.html',
-  styles: []
+  styles: [`
+      :host {
+        height: calc(100dvh - var(--app-height));
+        color: var(--md-sys-color-on-surface);
+        padding: var(--space-6);
+        overflow: scroll;
+      }
+  `]
 })
 export class HomeComponent {
-
-
-
     onOptionClick1() {
       console.log('Выбрана опци 1');
     }

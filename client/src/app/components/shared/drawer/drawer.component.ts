@@ -26,8 +26,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       [ngStyle]="{ 'min-width': minWidth, 'max-width': maxwidth }"
     >
       <div class="drawer-header">
-        <h3 class="drawer-title">Меню</h3>
-        <button class="close-button" (click)="overlayClick.emit()">×</button>
+        <button class="btn-gray-outline btn-sm btn-icon" (click)="overlayClick.emit()">✕</button>
       </div>
       <ng-content></ng-content>
     </div>
@@ -50,28 +49,32 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       top: 0;
       left: 0;
       height: 100vh;
-      background-color: #f8f9fa;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+      background-color: var(--md-sys-color-background);
+      box-shadow: var(--shadow-md);
       overflow: auto;
+      border-right: 1px solid var(--md-sys-color-outline-variant);
     }
     .drawer-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
-      padding: 16px 24px;
-      border-bottom: 1px solid #dee2e6;
+      height: var(--app-height);
+      padding: var(--space-2)  var(--space-4);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
     }
 
     .drawer-title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 500;
+      color: var(--md-sys-color-on-surface);
     }
 
     .close-button {
       background: transparent;
       border: none;
       padding: 8px;
+      color: var(--md-sys-color-on-surface);
       font-size: 1.5rem;
       cursor: pointer;
       line-height: 1;
@@ -81,7 +84,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class DrawerComponent {
   @Input() isOpen = true;
   @Input() minWidth: string = '200px';
-  @Input() maxwidth: string = '400px';
+  @Input() maxwidth: string = '300px';
 
   @Output() overlayClick = new EventEmitter<void>();
 }
