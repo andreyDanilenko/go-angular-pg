@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { UserStore } from '../../../stores/user-store/user.store';
 import { User } from '../../../core/types/user.model';
 import { DrawerComponent } from '../drawer/drawer.component';
+import { ThemeToggleComponent } from '../../uikit/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, CommonModule, DrawerComponent],
+  imports: [RouterLink, CommonModule, DrawerComponent, ThemeToggleComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

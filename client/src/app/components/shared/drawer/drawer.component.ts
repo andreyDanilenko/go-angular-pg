@@ -59,13 +59,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
+      padding: var(--space-2);
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
     }
 
     .drawer-title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 500;
       color: var(--md-sys-color-on-surface);
     }

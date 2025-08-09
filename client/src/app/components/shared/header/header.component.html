@@ -6,12 +6,13 @@
         [isOpen]="isDrawerOpen"
         (overlayClick)="isDrawerOpen = false"
       >
-        <li *ngIf="currentUser" class="NavList__Item__Profile">{{ displayName }}</li>
-        <li *ngIf="currentUser" class="NavList__Item"><a class="link-btn btn-sm" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
-        <li  class="NavList__Item"><a class="link-btn btn-sm" routerLink="/articles" [class.active-link]="isActive('/articles')">Articles</a></li>
+        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
+        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
+        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/articles" [class.active-link]="isActive('/articles')">Articles</a></li>
         <li class="NavList__Item"><a class="link-btn btn-sm"routerLink="/posts" [class.active-link]="isActive('/posts')">Статьи</a></li>
         <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
       </app-drawer>
     </ul>
   </nav>
+  <app-theme-toggle></app-theme-toggle>
 </header>

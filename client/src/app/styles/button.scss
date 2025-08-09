@@ -83,26 +83,16 @@ button.btn-primary {
   color: var(--md-sys-color-on-error);
   border: 1px solid var(--md-sys-color-error);
 }
-.btn-secondary-red:hover { background-color: rgb(216,59,59); }
+.btn-secondary-red:hover { background-color: var(--md-sys-color-on-error-container); }
 .btn-secondary-red:active { background-color: var(--md-sys-color-on-error-container); }
 
 /* SECONDARY — серый (вариант) */
 .btn-secondary-gray {
   background-color: var(--md-sys-color-tertiary);
   color: var(--md-sys-color-on-tertiary);
-  // border: 1px solid var(--md-sys-color-tertiary);
 }
 .btn-secondary-gray:hover { background-color: var(--md-sys-color-tertiary-container); }
 .btn-secondary-gray:active { background-color: var(--md-sys-color-on-tertiary-container); }
-
-/* TERTIARY (filled) */
-.btn-tertiary {
-  background-color: var(--md-sys-color-tertiary);
-  color: var(--md-sys-color-on-tertiary);
-  // border: 1px solid var(--md-sys-color-tertiary);
-}
-.btn-tertiary:hover { background-color: var(--md-sys-color-tertiary-container); }
-.btn-tertiary:active { background-color: var(--md-sys-color-on-tertiary-container); }
 
 /* ERROR — прозрачная с бордером + текстом (outline look) */
 .btn-error {

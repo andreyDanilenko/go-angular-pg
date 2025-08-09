@@ -1,5 +1,7 @@
 .Header {
-  padding: var(--space-6);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
   height: var(--app-height);
   background-color: var(--md-sys-color-background);
   box-shadow: var(--shadow-md);
@@ -7,12 +9,6 @@
 }
 
 .NavList {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  gap: 1rem;
-
   &__Item__Profile {
     font-weight: 600;
     padding: 0.5rem 1rem;
