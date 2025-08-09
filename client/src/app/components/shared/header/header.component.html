@@ -1,18 +1,21 @@
 <header class="Header">
   <nav class="Header__Nav">
-    <ul class="NavList">
+    <ul>
       <li class="NavList__Item"><button class="btn-gray-outline btn-sm" (click)="isDrawerOpen = !isDrawerOpen">Menu</button></li>
-      <app-drawer
-        [isOpen]="isDrawerOpen"
-        (overlayClick)="isDrawerOpen = false"
-      >
-        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
-        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
-        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/articles" [class.active-link]="isActive('/articles')">Articles</a></li>
-        <li class="NavList__Item"><a class="link-btn btn-sm"routerLink="/posts" [class.active-link]="isActive('/posts')">Статьи</a></li>
-        <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
-      </app-drawer>
     </ul>
   </nav>
   <app-theme-toggle></app-theme-toggle>
 </header>
+
+<app-drawer
+  [isOpen]="isDrawerOpen"
+  (overlayClick)="isDrawerOpen = false"
+>
+  <ul class="NavList">
+    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/articles" [class.active-link]="isActive('/articles')">Articles</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-sm"routerLink="/posts" [class.active-link]="isActive('/posts')">Статьи</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
+  </ul>
+</app-drawer>

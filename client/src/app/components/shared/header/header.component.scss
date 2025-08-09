@@ -9,6 +9,8 @@
 }
 
 .NavList {
+  padding: var(--space-3) 0;
+
   &__Item__Profile {
     font-weight: 600;
     padding: 0.5rem 1rem;

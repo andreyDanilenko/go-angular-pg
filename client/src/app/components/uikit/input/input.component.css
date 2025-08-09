@@ -55,12 +55,13 @@
 }
 
 .icon-btn.clear {
+  width: fit-content;
   right: 8px;
 }
 
 .icon-btn.eye {
   width: fit-content;
-  right: 32px;
+  right: 16px;
 }
 
 .error-placeholder {

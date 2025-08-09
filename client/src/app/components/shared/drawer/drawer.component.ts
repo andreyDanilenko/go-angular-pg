@@ -26,8 +26,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       [ngStyle]="{ 'min-width': minWidth, 'max-width': maxwidth }"
     >
       <div class="drawer-header">
-        <h3 class="drawer-title">Меню</h3>
-        <button class="close-button" (click)="overlayClick.emit()">×</button>
+        <button class="btn-gray-outline btn-sm btn-icon" (click)="overlayClick.emit()">✕</button>
       </div>
       <ng-content></ng-content>
     </div>
@@ -57,9 +56,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     }
     .drawer-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
-      padding: var(--space-2);
+      height: var(--app-height);
+      padding: var(--space-2)  var(--space-4);
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
     }
 
