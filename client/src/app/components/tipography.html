@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динамическое управление шрифтами</title>
+    <style>
+        :root {
+            /* Базовые переменные для масштабирования */
+            --font-scale-factor: 1;
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-family-alternative: Arial, sans-serif;
+
+            /* Оригинальные размеры (при scale = 1) */
+            --font-size-xs-base: 0.75rem;
+            --font-size-sm-base: 0.875rem;
+            --font-size-base-base: 1rem;
+            --font-size-lg-base: 1.125rem;
+            --font-size-xl-base: 1.25rem;
+            --font-size-2xl-base: 1.5rem;
+            --font-size-3xl-base: 1.875rem;
+
+            /* Динамически рассчитываемые размеры */
+            --font-size-xs: calc(var(--font-size-xs-base) * var(--font-scale-factor));
+            --font-size-sm: calc(var(--font-size-sm-base) * var(--font-scale-factor));
+            --font-size-base: calc(var(--font-size-base-base) * var(--font-scale-factor));
+            --font-size-lg: calc(var(--font-size-lg-base) * var(--font-scale-factor));
+            --font-size-xl: calc(var(--font-size-xl-base) * var(--font-scale-factor));
+            --font-size-2xl: calc(var(--font-size-2xl-base) * var(--font-scale-factor));
+            --font-size-3xl: calc(var(--font-size-3xl-base) * var(--font-scale-factor));
+
+            /* Вес шрифта */
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .controls {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .demo-section {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fcfcfc;
+        }
+
+        /* Текстовые классы - оставляем как есть, они используют переменные */
+        .text-xs {
+            font-size: var(--font-size-xs);
+        }
+
+        .text-sm {
+            font-size: var(--font-size-sm);
+        }
+
+        .text-base {
+            font-size: var(--font-size-base);
+        }
+
+        .text-lg {
+            font-size: var(--font-size-lg);
+        }
+
+        .text-xl {
+            font-size: var(--font-size-xl);
+        }
+
+        .text-2xl {
+            font-size: var(--font-size-2xl);
+        }
+
+        .text-3xl {
+            font-size: var(--font-size-3xl);
+        }
+
+        /* Вес шрифта */
+        .font-normal {
+            font-weight: var(--font-weight-normal);
+        }
+
+        .font-medium {
+            font-weight: var(--font-weight-medium);
+        }
+
+        .font-semibold {
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .font-bold {
+            font-weight: var(--font-weight-bold);
+        }
+
+        /* Примеры использования */
+        .example {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .example-title {
+            margin-bottom: 10px;
+            font-weight: var(--font-weight-semibold);
+            color: #495057;
+        }
+
+        .font-preview {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .font-sample {
+            padding: 8px 12px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+
+        .current-values {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f1f3f5;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Динамическое управление шрифтами</h1>
+            <p>Измените параметры ниже, и все текстовые элементы будут обновлены пропорционально</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="fontFamily">Семейство шрифтов:</label>
+                <select id="fontFamily" onchange="updateFonts()">
+                    <option value="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">Inter (по умолчанию)</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="Times New Roman, serif">Times New Roman</option>
+                    <option value="Courier New, monospace">Courier New</option>
+                    <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="fontScale">Масштаб шрифта: <span id="scaleValue">100%</span></label>
+                <input type="range" id="fontScale" min="50" max="200" value="100" oninput="updateFonts()">
+            </div>
+
+            <div class="font-preview">
+                <div class="font-sample text-xs">XS</div>
+                <div class="font-sample text-sm">SM</div>
+                <div class="font-sample text-base">Base</div>
+                <div class="font-sample text-lg">LG</div>
+                <div class="font-sample text-xl">XL</div>
+                <div class="font-sample text-2xl">2XL</div>
+                <div class="font-sample text-3xl">3XL</div>
+            </div>
+
+            <div class="current-values">
+                <strong>Текущие значения:</strong><br>
+                Семейство: <span id="currentFamily">Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif</span><br>
+                Масштаб: <span id="currentScale">1.0</span>x
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <div class="example">
+                <div class="example-title">Размеры текста (пропорциональное масштабирование):</div>
+                <p class="text-xs font-normal">Text-xs: Очень мелкий текст (0.75rem × масштаб)</p>
+                <p class="text-sm font-normal">Text-sm: Мелкий текст (0.875rem × масштаб)</p>
+                <p class="text-base font-normal">Text-base: Основной текст (1rem × масштаб)</p>
+                <p class="text-lg font-normal">Text-lg: Крупный текст (1.125rem × масштаб)</p>
+                <p class="text-xl font-normal">Text-xl: Очень крупный текст (1.25rem × масштаб)</p>
+                <p class="text-2xl font-semibold">Text-2xl: Заголовок (1.5rem × масштаб)</p>
+                <p class="text-3xl font-bold">Text-3xl: Крупный заголовок (1.875rem × масштаб)</p>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Вес шрифта (не зависит от масштаба):</div>
+                <p class="text-base font-normal">Font-normal: Обычный вес (400)</p>
+                <p class="text-base font-medium">Font-medium: Средний вес (500)</p>
+                <p class="text-base font-semibold">Font-semibold: Полужирный (600)</p>
+                <p class="text-base font-bold">Font-bold: Жирный (700)</p>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Комбинированные классы:</div>
+                <p class="text-xl font-bold">Text-xl + font-bold: Крупный жирный текст</p>
+                <p class="text-lg font-semibold">Text-lg + font-semibold: Умеренно крупный полужирный текст</p>
+                <p class="text-sm font-medium">Text-sm + font-medium: Мелкий средний текст</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Как это работает</h3>
+            <p>Вместо прямого определения размеров, мы используем базовые значения и коэффициент масштабирования. Все размеры шрифтов рассчитываются как <code>baseSize × scaleFactor</code>, что позволяет пропорционально изменять все текстовые элементы одновременно.</p>
+            <p>Семейство шрифтов устанавливается на уровне <code>:root</code> и наследуется всеми элементами, что обеспечивает единообразие стиля по всему приложению.</p>
+        </div>
+    </div>
+
+    <script>
+        function updateFonts() {
+            const fontFamily = document.getElementById('fontFamily').value;
+            const scalePercent = document.getElementById('fontScale').value;
+            const scaleValue = document.getElementById('scaleValue');
+            const currentFamily = document.getElementById('currentFamily');
+            const currentScale = document.getElementById('currentScale');
+
+            // Рассчитываем коэффициент масштабирования (например, 150% = 1.5)
+            const scaleFactor = scalePercent / 100;
+
+            // Обновляем CSS-переменные
+            document.documentElement.style.setProperty('--font-family-base', fontFamily);
+            document.documentElement.style.setProperty('--font-scale-factor', scaleFactor);
+
+            // Обновляем отображение
+            scaleValue.textContent = scalePercent + '%';
+            currentFamily.textContent = fontFamily;
+            currentScale.textContent = scaleFactor.toFixed(2);
+
+            // Обновляем превью шрифтов
+            const previews = document.querySelectorAll('.font-sample');
+            previews.forEach((preview, index) => {
+                const sizes = ['--font-size-xs', '--font-size-sm', '--font-size-base',
+                             '--font-size-lg', '--font-size-xl', '--font-size-2xl', '--font-size-3xl'];
+                if (index < sizes.length) {
+                    const computedStyle = getComputedStyle(document.documentElement);
+                    const fontSize = computedStyle.getPropertyValue(sizes[index]).trim();
+                    preview.style.fontSize = fontSize;
+                }
+            });
+        }
+
+        // Инициализация при загрузке
+        window.onload = updateFonts;
+    </script>
+</body>
+</html>
