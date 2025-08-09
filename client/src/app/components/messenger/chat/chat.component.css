@@ -1,11 +1,11 @@
 :host {
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
   position: relative;
   overflow: hidden;
 }
 
 .chat-container {
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
   /* height: calc(100dvh - var(--chat-header-height));
   position: relative;
   overflow: scroll; */
@@ -23,9 +23,6 @@
   flex-direction: column;
   gap: var(--space-3);
   padding-bottom: 70px;
-    flex-grow: 1;
-  overflow-y: auto;
-  padding: var(--space-4);
 }
 
 .message {
@@ -127,7 +124,7 @@
   width: 100%;
   margin-top: auto;
   width: 100%;
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
   border-top: 1px solid var(--md-sys-color-outline-variant);
 }
 

@@ -1,6 +1,6 @@
 .article-card {
   cursor: pointer;
-  background-color: var(--md-sys-color-surface-container-lowest);
+  background-color: var(--md-sys-color-background);
   border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;

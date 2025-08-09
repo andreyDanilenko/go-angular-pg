@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
     .tooltip-box {
       position: absolute !important;
       z-index: 9999 !important;
-      background-color: var(--md-sys-color-surface);
+      background-color: var(--md-sys-color-background);
       color: var(--md-sys-color-on-surface);
       padding: 10px;
       border-radius: 6px;

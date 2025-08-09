@@ -1,6 +1,6 @@
 .chat-header {
   height: var(--chat-header-height);
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
   display: flex;
   gap: 16px;

@@ -1,11 +1,11 @@
 .main-layout {
   height: 100%;
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
 }
 
 .main-content {
   height: 100%;
-  background-color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-background);
 }
 
 .main-header {

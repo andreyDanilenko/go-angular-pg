@@ -1,6 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+}
+
 .edit-container {
+  flex: 1;
   padding: 16px;
-  display: calc(100dvh - var(--));
   display: flex;
   flex-direction: column;
 }

@@ -50,7 +50,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       top: 0;
       left: 0;
       height: 100vh;
-      background-color: var(--md-sys-color-surface);
+      background-color: var(--md-sys-color-background);
       box-shadow: var(--shadow-md);
       overflow: auto;
       border-right: 1px solid var(--md-sys-color-outline-variant);
@@ -84,7 +84,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class DrawerComponent {
   @Input() isOpen = true;
   @Input() minWidth: string = '200px';
-  @Input() maxwidth: string = '400px';
+  @Input() maxwidth: string = '300px';
 
   @Output() overlayClick = new EventEmitter<void>();
 }
