@@ -6,9 +6,6 @@
 
 .chat-container {
   background-color: var(--md-sys-color-background);
-  /* height: calc(100dvh - var(--chat-header-height));
-  position: relative;
-  overflow: scroll; */
   display: flex;
   flex-direction: column;
   height: calc(100dvh - var(--chat-header-height));
