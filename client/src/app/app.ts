@@ -4,6 +4,8 @@ import { UserService } from './core/services/user.service';
 import { catchError, of, Subject, takeUntil, tap } from 'rxjs';
 import { WebSocketService } from './core/services/web-socket-service.service';
 import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
+
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ export class App implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private wsService: WebSocketService,
-    private authService: AuthService
+    private authService: AuthService,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
