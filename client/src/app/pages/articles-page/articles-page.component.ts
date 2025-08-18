@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArticleListComponent } from '../../components/articles/articles-list/article-list.component';
-import { Article, ArticleCategory } from '../../core/types/article.model';
+import { Article } from '../../core/types/article.model';
 import { ArticleService } from '../../core/services/article.service';
 import { Router } from '@angular/router';
+import { ArticlesHeaderHeaderComponent } from '../../components/articles/articles-list-header/articles-list-header.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ArticleListComponent],
+  imports: [CommonModule, ArticleListComponent, ArticlesHeaderHeaderComponent],
   templateUrl: './articles-page.component.html',
   styleUrls: ['./articles-page.component.css'],
   styles: []

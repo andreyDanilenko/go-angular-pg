@@ -1,6 +1,6 @@
 
 button, .btn, .link-btn {
-  width: 100%;
+  /* width: 100%; */
   font-family: inherit;
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-lg);
@@ -8,12 +8,14 @@ button, .btn, .link-btn {
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   line-height: 1;
   display: inline-flex;
+  gap: var(--space-1);
   align-items: center;
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   border: 1px solid transparent; /* базовый border, чтобы размеры не скакали */
   text-decoration: none;
+  white-space: nowrap; /* Предотвращает перенос текста */
 }
 
 /* .btn по умолчанию (добавлен, чтобы не ломать существующие вызовы) */
@@ -51,7 +53,7 @@ button.btn-primary {
   border-color: var(--md-sys-color-primary);
 }
 .btn-primary:hover { background-color: var(--md-sys-color-primary-container); }
-.btn-primary:active { background-color: var(--md-sys-color-on-primary-container); }
+.btn-primary:active { background-color: var(--md-sys-color-on-primary-container); color: var(--md-sys-color-surface) }
 .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(0,100,149,0.14); outline: none; }
 
 /* PRIMARY outline (универсальный .btn-outline) */
