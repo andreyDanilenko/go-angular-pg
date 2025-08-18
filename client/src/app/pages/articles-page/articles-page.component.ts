@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ArticleListComponent } from '../../components/articles/article-list/article-list.component';
+import { ArticleListComponent } from '../../components/articles/articles-list/article-list.component';
 import { Article, ArticleCategory } from '../../core/types/article.model';
 import { ArticleService } from '../../core/services/article.service';
 import { Router } from '@angular/router';
