@@ -1,8 +1,16 @@
+<button (click)="openModal()">Open Modal</button>
+<button (click)="openModalWithData()">Open Modal</button>
 
+<app-modal></app-modal>
 
-<!-- <aside class="facet-panel"> -->
-  <!-- <div class="facets"></div> -->
-<!-- </aside> -->
+<ng-template #modal1Content>
+  <p>This is a production-ready modal implementation with: 1</p>
+</ng-template>
+
+<ng-template #modal2Content let-data>
+  <p>ID: {{ data.id }}</p>
+  <p>Name: {{ data.name }}</p>
+</ng-template>
 
 <app-articles-list-header></app-articles-list-header>
 <app-article-list [articles]="articles"></app-article-list>

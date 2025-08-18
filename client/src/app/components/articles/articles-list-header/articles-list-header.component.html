@@ -25,9 +25,11 @@
         [(ngModel)]="selectedSort"
         (change)="onSortChange()"
       >
-        <option *ngFor="let option of sortOptions" [value]="option.value">
-          {{ option.label }}
-        </option>
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">
+            {{ option.label }}
+          </option>
+        }
       </select>
 
       <button class="btn btn-gray-outline btn-sm" (click)="onOpenFilters()">

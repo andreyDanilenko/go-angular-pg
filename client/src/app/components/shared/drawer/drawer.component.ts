@@ -14,11 +14,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     ]),
   ],
   template: `
-    <div
-      class="overlay"
-      *ngIf="isOpen"
-      (click)="overlayClick.emit()"
-    ></div>
+    @if (isOpen) {
+      <div
+        class="overlay"
+        (click)="overlayClick.emit()"
+      ></div>
+    }
 
     <div
       class="drawer"
@@ -26,7 +27,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       [ngStyle]="{ 'min-width': minWidth, 'max-width': maxwidth }"
     >
       <div class="drawer-header">
-        <button class="btn-gray-outline btn-sm btn-icon" (click)="overlayClick.emit()">✕</button>
+        <button class="btn-icon" (click)="overlayClick.emit()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
       <ng-content></ng-content>
     </div>
