@@ -45,9 +45,18 @@
         errorText="Код должен содержать 6 цифр"
         maxlength="6"
       ></app-input>
+
+      <!-- Добавить этот блок -->
+      <div class="resend-code">
+        @if (canResendCode) {
+          <button class="btn-text" (click)="onAuth()">Отправить код повторно</button>
+        } @else {
+          <span>Запросить код повторно через {{ remainingTime }} сек</span>
+        }
+      </div>
     </div>
   }
 
-    <button class="btn-primary btn-md" [disabled]="form.invalid"> {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
+    <button class="btn btn-primary btn-md" [ngStyle]="{width: '100%'}"[disabled]="form.invalid"> {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
   </form>
 </div>

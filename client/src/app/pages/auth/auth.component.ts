@@ -27,6 +27,10 @@ export class AuthComponent {
   apiError: string | null = null;
   userEmail: string = '';
 
+  canResendCode: boolean = false;
+  remainingTime: number = 0;
+  private resendTimer: any;
+
   form: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
@@ -38,27 +42,47 @@ export class AuthComponent {
     this.form.get('code')?.disable();
   }
 
+  ngOnDestroy() {
+    if (this.resendTimer) {
+      clearInterval(this.resendTimer);
+    }
+  }
+
+
+  onAuth() {
+    this.api.post('auth', {
+      email: this.form.value.email,
+      password: this.form.value.password
+    }).subscribe({
+        next: (response: any) => {
+          this.userEmail = this.form.value.email;
+          this.isCodeVerification = true;
+          this.form.get('email')?.enable();
+          this.form.get('password')?.enable();
+          this.form.get('code')?.enable();
+
+          this.canResendCode = false;
+          this.remainingTime = 120;
+          this.resendTimer = setInterval(() => {
+            this.remainingTime--;
+            if (this.remainingTime <= 0) {
+              clearInterval(this.resendTimer);
+              this.canResendCode = true;
+            }
+          }, 1000);
+        },
+      error: (err) => {
+        this.apiError = err?.error?.message || 'Ошибка при входе';
+      }
+    });
+  }
+
   onSubmit() {
     this.apiError = null;
-
     if (this.form.invalid) return;
 
     if (!this.isCodeVerification) {
-      this.api.post('auth', {
-        email: this.form.value.email,
-        password: this.form.value.password
-      }).subscribe({
-        next: (response: any) => {
-            this.userEmail = this.form.value.email;
-            this.isCodeVerification = true;
-            this.form.get('email')?.disable();
-            this.form.get('password')?.disable();
-            this.form.get('code')?.enable();
-        },
-        error: (err) => {
-          this.apiError = err?.error?.message || 'Ошибка при входе';
-        }
-      });
+      this.onAuth()
     } else {
       this.api.post('confirm', {
         email: this.userEmail,

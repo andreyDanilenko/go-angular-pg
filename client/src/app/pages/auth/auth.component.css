@@ -22,6 +22,7 @@ form {
   border: 1px solid var(--md-sys-color-outline-variant);
   width: 400px;
   max-width: 400px;
+  opacity: 0.9;
 }
 
 .error {
