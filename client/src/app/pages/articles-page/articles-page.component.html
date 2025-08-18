@@ -1,16 +1,18 @@
-<button (click)="openModal()">Open Modal</button>
-<button (click)="openModalWithData()">Open Modal</button>
 
-<app-modal></app-modal>
+
+
+
+<app-articles-list-header (addArticle)="openModal()" (openFilters)="openModalWithData()"></app-articles-list-header>
+<app-article-list [articles]="articles"></app-article-list>
 
 <ng-template #modal1Content>
-  <p>This is a production-ready modal implementation with: 1</p>
+  <p>Окно открытое кнопкой добавить</p>
 </ng-template>
 
 <ng-template #modal2Content let-data>
+  <p>Окно открытое кнопкой фильтры</p>
   <p>ID: {{ data.id }}</p>
   <p>Name: {{ data.name }}</p>
 </ng-template>
 
-<app-articles-list-header></app-articles-list-header>
-<app-article-list [articles]="articles"></app-article-list>
+<app-modal></app-modal>
