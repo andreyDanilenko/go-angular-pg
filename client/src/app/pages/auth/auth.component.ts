@@ -48,11 +48,10 @@ export class AuthComponent {
     }
   }
 
-
-  onAuth() {
+  onAuthRequest() {
     this.api.post('auth', {
       email: this.form.value.email,
-      password: this.form.value.password
+      password: this.form.value.password,
     }).subscribe({
         next: (response: any) => {
           this.userEmail = this.form.value.email;
@@ -82,7 +81,7 @@ export class AuthComponent {
     if (this.form.invalid) return;
 
     if (!this.isCodeVerification) {
-      this.onAuth()
+      this.onAuthRequest()
     } else {
       this.api.post('confirm', {
         email: this.userEmail,

@@ -19,9 +19,6 @@
 
   position: relative;
   z-index: 1;
-  & > * {
-    pointer-events: auto;
-  }
 }
 
 .auth-header {

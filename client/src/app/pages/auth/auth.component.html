@@ -1,5 +1,5 @@
 <div class="auth">
-  <h1 class="title">{{ isCodeVerification ? 'Введите код подтверждения' : 'Авторизация' }}</h1>
+  <h1 class="title">{{ isCodeVerification ? 'Код подтверждения' : 'Авторизация' }}</h1>
 
   <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
     @if (apiError) {
@@ -15,6 +15,7 @@
           [control]="form.controls['email']"
           class="auth-input"
           type="email"
+          class="app-input"
           placeholder="example@mail.com"
           size="md"
           errorText="Корректный email обязателен"
@@ -25,6 +26,7 @@
           [control]="form.controls['password']"
           class="auth-input"
           type="password"
+          class="app-input"
           placeholder="Введите пароль"
           size="md"
           errorText="Минимум 8 символов"
@@ -32,30 +34,27 @@
       </div>
     }
 
-  @if (isCodeVerification) {
-    <div class="code-verification">
-      <p class="code-instruction">Мы отправили 6-значный код на {{ form.value.email }}</p>
+    @if (isCodeVerification) {
+      <div class="code-verification">
+        <p class="code-instruction">Мы отправили 6-значный код на {{ form.value.email }}</p>
 
-      <app-input
-        label="Код подтверждения"
-        [control]="form.controls['code']"
-        type="text"
-        placeholder="Введите 6 цифр"
-        size="md"
-        errorText="Код должен содержать 6 цифр"
-        maxlength="6"
-      ></app-input>
+        <app-input
+          [control]="form.controls['code']"
+          type="text"
+          placeholder="Введите 6 цифр"
+          size="md"
+          maxlength="6"
+        ></app-input>
 
-      <!-- Добавить этот блок -->
-      <div class="resend-code">
-        @if (canResendCode) {
-          <button class="btn-text" (click)="onAuth()">Отправить код повторно</button>
-        } @else {
-          <span>Запросить код повторно через {{ remainingTime }} сек</span>
-        }
+        <div class="resend-code">
+          @if (canResendCode) {
+            <button class="btn-text" (click)="onAuthRequest()">Отправить код повторно</button>
+          } @else {
+            <span>Запросить код повторно через {{ remainingTime }} сек</span>
+          }
+        </div>
       </div>
-    </div>
-  }
+    }
 
     <button class="btn btn-primary btn-md" [ngStyle]="{width: '100%'}"[disabled]="form.invalid"> {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
   </form>
