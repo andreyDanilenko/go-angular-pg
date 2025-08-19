@@ -1,18 +1,10 @@
-
-
-
-
-<app-articles-list-header (addArticle)="openModal()" (openFilters)="openModalWithData()"></app-articles-list-header>
+<app-articles-list-header (addArticle)="openModal()" (openFilters)="openModal()"></app-articles-list-header>
 <app-article-list [articles]="articles"></app-article-list>
 
-<ng-template #modal1Content>
-  <p>Окно открытое кнопкой добавить</p>
+<ng-template #modalCreateContent let-data let-close="close" let-onConfirm="onConfirm">
+  <app-create-content-component
+    [onCancel]="close"
+    [onConfirmAction]="handleContentSelection">
+  </app-create-content-component>
 </ng-template>
-
-<ng-template #modal2Content let-data>
-  <p>Окно открытое кнопкой фильтры</p>
-  <p>ID: {{ data.id }}</p>
-  <p>Name: {{ data.name }}</p>
-</ng-template>
-
 <app-modal></app-modal>

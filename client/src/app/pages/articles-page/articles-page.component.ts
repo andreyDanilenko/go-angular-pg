@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 import { ArticlesHeaderHeaderComponent } from '../../components/articles/articles-list-header/articles-list-header.component';
 import { ModalService } from '../../core/services/modal.service';
 import { ModalComponent } from '../../components/shared/modal/modal.component';
+import { CreateContentComponent } from '../../components/modalContents/create-content-modal/create-content-modal.component';
 
 @Component({
   selector: 'app-articles',
   standalone: true,
-  imports: [CommonModule, ArticleListComponent, ArticlesHeaderHeaderComponent, ModalComponent],
+  imports: [CommonModule, ArticleListComponent, ArticlesHeaderHeaderComponent, ModalComponent, CreateContentComponent],
   templateUrl: './articles-page.component.html',
   styleUrls: ['./articles-page.component.css'],
   styles: []
@@ -21,26 +22,27 @@ export class ArticlesPageComponent {
   isLoading = true;
   error: string | null = null;
 
-  @ViewChild('modal1Content') modal1Content!: TemplateRef<any>;
-  @ViewChild('modal2Content') modal2Content!: TemplateRef<any>;
+  @ViewChild('modalCreateContent') modalCreateContent!: TemplateRef<any>;
 
   constructor(private articleService: ArticleService, private router: Router, private modalService: ModalService) {}
 
   openModal() {
     this.modalService.open({
-      content: this.modal1Content,
-      title: 'Первое модальное окно'
+      content: this.modalCreateContent,
+      title: 'Что вы хотите создать?'
     });
   }
 
-  openModalWithData() {
-    this.modalService.open({
-      content: this.modal2Content,
-      title: 'Окно с данными',
-      data: { id: 123, name: 'Пример' }
-    });
+  handleContentSelection = (type: 'post' | 'article') => {
+    console.log('Выбран тип:', type);
+    this.modalService.close();
+    // Дополнительная логика: навигация, создание и т.д.
+    if (type === 'post') {
+      this.router.navigate(['/create/post']);
+    } else {
+      this.router.navigate(['/create/article']);
+    }
   }
-
 
   ngOnInit(): void {
     this.loadArticles();

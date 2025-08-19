@@ -26,7 +26,7 @@ interface ModalState {
           </div>
           <div class="modal-body">
             <ng-container
-              *ngTemplateOutlet="state.config.content; context: { $implicit: state.config.data }">
+              *ngTemplateOutlet="state.config.content; context: getTemplateContext()">
             </ng-container>
           </div>
         </div>
@@ -104,6 +104,21 @@ export class ModalComponent {
   close() {
     this.modalService.close();
   }
+
+  onConfirm(result?: any) {
+    // Логика подтверждения, если нужна
+    this.close();
+  }
+
+  getTemplateContext() {
+    return {
+      $implicit: this.state.config?.data,
+      close: () => this.close(),
+      // Можно добавить другие методы
+      onConfirm: (result?: any) => this.onConfirm(result)
+    };
+  }
+
 
   onBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {
