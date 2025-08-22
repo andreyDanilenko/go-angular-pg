@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -48,6 +48,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.connectionSubscription = this.wsService.getConnectionStatus().subscribe({
       next: (connected: boolean) => {
         this.isConnected = connected;
+          console.log('ngOnInit isConnected', connected);
         if (connected && this.chatId) {
           this.loadChatHistory();
           this.subscribeToMessages();
@@ -58,6 +59,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('ngOnChanges chat', changes['chatId']);
+    console.log('ngOnChanges previousValue', changes['chatId'].previousValue);
+    console.log('ngOnChanges currentValue', changes['chatId'].currentValue);
+
     if (changes['chatId'] && changes['chatId'].currentValue !== changes['chatId'].previousValue) {
       this.resetChat();
       if (this.isConnected && this.chatId) {

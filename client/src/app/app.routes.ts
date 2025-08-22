@@ -5,8 +5,6 @@ import { AuthGuard } from './pages/guard/auth-guard';
 import { AuthComponent } from './pages/auth/auth.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HomeComponent } from './pages/main/main.component';
-import { PostsPageComponent } from './pages/posts-page/posts-page';
-import { PostEditorComponent } from './pages/post-page/post-page';
 import { ProfilePageComponent } from './pages/profile/profile-page.component';
 import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
 import { ArticlesPageComponent } from './pages/articles-page/articles-page.component';
@@ -34,17 +32,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: MessengerPageComponent },
-    ]
-  },
-  {
-    path: 'posts',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: PostsPageComponent },
-      { path: 'create', component: PostEditorComponent },
-      { path: ':id', component: PostEditorComponent },
-      { path: ':id/edit', component: PostEditorComponent }
     ]
   },
   {

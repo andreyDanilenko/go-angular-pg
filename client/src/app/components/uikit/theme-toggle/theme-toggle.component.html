@@ -1,3 +1,7 @@
- <button class="btn-error btn-sm" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
-   {{ themeService.isDarkMode() ? 'Темная тема' : 'Светлая тема' }}
+<button
+  class="btn-error btn-sm"
+  (click)="toggleTheme()"
+  [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+>
+  {{ isDarkMode ? 'Темная тема' : 'Светлая тема' }}
 </button>

@@ -12,10 +12,9 @@
   (overlayClick)="isDrawerOpen = false"
 >
   <ul class="NavList">
-    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/articles" [class.active-link]="isActive('/articles')">Articles</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-sm"routerLink="/posts" [class.active-link]="isActive('/posts')">Статьи</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-sm" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/articles" [class.active-link]="isActive('/articles')">Статьи</a></li>
+    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
   </ul>
 </app-drawer>

@@ -1,8 +1,10 @@
+<app-articles-list-header (addArticle)="openModal()" (openFilters)="openModal()"></app-articles-list-header>
+<app-article-list [articles]="articles"></app-article-list>
 
-<aside class="facet-panel">
-  <!-- <div class="facets"></div> -->
-</aside>
-
-<main class="content">
-  <app-article-list [articles]="articles"></app-article-list>
-</main>
+<ng-template #modalCreateContent let-data let-close="close" let-onConfirm="onConfirm">
+  <app-create-content-component
+    [onCancel]="close"
+    [onConfirmAction]="handleContentSelection">
+  </app-create-content-component>
+</ng-template>
+<app-modal></app-modal>

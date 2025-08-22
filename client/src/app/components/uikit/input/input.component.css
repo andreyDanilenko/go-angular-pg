@@ -6,9 +6,9 @@
 }
 
 .input-wrapper label {
-  margin-bottom: 6px;
   font-weight: 500;
   color: var(--md-sys-color-on-background);
+  margin-bottom: var(--space-1);
 }
 
 .input-container {
@@ -66,23 +66,23 @@
 
 .error-placeholder {
   min-height: 18px;
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 .error-message {
   color: var(--md-sys-color-error);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 /* Размеры */
 .input-wrapper.sm input {
-  height: 32px;
+  min-height: 32px;
 }
 
 .input-wrapper.md input {
-  height: 40px;
+  min-height: 40px;
 }
 
 .input-wrapper.lg input {
-  height: 48px;
+  min-height: 48px;
 }

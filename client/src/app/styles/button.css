@@ -1,7 +1,5 @@
 
-/* Базовые стили */
 button, .btn, .link-btn {
-  width: 100%;
   font-family: inherit;
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-lg);
@@ -9,12 +7,14 @@ button, .btn, .link-btn {
   transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   line-height: 1;
   display: inline-flex;
+  gap: var(--space-1);
   align-items: center;
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   border: 1px solid transparent; /* базовый border, чтобы размеры не скакали */
   text-decoration: none;
+  white-space: nowrap; /* Предотвращает перенос текста */
 }
 
 /* .btn по умолчанию (добавлен, чтобы не ломать существующие вызовы) */
@@ -24,21 +24,43 @@ button, .btn, .link-btn {
 }
 
 /* btn модификаторы (маленькая / средняя / большая) */
-.btn-sm, .btn-sm.btn { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); height: 32px; min-width: 32px; }
-.btn-md, .btn-md.btn { font-size: var(--font-size-sm); padding: 0 var(--space-4); height: 40px; min-width: 40px; }
-.btn-lg, .btn-lg.btn { font-size: var(--font-size-md); padding: 0 20px; height: 48px; min-width: 48px; }
+.btn-sm, .btn-sm.btn { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); min-height: 32px; min-width: 32px; }
+.btn-md, .btn-md.btn { font-size: var(--font-size-sm); padding: 0 var(--space-4); min-height: 40px; min-width: 40px; }
+.btn-lg, .btn-lg.btn { font-size: var(--font-size-md); padding: 0 20px; min-height: 48px; min-width: 48px; }
 
 /* Иконка-only */
 .btn-icon {
   width: 32px;
-  height: 32px;
+  min-height: 32px;
   padding: 0;
   justify-content: center;
   border-radius: 6px;
 }
 
+.btn-icon {
+  width: 40px;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+.btn-icon.primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.btn-icon.primary:hover {
+  background-color: var(--md-sys-color-primary-container);
+}
+
 /* ------------------------------
-   Варианты кнопок (все ранее обсуждённые)
    - заполненные (filled)
    - outline / прозрачные
    - text (как обычный текст)
@@ -53,7 +75,7 @@ button.btn-primary {
   border-color: var(--md-sys-color-primary);
 }
 .btn-primary:hover { background-color: var(--md-sys-color-primary-container); }
-.btn-primary:active { background-color: var(--md-sys-color-on-primary-container); }
+.btn-primary:active { background-color: var(--md-sys-color-on-primary-container); color: var(--md-sys-color-surface) }
 .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(0,100,149,0.14); outline: none; }
 
 /* PRIMARY outline (универсальный .btn-outline) */
@@ -146,71 +168,33 @@ button.btn-text {
   color: var(--md-sys-color-primary-container);
 }
 
+.icon-btn {
+  width: 40px;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+.icon-btn.primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.icon-btn.primary:hover {
+  background-color: var(--md-sys-color-primary-container);
+}
 /* Disabled state helper */
-.btn[disabled], .link-btn[aria-disabled="true"] {
+.btn[disabled] {
   opacity: 0.48;
   cursor: not-allowed;
   pointer-events: none;
-}
-
-/* ------------------------------
-   Демонстрационные сетки и палитра
-   ------------------------------ */
-.section {
-  margin: 18px 0;
-}
-
-.h1 {
-  font-size: 18px;
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-
-/* grid для кнопок */
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px 14px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-/* подпись размера */
-.size-label {
-  grid-column: 1 / -1;
-  font-weight: 700;
-  margin: 12px 0 6px;
-}
-
-/* палитра (palette swatches) */
-.palette {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.swatch {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.02);
-}
-.swatch .sample {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.06);
-}
-.swatch .meta { font-size: 13px; color: var(--md-sys-color-on-surface); }
-.small { font-size: 12px; color: var(--md-sys-color-on-surface); opacity: 0.85; }
-
-/* удобный контейнер для демки */
-.card {
-  background: var(--md-sys-color-surface-container-low);
-  padding: 14px;
-  border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(11,24,40,0.04);
-  border: 1px solid var(--md-sys-color-surface-container);
 }

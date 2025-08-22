@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  position: absolute;  /* Изменено с fixed на absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;  /* Ниже основного контента */
+  background-color: var(--md-sys-color-background);
+  /* pointer-events: auto;  Разрешаем события мыши */
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;  /* Важно для кликабельности */
+  }
+}

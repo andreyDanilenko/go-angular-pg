@@ -6,5 +6,13 @@ import { ThemeService } from '../../../core/services/theme.service';
   templateUrl: './theme-toggle.component.html',
 })
 export class ThemeToggleComponent {
-  constructor(public themeService: ThemeService) {}
+  constructor(private themeService: ThemeService) {}
+
+  get isDarkMode(): boolean {
+    return this.themeService.isDarkMode();
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 }
