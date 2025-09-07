@@ -8,6 +8,7 @@ import { HomeComponent } from './pages/main/main.component';
 import { ProfilePageComponent } from './pages/profile/profile-page.component';
 import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
 import { ArticlesPageComponent } from './pages/articles-page/articles-page.component';
+import { ArticlePageComponent } from './pages/article-page/article-page.component';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: ArticlesPageComponent },
+      { path: ':id', component: ArticlePageComponent },
       // { path: 'create', component: PostEditorComponent },
       // { path: ':id', component: PostEditorComponent },
       // { path: ':id/edit', component: PostEditorComponent }
