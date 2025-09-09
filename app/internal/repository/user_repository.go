@@ -76,6 +76,13 @@ func (r *UserRepository) UpdateUser(ctx context.Context, id string, input model.
 	return &user, nil
 }
 
+func (r *UserRepository) UpdateFields(ctx context.Context, userID string, updates map[string]interface{}) error {
+	return r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("id = ?", userID).
+		Updates(updates).Error
+}
+
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	var user model.User
 	err := r.db.WithContext(ctx).
