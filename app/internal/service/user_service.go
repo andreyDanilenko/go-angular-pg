@@ -96,6 +96,16 @@ func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*mod
 		return nil, "", err
 	}
 
+	updates := map[string]interface{}{
+		"token":         token,
+		"token_expires": time.Now().Add(3 * time.Hour),
+		"updated_at":    time.Now(),
+	}
+
+	if err := s.repo.UpdateFields(ctx, user.ID, updates); err != nil {
+		return nil, "", fmt.Errorf("failed to save token: %w", err)
+	}
+
 	return user, token, nil
 }
 
@@ -130,15 +140,17 @@ func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, er
 	}
 
 	fullUser := &model.User{
-		ID:         user.ID,
-		Username:   user.Username,
-		FirstName:  user.FirstName,
-		LastName:   user.LastName,
-		MiddleName: user.MiddleName,
-		Role:       user.Role,
-		Email:      user.Email,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
+		ID:           user.ID,
+		Username:     user.Username,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		MiddleName:   user.MiddleName,
+		Role:         user.Role,
+		Token:        user.Token,
+		TokenExpires: user.TokenExpires,
+		Email:        user.Email,
+		CreatedAt:    user.CreatedAt,
+		UpdatedAt:    user.UpdatedAt,
 	}
 
 	return fullUser, nil

@@ -1,0 +1,38 @@
+<div class="article-detail">
+  @if (article) {
+    <div class="article">
+
+      <nav class="breadcrumb">
+        <a routerLink="/" class="breadcrumb-link">Главная</a>
+        <span>/</span>
+        <a routerLink="/articles" class="breadcrumb-link">Статьи</a>
+        <span>/</span>
+        <span class="breadcrumb-current">{{ getCategoryTranslation(article.category) }}</span>
+      </nav>
+
+      <h1 class="article-title">{{ article.title }}</h1>
+
+      <div class="article-meta">
+        <span class="meta-item">
+          <strong>Автор:</strong> {{ article.authorName }}
+        </span>
+
+        <span class="meta-item">
+          <strong>Опубликовано:</strong> {{ formatDate(article.createdAt) }}
+        </span>
+
+        <span class="article-category" [class]="getCategoryClass(article.category)">
+          {{ getCategoryTranslation(article.category) }}
+        </span>
+      </div>
+
+      <div class="article-content" [innerHTML]="article.content"></div>
+
+      <div class="article-footer">
+        <span class="meta-item">
+          <strong>Обновлено:</strong> {{ formatDate(article.updatedAt) }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

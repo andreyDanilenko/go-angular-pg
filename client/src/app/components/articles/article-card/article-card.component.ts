@@ -4,6 +4,7 @@ import { ArticleImageComponent } from '../article-image/article-image.component'
 import { DatePipe } from '@angular/common';
 import { Article } from '../../../core/types/article.model';
 import { TruncatePipe } from '../../../core/services/truncate.pipe';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-article-card',
   standalone: true,
@@ -15,7 +16,10 @@ import { TruncatePipe } from '../../../core/services/truncate.pipe';
 export class ArticleCardComponent {
   @Input() article!: Article;
 
-  constructor(private datePipe: DatePipe) {}
+  constructor(
+    private datePipe: DatePipe,
+    private router: Router,
+  ) {}
 
   categories = {
     general: {
@@ -52,5 +56,9 @@ export class ArticleCardComponent {
 
   get formattedDate(): string {
     return this.datePipe.transform(this.article.createdAt, 'd MMMM y') || '';
+  }
+
+  navigateToArticle(): void {
+    this.router.navigate(['/articles', this.article.id]);
   }
 }

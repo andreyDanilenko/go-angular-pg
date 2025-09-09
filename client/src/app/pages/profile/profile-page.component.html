@@ -1,101 +1,71 @@
+<div class="profile">
 
-<div class="container">
-  <h1 class="Title">Профиль</h1>
-
-  <div class="UserProfile" *ngIf="currentUser; else loading">
-    <div *ngIf="!isEditMode" class="UserProfile__ViewMode">
-      <div class="UserProfile__Field">
-        <span class="UserProfile__FieldLabel">Логин:</span>
-        <span class="UserProfile__FieldValue">{{ currentUser.username }}</span>
+  @if (user && !loading) {
+    <div class="profile-content">
+      <div class="profile-header">
+        <h1 class="text-3xl">Профиль</h1>
+        <button class="btn-primary btn-sm" (click)="editProfile()">Редактировать</button>
       </div>
 
-      <div class="UserProfile__Field">
-        <span class="UserProfile__FieldLabel">Имя:</span>
-        <span class="UserProfile__FieldValue">{{ currentUser.firstName }}</span>
+      <div class="profile-card">
+        <div class="profile-avatar">
+          <div class="avatar-placeholder">
+            {{ user.first_name![0] }}{{ user.last_name![0] }}
+          </div>
+        </div>
+
+        <div class="profile-info">
+          <div class="info-group">
+            <label class="info-label">Email</label>
+            <p class="info-value">{{ user.email }}</p>
+          </div>
+
+          <div class="info-group">
+            <label class="info-label">Никнейм</label>
+            <p class="info-value">{{ user.username }}</p>
+          </div>
+
+          <div class="info-group">
+            <label class="info-label">Имя</label>
+            <p class="info-value">{{ user.first_name }}</p>
+          </div>
+
+          <div class="info-group">
+            <label class="info-label">Фамилия</label>
+            <p class="info-value">{{ user.last_name }}</p>
+          </div>
+
+          @if (user.middle_name) {
+            <div class="info-group">
+              <label class="info-label">Отчество</label>
+              <p class="info-value">{{ user.middle_name }}</p>
+            </div>
+          }
+        </div>
       </div>
 
-      <div class="UserProfile__Field">
-        <span class="UserProfile__FieldLabel">Фамилия:</span>
-        <span class="UserProfile__FieldValue">{{ currentUser.lastName }}</span>
+      <div class="profile-stats">
+        <!-- <div class="stat-item">
+          <span class="stat-number">{{ user.articlesCount }}</span>
+          <span class="stat-label">статей</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-label">Последняя активность</span>
+          <span class="stat-date">{{ formatDate(user.lastActivity) }}</span>
+        </div> -->
+
+        <div class="stat-item">
+          <span class="stat-label">Зарегистрирован</span>
+          <span class="stat-date">{{ formatDate(user.created_at) }}</span>
+        </div>
       </div>
 
-      <div class="UserProfile__Field">
-        <span class="UserProfile__FieldLabel">Отчество:</span>
-        <span class="UserProfile__FieldValue">{{ currentUser.middleName || '—' }}</span>
-      </div>
-
-      <div class="UserProfile__Field">
-        <span class="UserProfile__FieldLabel">Email:</span>
-        <span class="UserProfile__FieldValue">{{ currentUser.email }}</span>
-      </div>
-
-
-      <div *ngIf="!isEditMode" class="UserProfile__FormActions">
-          <button class="btn-success btn-size-compact" (click)="toggleEditMode()">Редактировать</button>
-          <button class="btn-danger btn-size-compact" (click)="logout()">Выйти</button>
-      </div>
     </div>
-
-    <!-- Режим редактирования -->
-    <form *ngIf="isEditMode" class="UserProfile__Form" (ngSubmit)="saveChanges()">
-      <div class="UserProfile__FormGroup">
-        <label for="username" class="UserProfile__Label">Логин</label>
-        <input
-          id="username"
-          type="text"
-          [(ngModel)]="editedUser.username"
-          name="username"
-          class="UserProfile__Input"
-          required
-        >
-      </div>
-
-      <div class="UserProfile__FormGroup">
-        <label for="firstName" class="UserProfile__Label">Имя</label>
-        <input
-          id="firstName"
-          type="text"
-          [(ngModel)]="editedUser.firstName"
-          name="firstName"
-          class="UserProfile__Input"
-          required
-        >
-      </div>
-
-      <div class="UserProfile__FormGroup">
-        <label for="lastName" class="UserProfile__Label">Фамилия</label>
-        <input
-          id="lastName"
-          type="text"
-          [(ngModel)]="editedUser.lastName"
-          name="lastName"
-          class="UserProfile__Input"
-          required
-        >
-      </div>
-
-      <div class="UserProfile__FormGroup">
-        <label for="middleName" class="UserProfile__Label">Отчество</label>
-        <input
-          id="middleName"
-          type="text"
-          [(ngModel)]="editedUser.middleName"
-          name="middleName"
-          class="UserProfile__Input"
-        >
-      </div>
-
-      <div class="UserProfile__FormActions">
-        <button class="btn-success btn-size-compact" [disabled]="!isFormValid()">Сохранить</button>
-        <button class="btn-tertiary btn-size-compact" (click)="toggleEditMode()">Отмена</button>
-      </div>
-    </form>
-  </div>
-
-  <ng-template #loading>
-    <div class="UserProfile__Loading">
-      <div class="UserProfile__LoadingSpinner"></div>
-      <p class="UserProfile__LoadingText">Загрузка данных пользователя...</p>
+  } @else {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Загрузка профиля...</p>
     </div>
-  </ng-template>
+  }
 </div>
