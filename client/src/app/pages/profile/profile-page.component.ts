@@ -32,8 +32,6 @@ export class ProfilePageComponent implements OnInit {
     this.userService.getUserMe().subscribe({
       next: (user) => {
         this.user = user;
-        console.log(user);
-
         this.loading = false;
       },
       error: (error) => {

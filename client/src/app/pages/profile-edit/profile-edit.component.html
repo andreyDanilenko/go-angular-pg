@@ -6,32 +6,13 @@
       </div>
 
       <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="edit-form">
-
-        <div class="form-group">
-          <label for="email" class="form-label">Email *</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="form-input"
-            [disabled]="true"
-            [class.error]="email?.invalid && email?.touched"
-          >
-          @if (email?.invalid && email?.touched) {
-            <div class="error-message">
-              @if (email?.errors?.['required']) { <span>Email обязателен</span> }
-              @if (email?.errors?.['required']) { <span>Некорректный email</span> }
-            </div>
-          }
-        </div>
-
         <div class="form-group">
           <label for="firstName" class="form-label">Имя *</label>
           <input
             id="firstName"
             type="text"
             formControlName="first_name"
-            class="form-input"
+            class="btn btn-gray-outline btn-md"
             [class.error]="first_name?.invalid && first_name?.touched"
           >
           <div class="error-message" *ngIf="first_name?.invalid && first_name?.touched">
@@ -46,7 +27,7 @@
             id="lastName"
             type="text"
             formControlName="last_name"
-            class="form-input"
+            class="btn btn-gray-outline btn-md"
             [class.error]="last_name?.invalid && last_name?.touched"
           >
           <div class="error-message" *ngIf="last_name?.invalid && last_name?.touched">
@@ -61,7 +42,7 @@
             id="middle_name"
             type="text"
             formControlName="middle_name"
-            class="form-input"
+            class="btn btn-gray-outline btn-md"
           >
         </div>
 

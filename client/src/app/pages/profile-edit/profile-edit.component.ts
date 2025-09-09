@@ -4,12 +4,13 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { User } from '../../core/types/user.model';
+import { InputComponent } from '../../components/uikit/input/input.component';
 
 
 @Component({
   selector: 'app-profile-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InputComponent],
   templateUrl: './profile-edit.component.html',
   styleUrls: ['./profile-edit.component.scss']
 })
