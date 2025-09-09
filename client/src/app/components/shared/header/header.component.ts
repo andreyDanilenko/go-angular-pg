@@ -34,8 +34,8 @@ export class HeaderComponent implements OnInit {
       const role = this.currentUser.role.toUpperCase()
 
     if (this.currentUser.username) return `${this.currentUser.username} ${role}`;
-    if (this.currentUser.firstName && this.currentUser.lastName) {
-      return `${this.currentUser.lastName} ${this.currentUser.firstName.charAt(0)}. ${role}`;
+    if (this.currentUser.first_name && this.currentUser.last_name) {
+      return `${this.currentUser.last_name} ${this.currentUser.first_name.charAt(0)}. ${role}`;
     }
 
     return `${this.currentUser.email} ${role}`;

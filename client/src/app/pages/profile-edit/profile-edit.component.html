@@ -1,0 +1,101 @@
+<div class="profile-edit">
+  @if (user && !loading) {
+    <div class="edit-content">
+      <div class="edit-header">
+        <h1 class="text-3xl">Редактирование профиля</h1>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="edit-form">
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email *</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-input"
+            [disabled]="true"
+            [class.error]="email?.invalid && email?.touched"
+          >
+          @if (email?.invalid && email?.touched) {
+            <div class="error-message">
+              @if (email?.errors?.['required']) { <span>Email обязателен</span> }
+              @if (email?.errors?.['required']) { <span>Некорректный email</span> }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="firstName" class="form-label">Имя *</label>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="first_name"
+            class="form-input"
+            [class.error]="first_name?.invalid && first_name?.touched"
+          >
+          <div class="error-message" *ngIf="first_name?.invalid && first_name?.touched">
+            <span *ngIf="first_name?.errors?.['required']">Имя обязательно</span>
+            <span *ngIf="first_name?.errors?.['minlength']">Минимум 2 символа</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName" class="form-label">Фамилия *</label>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="last_name"
+            class="form-input"
+            [class.error]="last_name?.invalid && last_name?.touched"
+          >
+          <div class="error-message" *ngIf="last_name?.invalid && last_name?.touched">
+            <span *ngIf="last_name?.errors?.['required']">Фамилия обязательна</span>
+            <span *ngIf="last_name?.errors?.['minlength']">Минимум 2 символа</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="middle_name" class="form-label">Отчество</label>
+          <input
+            id="middle_name"
+            type="text"
+            formControlName="middle_name"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-gray-outline btn-sm"
+            (click)="cancel()"
+            [disabled]="saving"
+          >
+            Отмена
+          </button>
+          <button
+            type="submit"
+            class="btn-primary btn-sm"
+            [disabled]="profileForm.invalid || saving"
+          >
+            {{ saving ? 'Сохранение...' : 'Сохранить' }}
+          </button>
+        </div>
+
+        @if (error) {
+          <div class="error-message">
+            {{ error }}
+          </div>
+        }
+
+      </form>
+
+    </div>
+  } @else {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Загрузка данных...</p>
+    </div>
+  }
+</div>

@@ -1,99 +1,53 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { UserService } from '../../core/services/user.service';
-import { User } from '../../core/types/user.model';
-import { UserStore } from '../../stores/user-store/user.store';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
 
+import { DatePipe } from '@angular/common';
+import { UserService } from '../../core/services/user.service';
+import { User } from '../../core/types/user.model';
+
 @Component({
-  selector: 'app-user-profile',
+  selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './profile-page.component.html',
-  styleUrls: ['./profile-page.component.scss']
+  styleUrls: ['./profile-page.component.scss'],
+  providers: [DatePipe]
 })
 export class ProfilePageComponent implements OnInit {
-  private authService = inject(AuthService);
-  private router = inject(Router);
-
-  isEditMode = false;
-  currentUser: User | null = null;
-  editedUser: {
-    username?: string;
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-    email?: string;
-  } = {};
+  user: User | null = null;
+  loading = true;
 
   constructor(
-    private userStore: UserStore,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router,
+    private datePipe: DatePipe
   ) {}
 
   ngOnInit(): void {
-    this.userStore.state$.subscribe(state => {
-      this.currentUser = state.currentUser;
-      this.resetEditedUser();
+    this.loadUserProfile();
+  }
+
+  private loadUserProfile(): void {
+    this.userService.getUserMe().subscribe({
+      next: (user) => {
+        this.user = user;
+        console.log(user);
+
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading profile:', error);
+        this.loading = false;
+      }
     });
   }
 
-  toggleEditMode(): void {
-    this.isEditMode = !this.isEditMode;
-    if (this.isEditMode) {
-      this.resetEditedUser();
-    }
+  formatDate(date: Date | string): string {
+    return this.datePipe.transform(date, 'dd.MM.yyyy') || '';
   }
 
-  resetEditedUser(): void {
-    if (this.currentUser) {
-      this.editedUser = {
-        username: this.currentUser.username,
-        firstName: this.currentUser.firstName,
-        lastName: this.currentUser.lastName,
-        middleName: this.currentUser.middleName,
-        email: this.currentUser.email
-      };
-    } else {
-      this.editedUser = {};
-    }
+  editProfile(): void {
+    this.router.navigate(['/profile/edit']);
   }
-
-  isFormValid(): boolean {
-    return !!(
-      this.editedUser.username &&
-      this.editedUser.firstName &&
-      this.editedUser.lastName &&
-      this.editedUser.email
-    );
-  }
-
-  saveChanges(): void {
-    if (this.currentUser && this.isFormValid()) {
-      const updatedUser = {
-        ...this.currentUser,
-        ...this.editedUser
-      };
-
-      this.userService.updateUserMe(updatedUser).subscribe({
-        next: (response) => {
-          this.currentUser = response;
-          this.isEditMode = false;
-          // После успешного сохранения сбрасываем editedUser
-          this.resetEditedUser();
-        },
-        error: (err) => {
-          console.error('Ошибка при обновлении:', err);
-        }
-      });
-    }
-  }
-
-  logout(): void {
-      this.authService.logout();
-      this.router.navigate(['/auth/login']);
-  }
-
 }

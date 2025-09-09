@@ -115,8 +115,8 @@ export class MessengerPageComponent implements OnDestroy {
 
   get displayName(): string {
     if (!this.currentUser) return '';
-    if (this.currentUser.firstName && this.currentUser.lastName) {
-      return `${this.currentUser.lastName} ${this.currentUser.firstName}`;
+    if (this.currentUser.first_name && this.currentUser.last_name) {
+      return `${this.currentUser.last_name} ${this.currentUser.first_name}`;
     }
 
     return `${this.currentUser.email}`;

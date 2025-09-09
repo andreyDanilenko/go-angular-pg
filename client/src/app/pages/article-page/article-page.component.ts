@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router'; // Добавляем ActivatedRoute
-import { Article } from '../../core/types/article.model';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Article, ArticleCategory } from '../../core/types/article.model';
 import { ArticleService } from '../../core/services/article.service';
 
 @Component({
   selector: 'app-article',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './article-page.component.html',
   styleUrls: ['./article-page.component.css']
 })
@@ -17,9 +17,9 @@ export class ArticlePageComponent implements OnInit {
   error: string | null = null;
 
   constructor(
-    private route: ActivatedRoute, // Добавляем ActivatedRoute
+    private route: ActivatedRoute,
     private router: Router,
-    private articleService: ArticleService // Предполагается, что у вас есть сервис для работы со статьями
+    private articleService: ArticleService
   ) {}
 
   ngOnInit(): void {
@@ -27,7 +27,6 @@ export class ArticlePageComponent implements OnInit {
   }
 
   private loadArticle(): void {
-    // Получаем параметр id из маршрута
     const articleId = this.route.snapshot.paramMap.get('id');
 
     if (!articleId) {
@@ -36,8 +35,7 @@ export class ArticlePageComponent implements OnInit {
       return;
     }
 
-    // Загружаем статью через сервис
-    this.articleService.getArticle(articleId).subscribe({
+  this.articleService.getArticle(articleId).subscribe({
       next: (article) => {
         this.article = article;
         this.isLoading = false;
@@ -51,7 +49,30 @@ export class ArticlePageComponent implements OnInit {
     });
   }
 
-  // Дополнительные методы, если нужны
+  formatDate(date: string | Date): string {
+    return new Date(date).toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  getCategoryClass(category: ArticleCategory): string {
+    return `category-${category}`;
+  }
+
+  getCategoryTranslation(category: ArticleCategory): string {
+    const translations: Record<ArticleCategory, string> = {
+      [ArticleCategory.General]: 'Общее',
+      [ArticleCategory.Tech]: 'Технологии',
+      [ArticleCategory.Science]: 'Наука',
+      [ArticleCategory.Politics]: 'Политика',
+      [ArticleCategory.Health]: 'Здоровье'
+    };
+
+    return translations[category] || category;
+  }
+
   goBack(): void {
     this.router.navigate(['/articles']);
   }
