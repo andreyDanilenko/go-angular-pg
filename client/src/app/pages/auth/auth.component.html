@@ -31,6 +31,17 @@
           size="md"
           errorText="Минимум 8 символов"
         ></app-input>
+
+        <app-input
+          label="Код приглашения"
+          [control]="form.controls['invite']"
+          class="auth-input"
+          type="text"
+          class="app-input"
+          placeholder="Введите код приглашения"
+          size="md"
+          errorText="Нужен код"
+        ></app-input>
       </div>
     }
 
@@ -57,5 +68,14 @@
     }
 
     <button class="btn btn-primary btn-md" [ngStyle]="{width: '100%'}"[disabled]="form.invalid"> {{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
+    @if (!isCodeVerification)  { <p class="text-sm">Как получить  <button class="btn btn-text" (click)="openModal()">код приглашения?</button></p> }
   </form>
 </div>
+
+<ng-template #modalAuthInfoContent let-data let-close="close" let-onConfirm="onConfirm">
+  <app-auth-info-modal
+    [onCancel]="close">
+  </app-auth-info-modal>
+</ng-template>
+<app-modal></app-modal>
+

@@ -15,15 +15,17 @@ interface ModalState {
     <div class="modal-overlay" [class.active]="state.isOpen" (click)="onBackdropClick($event)">
       @if (state.config) {
         <div class="modal-content" role="dialog" aria-modal="true">
-          <div class="modal-header">
-            <h2 class="text-2xl modal-header-title">{{ state.config.title }}</h2>
-            <button class="btn-icon" (click)="close()" aria-label="close modal">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
+          @if (!state.config.isHeader) {
+            <div class="modal-header">
+              <h2 class="text-2xl modal-header-title">{{ state.config.title }}</h2>
+              <button class="btn-icon" (click)="close()" aria-label="close modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          }
           <div class="modal-body">
             <ng-container
               *ngTemplateOutlet="state.config.content; context: getTemplateContext()">

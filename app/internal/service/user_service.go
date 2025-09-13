@@ -38,6 +38,11 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 	}
 
 	if user == nil {
+		/// Хардкод убрать!
+		if input.Invite != "y5B0_3nnVW2G" {
+			return nil, fmt.Errorf("Wrong invite code")
+		}
+
 		user, err = s.repo.Create(ctx, model.SignInInput{
 			Email:    input.Email,
 			Password: input.Password,
@@ -46,7 +51,6 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 			return nil, fmt.Errorf("failed to create user: %w", err)
 		}
 	} else {
-		// Пользователь есть — сверяем пароль
 		if err := bcrypt.CompareHashAndPassword(
 			[]byte(user.Password),
 			[]byte(input.Password),
@@ -91,14 +95,14 @@ func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*mod
 	}
 
 	_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
-	token, err := s.tokenManager.Generate(user.ID, user.Role, 3*time.Hour)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, 720*time.Hour)
 	if err != nil {
 		return nil, "", err
 	}
 
 	updates := map[string]interface{}{
 		"token":         token,
-		"token_expires": time.Now().Add(3 * time.Hour),
+		"token_expires": time.Now().Add(720 * time.Hour),
 		"updated_at":    time.Now(),
 	}
 
