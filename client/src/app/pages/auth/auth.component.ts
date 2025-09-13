@@ -34,11 +34,11 @@ export class AuthComponent {
   form: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
+    invite: ['', [Validators.required]],
     code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
   });
 
   ngOnInit() {
-    // Показываем только поля email и password при загрузке
     this.form.get('code')?.disable();
   }
 
@@ -52,6 +52,7 @@ export class AuthComponent {
     this.api.post('auth', {
       email: this.form.value.email,
       password: this.form.value.password,
+      invite: this.form.value.invite,
     }).subscribe({
         next: (response: any) => {
           this.userEmail = this.form.value.email;
@@ -59,6 +60,7 @@ export class AuthComponent {
           this.form.get('email')?.enable();
           this.form.get('password')?.enable();
           this.form.get('code')?.enable();
+          this.form.get('invite')?.enable();
 
           this.canResendCode = false;
           this.remainingTime = 120;
