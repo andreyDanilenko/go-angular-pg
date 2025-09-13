@@ -2,9 +2,10 @@ import { Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ModalConfig {
-  content: TemplateRef<any>;
+  content?: TemplateRef<any>;
   title?: string;
   data?: any;
+  isHeader?: boolean;
 }
 
 interface ModalState {

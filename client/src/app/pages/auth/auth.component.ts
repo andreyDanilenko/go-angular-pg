@@ -1,10 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BaseApiService } from '../../core/services/base-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { InputComponent } from '../../components/uikit/input/input.component';
+import { ModalComponent } from '../../components/shared/modal/modal.component';
+import { AuthInfoComponent } from '../../components/modalContents/auth-info-modal/auth-info-modal';
+import { ModalService } from '../../core/services/modal.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +16,8 @@ import { InputComponent } from '../../components/uikit/input/input.component';
     CommonModule,
     ReactiveFormsModule,
     InputComponent,
+    ModalComponent,
+    AuthInfoComponent
   ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
@@ -23,6 +28,8 @@ export class AuthComponent {
   private router = inject(Router);
   private auth = inject(AuthService);
 
+  constructor(private modalService: ModalService) {}
+
   isCodeVerification = false;
   apiError: string | null = null;
   userEmail: string = '';
@@ -30,6 +37,9 @@ export class AuthComponent {
   canResendCode: boolean = false;
   remainingTime: number = 0;
   private resendTimer: any;
+
+  @ViewChild('modalAuthInfoContent') modalAuthInfoContent!: TemplateRef<any>;
+
 
   form: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -46,6 +56,14 @@ export class AuthComponent {
     if (this.resendTimer) {
       clearInterval(this.resendTimer);
     }
+  }
+
+  openModal() {
+    this.modalService.open({
+      content: this.modalAuthInfoContent,
+      isHeader: true,
+      title: 'Что вы хотите создать?'
+    });
   }
 
   onAuthRequest() {
