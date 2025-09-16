@@ -11,6 +11,7 @@ import { ArticlesPageComponent } from './pages/articles-page/articles-page.compo
 import { ArticlePageComponent } from './pages/article-page/article-page.component';
 import { ProfileEditComponent } from './pages/profile-edit/profile-edit.component';
 import { ChallengeProfilePageComponent } from './pages/challenge-profile-page/challenge-profile-page.component';
+import { ChallengeCatalogPageComponent } from './pages/challenge-main-page/challenge-catalog-page.component';
 
 export const routes: Routes = [
   {
@@ -55,7 +56,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'profile', component: ChallengeProfilePageComponent },
-      { path: 'catalog', component: ChallengeProfilePageComponent },
+      { path: 'catalog', component: ChallengeCatalogPageComponent },
       // { path: 'create', component: PostEditorComponent },
       // { path: ':id', component: PostEditorComponent },
       // { path: ':id/edit', component: PostEditorComponent }

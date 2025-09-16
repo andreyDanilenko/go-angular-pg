@@ -11,9 +11,9 @@ import { RouterLink } from '@angular/router';
             <div class="logo">ChallengeTracker</div>
             <nav class="nav-links">
                 <a routerLink="/">Главная</a>
-                <a routerLink="/">Челленджи</a>
-                <a routerLink="/">Статистика</a>
-                <a routerLink="/">Профиль</a>
+                <a routerLink="/challenger/catalog">Челленджи</a>
+                <a routerLink="/challenger/stats">Статистика</a>
+                <a routerLink="/challenger/profile">Профиль</a>
                 <a routerLink="/">Выход</a>
             </nav>
         </div>
