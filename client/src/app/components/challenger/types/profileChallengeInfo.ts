@@ -1,4 +1,4 @@
-export type ChallengeCardProfile = {
+export type ProfileChallengeInfo = {
   id: number;
   image: string;
   title: string;
@@ -9,7 +9,7 @@ export type ChallengeCardProfile = {
   category: string;
 }
 
-export const MOCK_CHALLENGES: ChallengeCardProfile[] = [
+export const MOCK_CHALLENGES: ProfileChallengeInfo[] = [
   {
     id: 1,
     image: 'https://placehold.co/300x180/4a6fa5/ffffff?text=Фитнес+30+дней',

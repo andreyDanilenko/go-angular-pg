@@ -8,8 +8,11 @@ import { ChallengeProfileBioComponent } from '../../components/challenger/compon
 import { ChallengeProfileStatsComponent } from '../../components/challenger/components/profile-page/stats/stats.component';
 import { ChallengeProfileStats } from '../../components/challenger/types/stats';
 import { ChallengeProfileInfo } from '../../components/challenger/types/profile';
-import { ChallengeCardProfile, MOCK_CHALLENGES } from '../../components/challenger/types/challengeCardProfile';
+import { ProfileChallengeInfo, MOCK_CHALLENGES } from '../../components/challenger/types/profileChallengeInfo';
 import { ChallengeCardComponent } from '../../components/challenger/components/challenge-card-profile/challenge-card-profile.component';
+import { MOCK_CONTACTS, ProfileContact } from '../../components/challenger/types/profileContact';
+import { ChallengeProfileContactComponent } from '../../components/challenger/components/profile-page/contact/contact.component';
+import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
 
 @Component({
   selector: 'app-challenge-profile-page',
@@ -19,7 +22,9 @@ import { ChallengeCardComponent } from '../../components/challenger/components/c
     HeaderComponent,
     ChallengeProfileBioComponent,
     ChallengeProfileStatsComponent,
-    ChallengeCardComponent
+    ChallengeCardComponent,
+    ChallengeProfileContactComponent,
+    FooterComponent,
   ],
   templateUrl: './challenge-profile-page.component.html',
   styleUrls: ['./challenge-profile-page.component.css']
@@ -29,14 +34,14 @@ export class ChallengeProfilePageComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  challenges: ChallengeCardProfile[] = MOCK_CHALLENGES;
+  challenges: ProfileChallengeInfo[] = MOCK_CHALLENGES;
+  contacts: ProfileContact[] = MOCK_CONTACTS;
   userStats: ChallengeProfileStats = {
     completed: 24,
     active: 12,
     success: 89,
     streak: 147
   };
-
   userInfo: ChallengeProfileInfo  = {
     avatar: 'https://placehold.co/120x120',
     name: 'Андрей Даниленко',

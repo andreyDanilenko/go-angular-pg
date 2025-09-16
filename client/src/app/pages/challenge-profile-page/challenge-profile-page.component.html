@@ -32,49 +32,14 @@
     <section class="contact-section">
         <h2 class="section-title">Контакты</h2>
         <div class="contact-list">
-            <div class="contact-item">
-                <div class="contact-icon">✉️</div>
-                <div class="contact-details">
-                    <h4>Email</h4>
-                    <p>alex.petrov@example.com</p>
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-icon">📱</div>
-                <div class="contact-details">
-                    <h4>Телефон</h4>
-                    <p>+7 (999) 123-45-67</p>
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-icon">🌐</div>
-                <div class="contact-details">
-                    <h4>Сайт</h4>
-                    <p>alexpetrov.ru</p>
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-icon">📸</div>
-                <div class="contact-details">
-                    <h4>Instagram</h4>
-                    <p>@alex_petrov</p>
-                </div>
-            </div>
-
-            <div class="contact-item">
-                <div class="contact-icon">💼</div>
-                <div class="contact-details">
-                    <h4>LinkedIn</h4>
-                    <p>linkedin.com/in/alex-petrov</p>
-                </div>
-            </div>
+          @for (contact of contacts; track contact.id) {
+            <app-challenge-profile-contact
+              [contact]="contact">
+            </app-challenge-profile-contact>
+          }
         </div>
     </section>
 </div>
 
-<footer>
-    <p>&copy; 2025 LifeDreamTech. Все права защищены.</p>
-</footer>
+<app-challenge-footer></app-challenge-footer>
+

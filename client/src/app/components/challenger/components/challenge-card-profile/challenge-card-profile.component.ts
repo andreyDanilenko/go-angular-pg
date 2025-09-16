@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChallengeCardProfile } from '../../types/challengeCardProfile';
+import { ProfileChallengeInfo } from '../../types/profileChallengeInfo';
 
 @Component({
   selector: 'app-challenge-card',
@@ -127,7 +127,7 @@ import { ChallengeCardProfile } from '../../types/challengeCardProfile';
   `]
 })
 export class ChallengeCardComponent {
-  @Input({ required: true }) challenge!: ChallengeCardProfile;
+  @Input({ required: true }) challenge!: ProfileChallengeInfo;
 
   getStatusText(status: string): string {
     switch (status) {
