@@ -10,6 +10,7 @@ import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
 import { ArticlesPageComponent } from './pages/articles-page/articles-page.component';
 import { ArticlePageComponent } from './pages/article-page/article-page.component';
 import { ProfileEditComponent } from './pages/profile-edit/profile-edit.component';
+import { ChallengeProfilePageComponent } from './pages/challenge-profile-page/challenge-profile-page.component';
 
 export const routes: Routes = [
   {
@@ -43,6 +44,18 @@ export const routes: Routes = [
     children: [
       { path: '', component: ArticlesPageComponent },
       { path: ':id', component: ArticlePageComponent },
+      // { path: 'create', component: PostEditorComponent },
+      // { path: ':id', component: PostEditorComponent },
+      // { path: ':id/edit', component: PostEditorComponent }
+    ]
+  },
+  {
+    path: 'challenger',
+    // component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'profile', component: ChallengeProfilePageComponent },
+      { path: 'catalog', component: ChallengeProfilePageComponent },
       // { path: 'create', component: PostEditorComponent },
       // { path: ':id', component: PostEditorComponent },
       // { path: ':id/edit', component: PostEditorComponent }
