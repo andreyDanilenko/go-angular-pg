@@ -1,19 +1,21 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-challenge-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <header>
         <div class="container header-content">
             <div class="logo">ChallengeTracker</div>
             <nav class="nav-links">
-                <a href="#">Главная</a>
-                <a href="#">Челленджи</a>
-                <a href="#">Статистика</a>
-                <a href="#">Профиль</a>
+                <a routerLink="/">Главная</a>
+                <a routerLink="/">Челленджи</a>
+                <a routerLink="/">Статистика</a>
+                <a routerLink="/">Профиль</a>
+                <a routerLink="/">Выход</a>
             </nav>
         </div>
     </header>

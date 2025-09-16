@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Article, ArticleCategory } from '../../core/types/article.model';
 import { ArticleService } from '../../core/services/article.service';
-import { HeaderComponent } from '../../components/challenger/header/header.component';
+import { HeaderComponent } from '../../components/challenger/components/header/header.component';
+import { ChallengeProfileBioComponent } from '../../components/challenger/components/profile-page/bio/bio.component';
+import { ChallengeProfileStatsComponent } from '../../components/challenger/components/profile-page/stats/stats.component';
+import { ChallengeProfileStats } from '../../components/challenger/types/stats';
+import { ChallengeProfileInfo } from '../../components/challenger/types/profile';
+import { ChallengeCardProfile, MOCK_CHALLENGES } from '../../components/challenger/types/challengeCardProfile';
+import { ChallengeCardComponent } from '../../components/challenger/components/challenge-card-profile/challenge-card-profile.component';
 
 @Component({
   selector: 'app-challenge-profile-page',
@@ -11,6 +17,9 @@ import { HeaderComponent } from '../../components/challenger/header/header.compo
   imports: [
     CommonModule,
     HeaderComponent,
+    ChallengeProfileBioComponent,
+    ChallengeProfileStatsComponent,
+    ChallengeCardComponent
   ],
   templateUrl: './challenge-profile-page.component.html',
   styleUrls: ['./challenge-profile-page.component.css']
@@ -19,6 +28,22 @@ export class ChallengeProfilePageComponent implements OnInit {
   article: Article | null = null;
   isLoading = true;
   error: string | null = null;
+
+  challenges: ChallengeCardProfile[] = MOCK_CHALLENGES;
+  userStats: ChallengeProfileStats = {
+    completed: 24,
+    active: 12,
+    success: 89,
+    streak: 147
+  };
+
+  userInfo: ChallengeProfileInfo  = {
+    avatar: 'https://placehold.co/120x120',
+    name: 'Андрей Даниленко',
+    username: 'danilllenko',
+    bio: 'Энтузиаст саморазвития и здорового образа жизни. Увлечен фитнесом, чтением и изучением новых навыков. Верю, что маленькие ежедневные усилия приводят к большим результатам. Присоединяйтесь ко мне в этом путешествии по улучшению себя!'
+  };
+
 
   constructor(
     private route: ActivatedRoute,
