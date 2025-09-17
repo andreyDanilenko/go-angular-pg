@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProfileChallengeInfo } from '../../types/profileChallengeInfo';
+import type { ProfileChallengeInfo } from '../../types/profileChallengeInfo';
 
 @Component({
   selector: 'app-challenge-card',
