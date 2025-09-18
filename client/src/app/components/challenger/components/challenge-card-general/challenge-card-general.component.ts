@@ -98,6 +98,8 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
         flex-grow: 1;
         height: 100%;
         padding: 20px;
+        display: flex;
+        flex-direction: column;
     }
 
     .challenge-title {
@@ -127,6 +129,7 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        flex: 1;
     }
 
     .challenge-meta {

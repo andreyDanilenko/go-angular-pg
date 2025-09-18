@@ -35,13 +35,14 @@
     </section>
 
     <!-- Пагинация -->
-    <div class="pagination">
-        <button class="page-btn">← Назад</button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">4</button>
-        <button class="page-btn">→ Вперед</button>
+    <app-challenge-paginator
+      [config]="paginationConfig"
+      (pageChange)="onPageChange($event)">
+    </app-challenge-paginator>
+
+    <div>
+      <p>Текущая страница: {{ paginationConfig.currentPage }}</p>
+      <p>Всего элементов: {{ paginationConfig.totalItems }}</p>
     </div>
 </div>
 
