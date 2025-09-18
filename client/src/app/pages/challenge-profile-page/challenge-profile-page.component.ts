@@ -8,7 +8,7 @@ import { ChallengeProfileBioComponent } from '../../components/challenger/compon
 import { ChallengeProfileStatsComponent } from '../../components/challenger/components/profile-page/stats/stats.component';
 import { ChallengeProfileStats } from '../../components/challenger/types/stats';
 import { ChallengeProfileInfo } from '../../components/challenger/types/profile';
-import { ProfileChallengeInfo, MOCK_CHALLENGES } from '../../components/challenger/types/profileChallengeInfo';
+import { ProfileChallengeCardProfile, MOCK_CHALLENGES } from '../../components/challenger/types/challengeProfile';
 import { ChallengeCardComponent } from '../../components/challenger/components/challenge-card-profile/challenge-card-profile.component';
 import { MOCK_CONTACTS, ProfileContact } from '../../components/challenger/types/profileContact';
 import { ChallengeProfileContactComponent } from '../../components/challenger/components/profile-page/contact/contact.component';
@@ -34,7 +34,7 @@ export class ChallengeProfilePageComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
 
-  challenges: ProfileChallengeInfo[] = MOCK_CHALLENGES;
+  challenges: ProfileChallengeCardProfile[] = MOCK_CHALLENGES;
   contacts: ProfileContact[] = MOCK_CONTACTS;
   userStats: ChallengeProfileStats = {
     completed: 24,
