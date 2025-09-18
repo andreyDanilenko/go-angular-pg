@@ -35,7 +35,7 @@ export class ChallengeCatalogPageComponent {
     currentPage: 1,
     totalItems: 150,
     itemsPerPage: 10,
-    maxVisiblePages: 7
+    maxVisiblePages: 5
   };
 
   onPageChange(page: number): void {

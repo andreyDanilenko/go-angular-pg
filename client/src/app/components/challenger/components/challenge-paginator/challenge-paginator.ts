@@ -13,31 +13,34 @@ interface PaginationConfig {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="pagination" *ngIf="totalPages > 1">
-      <button
-        class="page-btn"
-        [class.disabled]="currentPage === 1"
-        (click)="goToPage(currentPage - 1)"
-        [disabled]="currentPage === 1">
-        ← Назад
-      </button>
+     @if (totalPages > 1) {
+      <div class="pagination">
+        <button
+          class="page-btn"
+          [class.disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          [disabled]="currentPage === 1">
+          ← Назад
+        </button>
 
-      <button
-        *ngFor="let page of visiblePages"
-        class="page-btn"
-        [class.active]="page === currentPage"
-        (click)="goToPage(page)">
-        {{ page }}
-      </button>
+        @for (page of visiblePages; track page) {
+          <button
+            class="page-btn"
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
 
-      <button
-        class="page-btn"
-        [class.disabled]="currentPage === totalPages"
-        (click)="goToPage(currentPage + 1)"
-        [disabled]="currentPage === totalPages">
-        → Вперед
-      </button>
-    </div>
+        <button
+          class="page-btn"
+          [class.disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage === totalPages">
+          → Вперед
+        </button>
+      </div>
+     }
   `,
   styles: [`
     .pagination {
@@ -63,7 +66,7 @@ interface PaginationConfig {
         font-size: 14px;
     }
 
-    .page-btn:hover:not(.disabled) {
+    .page-btn:hover:not(.disabled):not(.active) {
         background-color: var(--md-sys-color-surface-variant);
     }
 
