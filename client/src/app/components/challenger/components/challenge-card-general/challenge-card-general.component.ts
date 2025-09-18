@@ -52,10 +52,12 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
       </div>
 
       <!-- Бейджи -->
-      <div class="badges" *ngIf="challenge?.isFeatured || challenge?.isNew">
-        <span class="badge featured" *ngIf="challenge?.isFeatured">🔥 Популярный</span>
-        <span class="badge new" *ngIf="challenge?.isNew">🆕 Новый</span>
-      </div>
+       @if (challenge?.isFeatured || challenge?.isNew) {
+        <div class="badges">
+          @if (challenge?.isFeatured) { <span class="badge featured">🔥 Популярный</span> }
+          @if (challenge?.isNew) { <span class="badge new">🆕 Новый</span> }
+        </div>
+       }
     </div>
   `,
   styles: [`
@@ -67,6 +69,9 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
         transition: transform 0.3s, box-shadow 0.3s;
         cursor: pointer;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .challenge-card.featured {
@@ -86,9 +91,12 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
         width: 100%;
         height: 180px;
         object-fit: cover;
+        flex-shrink: 0;
     }
 
     .challenge-info {
+        flex-grow: 1;
+        height: 100%;
         padding: 20px;
     }
 
@@ -193,6 +201,13 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
     .badge.new {
         background-color: var(--md-sys-color-secondary);
         color: var(--md-sys-color-on-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .challenge-meta {
+          flex-direction: column;
+          gap: 5px;
+      }
     }
   `]
 })
