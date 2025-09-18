@@ -110,6 +110,7 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
     }
 
     .challenge-category {
+        width: fit-content;
         display: inline-block;
         padding: 4px 10px;
         border-radius: 15px;
@@ -152,6 +153,7 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
     }
 
     .level-badge {
+        width: fit-content;
         padding: 2px 8px;
         border-radius: 10px;
         font-size: 11px;
