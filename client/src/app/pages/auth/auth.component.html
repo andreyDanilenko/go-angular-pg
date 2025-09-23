@@ -1,5 +1,5 @@
 <div class="auth">
-  <h1 class="title">{{ isCodeVerification ? 'Код подтверждения' : 'Авторизация' }}</h1>
+  <!-- <h1 class="title">{{ isCodeVerification ? 'Код подтверждения' : 'Авторизация' }}</h1> -->
 
   <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
     @if (apiError) {

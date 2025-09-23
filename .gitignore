@@ -2,8 +2,4 @@
 /postgres-data
 /nginx/ssl
 /diary
-
-catalog.html
-detail-my.html
-detailf-from catalog.html
-q.html
+/markdown
