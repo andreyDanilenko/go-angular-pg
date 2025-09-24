@@ -5,6 +5,7 @@ import { FooterComponent } from '../../components/challenger/components/footer/f
 import { ChallengeGeneral, MOCK_GENERAL_CHALLENGES } from '../../components/challenger/types/challengeGeneral';
 import { ChallengeCardGeneralComponent } from '../../components/challenger/components/challenge-card-general/challenge-card-general.component';
 import { ChallengePaginatorComponent } from '../../components/challenger/components/challenge-paginator/challenge-paginator';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-challenge-main-page',
@@ -20,10 +21,12 @@ import { ChallengePaginatorComponent } from '../../components/challenger/compone
   styleUrls: ['./challenge-catalog-page.component.css']
 })
 export class ChallengeCatalogPageComponent {
-  // ChallengeCard
+
+  constructor(private router: Router) {}
+
   challenges: ChallengeGeneral[] = MOCK_GENERAL_CHALLENGES;
   onChallengeClick(challengeId: number): void {
-    console.log('Clicked challenge:', challengeId);
+    this.router.navigate(['/challenger/catalog', challengeId]);
   }
 
   onImageError(error: string): void {

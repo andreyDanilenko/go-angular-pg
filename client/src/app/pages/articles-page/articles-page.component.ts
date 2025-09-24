@@ -36,7 +36,6 @@ export class ArticlesPageComponent {
   handleContentSelection = (type: 'post' | 'article') => {
     console.log('Выбран тип:', type);
     this.modalService.close();
-    // Дополнительная логика: навигация, создание и т.д.
     if (type === 'post') {
       this.router.navigate(['/create/post']);
     } else {
