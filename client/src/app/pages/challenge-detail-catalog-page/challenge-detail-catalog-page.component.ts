@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/challenger/components/header/header.component';
 import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
 import { ChallengeDetailCatalogMeta, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_META } from '../../components/challenger/types/сhallengeCatalogDetail';
-import { ChallengeDetailCatalogMetaComponent } from '../../components/challenger/components/challenge-detaile-catalog/challenge-detail-catalog-meta/challenge-detail-catalog-meta';
-import { ChallengeDetailCatalogAboutComponent } from '../../components/challenger/components/challenge-detaile-catalog/challenge-detaile-catalog-about/challenge-detaile-catalog-about';
+import { ChallengeDetailCatalogMetaComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-meta/challenge-detail-catalog-meta';
+import { ChallengeDetailCatalogAboutComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-about/challenge-detail-catalog-about';
 
 
 @Component({
