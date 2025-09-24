@@ -272,21 +272,6 @@ import { ChallengeDetailCatalogIncreases } from '../../../types/сhallengeCatalo
       line-height: 1.2;
     }
 
-    /* Плейсхолдер загрузки */
-    .loading-placeholder {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
-
-    .placeholder-card {
-      background: var(--md-sys-color-surface-variant);
-      border-radius: 16px;
-      padding: 24px;
-      height: 200px;
-      animation: pulse 2s infinite;
-    }
-
     .placeholder {
       text-align: center;
       padding: 40px;
@@ -294,23 +279,7 @@ import { ChallengeDetailCatalogIncreases } from '../../../types/сhallengeCatalo
       font-style: italic;
     }
 
-    /* Анимации */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 0.8; }
-      100% { opacity: 0.6; }
-    }
 
     /* Адаптивность */
     @media (max-width: 768px) {
