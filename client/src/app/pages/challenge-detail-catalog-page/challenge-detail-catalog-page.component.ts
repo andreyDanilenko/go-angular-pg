@@ -3,9 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/challenger/components/header/header.component';
 import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
-import { ChallengeDetailCatalogAbout, ChallengeDetailCatalogMeta, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_META } from '../../components/challenger/types/сhallengeCatalogDetail';
+import { ChallengeDetailCatalogAbout, ChallengeDetailCatalogMeta, ChallengeDetailCatalogSchedule, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_META, MOCK_CHALLENGE_SCHEDULE } from '../../components/challenger/types/сhallengeCatalogDetail';
 import { ChallengeDetailCatalogMetaComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-meta/challenge-detail-catalog-meta';
 import { ChallengeDetailCatalogAboutComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-about/challenge-detail-catalog-about';
+import { ChallengeDetailCatalogScheduleComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-schedule/challenge-detail-catalog-schedule';
 
 
 @Component({
@@ -16,7 +17,8 @@ import { ChallengeDetailCatalogAboutComponent } from '../../components/challenge
     HeaderComponent,
     FooterComponent,
     ChallengeDetailCatalogMetaComponent,
-    ChallengeDetailCatalogAboutComponent
+    ChallengeDetailCatalogAboutComponent,
+    ChallengeDetailCatalogScheduleComponent
   ],
   templateUrl: './challenge-detail-catalog-page.component.html',
   styleUrls: ['./challenge-detail-catalog-page.component.css']
@@ -24,16 +26,13 @@ import { ChallengeDetailCatalogAboutComponent } from '../../components/challenge
 
 export class ChallengeDetailCatalogPageComponent implements OnInit {
   challengeId!: string;
-  challengeMetaData!: ChallengeDetailCatalogMeta | null;
-  challengeAboutData!: ChallengeDetailCatalogAbout | null;
-
-  // challengeAboutData = MOCK_CHALLENGE_ABOUT[1]
+  challengeMetaData: ChallengeDetailCatalogMeta | null = null;
+  challengeAboutData: ChallengeDetailCatalogAbout | null = null;
+  scheduleData: ChallengeDetailCatalogSchedule | null = null;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    console.log('123');
-
     this.challengeId = this.route.snapshot.paramMap.get('id') || '1';
     this.loadChallengeData(this.challengeId);
   }
@@ -41,12 +40,7 @@ export class ChallengeDetailCatalogPageComponent implements OnInit {
   private loadChallengeData(id: string): void {
     this.challengeMetaData = MOCK_CHALLENGE_META.find(challenge => challenge.id === id) || null;
     this.challengeAboutData = MOCK_CHALLENGE_ABOUT.find(challenge => challenge.id === id) || null;
-
-    console.log('123', this.challengeAboutData);
-
-    // if (!this.challengeMetaData) {
-    //   this.challengeMetaData = this.getNotFoundChallengeData(id);
-    // }
+    this.scheduleData = MOCK_CHALLENGE_SCHEDULE.find(challenge => challenge.id === id) || null;
   }
 
   private getNotFoundChallengeData(id: string): ChallengeDetailCatalogMeta {

@@ -24,6 +24,29 @@ export interface ChallengeMetaItem {
   text: string;
 }
 
+
+export interface ChallengeDetailCatalogSchedule {
+  id: string;
+  weeks: ScheduleWeek[];
+}
+
+export interface ScheduleWeek {
+  weekNumber: string;
+  title: string;
+  subtitle: string;
+  workoutType: string;
+  exercises: string;
+  difficulty: ScheduleDifficulty;
+  progressPercentage: number;
+}
+
+export type ScheduleDifficulty = 'beginner' | 'beginner-plus' | 'intermediate' | 'intermediate-plus' | 'advanced';
+
+export interface DifficultyStyle {
+  class: string;
+  label: string;
+}
+
 export const MOCK_CHALLENGE_META: ChallengeDetailCatalogMeta[] = [
   {
     id: '1',
@@ -135,6 +158,82 @@ export const MOCK_CHALLENGE_ABOUT: ChallengeDetailCatalogAbout[] = [
       'Нормализация веса',
       'Улучшение состояния кожи',
       'Повышение энергии'
+    ]
+  }
+];
+
+export const MOCK_CHALLENGE_SCHEDULE: ChallengeDetailCatalogSchedule[] = [
+  {
+    id: '1',
+    weeks: [
+      {
+        weekNumber: '1',
+        title: 'Неделя 1',
+        subtitle: 'Адаптация',
+        workoutType: 'Базовые упражнения',
+        exercises: 'Приседания, отжимания на коленях, планка, мостик, шаги с прыжком',
+        difficulty: 'beginner',
+        progressPercentage: 20
+      },
+      {
+        weekNumber: '2',
+        title: 'Неделя 2',
+        subtitle: 'Укрепление',
+        workoutType: 'Круговые тренировки',
+        exercises: 'Приседания с весом тела, классические отжимания, планка с подъемами, выпады, скручивания',
+        difficulty: 'beginner-plus',
+        progressPercentage: 40
+      },
+      {
+        weekNumber: '3',
+        title: 'Неделя 3',
+        subtitle: 'Интенсивность',
+        workoutType: 'HIIT (интервальные)',
+        exercises: 'Бёрпи, прыжки со скакалкой, планка с перемещением, альпинист, приседания с прыжком',
+        difficulty: 'intermediate',
+        progressPercentage: 70
+      },
+      {
+        weekNumber: '4',
+        title: 'Неделя 4',
+        subtitle: 'Пиковая форма',
+        workoutType: 'Комплексные комплексы',
+        exercises: 'Цепочки из нескольких упражнений, круговые тренировки с минимальным отдыхом, функциональные движения',
+        difficulty: 'intermediate-plus',
+        progressPercentage: 100
+      }
+    ]
+  },
+  {
+    id: '2',
+    weeks: [
+      {
+        weekNumber: '1',
+        title: 'Неделя 1',
+        subtitle: 'Основы йоги',
+        workoutType: 'Хатха йога',
+        exercises: 'Позы горы, дерева, воина, собаки мордой вниз, ребенка',
+        difficulty: 'beginner',
+        progressPercentage: 25
+      },
+      {
+        weekNumber: '2',
+        title: 'Неделя 2',
+        subtitle: 'Гибкость',
+        workoutType: 'Виньяса флоу',
+        exercises: 'Приветствие солнцу, поза голубя, наклоны вперед, скручивания',
+        difficulty: 'beginner-plus',
+        progressPercentage: 50
+      },
+      {
+        weekNumber: '3',
+        title: 'Неделя 3',
+        subtitle: 'Баланс',
+        workoutType: 'Балансовые асаны',
+        exercises: 'Поза орла, поза танцора, поза ворона, стойка на руках',
+        difficulty: 'intermediate',
+        progressPercentage: 75
+      }
     ]
   }
 ];

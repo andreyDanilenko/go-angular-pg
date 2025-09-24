@@ -25,79 +25,8 @@
             <div class="challenge-info">
                 <!-- Описание -->
                 <app-challenge-detail-catalog-about [data]="challengeAboutData" />
-
                 <!-- Расписание тренировок -->
-                <h2 class="section-title">Расписание тренировок</h2>
-                <table class="workout-table">
-                    <thead>
-                        <tr>
-                            <th>Неделя</th>
-                            <th>Тип тренировки</th>
-                            <th>Основные упражнения</th>
-                            <th>Уровень сложности</th>
-                            <th>Прогрессия нагрузки</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Неделя 1</strong><br><em>Адаптация</em></td>
-                            <td>Базовые упражнения</td>
-                            <td>Приседания, отжимания на коленях, планка, мостик, шаги с прыжком</td>
-                            <td><span class="difficulty-level level-beginner">Начинающий</span></td>
-                            <td>
-                                <div class="load-increase">
-                                    <div class="load-bar">
-                                        <div class="load-fill" style="width: 20%;"></div>
-                                    </div>
-                                    <span>20%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Неделя 2</strong><br><em>Укрепление</em></td>
-                            <td>Круговые тренировки</td>
-                            <td>Приседания с весом тела, классические отжимания, планка с подъемами, выпады, скручивания</td>
-                            <td><span class="difficulty-level level-beginner">Начинающий+</span></td>
-                            <td>
-                                <div class="load-increase">
-                                    <div class="load-bar">
-                                        <div class="load-fill" style="width: 40%;"></div>
-                                    </div>
-                                    <span>40%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Неделя 3</strong><br><em>Интенсивность</em></td>
-                            <td>HIIT (интервальные)</td>
-                            <td>Бёрпи, прыжки со скакалкой, планка с перемещением, альпинист, приседания с прыжком</td>
-                            <td><span class="difficulty-level level-intermediate">Средний</span></td>
-                            <td>
-                                <div class="load-increase">
-                                    <div class="load-bar">
-                                        <div class="load-fill" style="width: 70%;"></div>
-                                    </div>
-                                    <span>70%</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Неделя 4</strong><br><em>Пиковая форма</em></td>
-                            <td>Комплексные комплексы</td>
-                            <td>Цепочки из нескольких упражнений, круговые тренировки с минимальным отдыхом, функциональные движения</td>
-                            <td><span class="difficulty-level level-intermediate">Средний+</span></td>
-                            <td>
-                                <div class="load-increase">
-                                    <div class="load-bar">
-                                        <div class="load-fill" style="width: 100%;"></div>
-                                    </div>
-                                    <span>100%</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
+                <app-challenge-detail-catalog-schedule [data]="scheduleData" />
                 <!-- Увеличение нагрузки -->
                 <h2 class="section-title">Как увеличивается нагрузка</h2>
                 <div class="tip-box">
