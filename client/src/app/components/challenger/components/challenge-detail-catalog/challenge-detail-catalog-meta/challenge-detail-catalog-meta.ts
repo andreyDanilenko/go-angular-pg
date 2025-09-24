@@ -29,18 +29,6 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
           }
         </div>
       }
-
-
-      <!-- @if (!data) {
-        <div class="challenge-meta">
-          @for (item of placeholderMetaItems; track item) {
-            <div class="meta-item">
-              <span>{{ item.icon }}</span>
-              <span>Загрузка...</span>
-            </div>
-          }
-        </div>
-      } -->
     </div>
   `,
   styles: [`
