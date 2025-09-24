@@ -33,10 +33,6 @@ export class UserStore {
 
   setUsers(users: User[]): void {
     this.setState({ users, error: null });
-
-
-
-
   }
 
   setAdminUsers(adminUsers: User[]): void {

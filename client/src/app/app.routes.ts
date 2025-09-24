@@ -11,7 +11,7 @@ import { ArticlesPageComponent } from './pages/articles-page/articles-page.compo
 import { ArticlePageComponent } from './pages/article-page/article-page.component';
 import { ProfileEditComponent } from './pages/profile-edit/profile-edit.component';
 import { ChallengeProfilePageComponent } from './pages/challenge-profile-page/challenge-profile-page.component';
-import { ChallengeCatalogPageComponent } from './pages/challenge-main-page/challenge-catalog-page.component';
+import { ChallengeCatalogPageComponent } from './pages/challenge-catalog-page/challenge-catalog-page.component';
 
 export const routes: Routes = [
   {
