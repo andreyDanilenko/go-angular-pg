@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/сhallengeCatalogDetail';
 
@@ -7,7 +7,7 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="challenge-header" [style.background]="getGradient()">
+    <div class="challenge-header" [style.background]="gradient">
       <span
         class="challenge-category"
         [style.backgroundColor]="data?.categoryColor ? data!.categoryColor + '40' : 'rgba(255, 255, 255, 0.2)'"
@@ -21,7 +21,7 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
 
       @if (data) {
         <div class="challenge-meta">
-          @for (metaItem of getMetaItems(); track metaItem) {
+          @for (metaItem of metaItems; track metaItem.icon) {
             <div class="meta-item">
               <span>{{ metaItem.icon }}</span>
               <span>{{ metaItem.text }}</span>
@@ -31,7 +31,7 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
       }
 
 
-      @if (!data) {
+      <!-- @if (!data) {
         <div class="challenge-meta">
           @for (item of placeholderMetaItems; track item) {
             <div class="meta-item">
@@ -40,7 +40,7 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
             </div>
           }
         </div>
-      }
+      } -->
     </div>
   `,
   styles: [`
@@ -116,9 +116,14 @@ import { ChallengeDetailCatalogMeta, ChallengeMetaItem } from '../../../types/с
     }
   `]
 })
+
 export class ChallengeDetailCatalogMetaComponent {
   @Input() data: ChallengeDetailCatalogMeta | null = null;
   @Input() customGradient?: string;
+
+  private _cachedMetaItems: ChallengeMetaItem[] = [];
+  private _cachedGradient: string = '';
+  private _dataVersion: number = 0;
 
   private defaultMetaItems: ChallengeMetaItem[] = [
     { icon: '📅', text: 'duration' },
@@ -127,15 +132,34 @@ export class ChallengeDetailCatalogMetaComponent {
     { icon: '🏠', text: 'location' }
   ];
 
-  placeholderMetaItems = [
-    { icon: '📅', text: 'Загрузка...' },
-    { icon: '⏰', text: 'Загрузка...' },
-    { icon: '💪', text: 'Загрузка...' },
-    { icon: '🏠', text: 'Загрузка...' }
-  ];
+  get metaItems(): ChallengeMetaItem[] {
+    // Просто возвращаем кешированное значение
+    return this._cachedMetaItems;
+  }
 
-  getMetaItems(): ChallengeMetaItem[] {
+  get gradient(): string {
+    return this._cachedGradient;
+  }
+
+  get categoryBackground(): string {
+    return this.data?.categoryColor
+      ? this.data.categoryColor + '40'
+      : 'rgba(255, 255, 255, 0.2)';
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] || changes['customGradient']) {
+      this._dataVersion++;
+      this._cachedMetaItems = this.calculateMetaItems();
+      this._cachedGradient = this.calculateGradient();
+      console.log('Cache updated, version:', this._dataVersion);
+    }
+  }
+
+  private calculateMetaItems(): ChallengeMetaItem[] {
     if (!this.data) return [];
+
+    console.log('Calculating meta items for data:', this.data);
 
     return this.defaultMetaItems.map(item => ({
       ...item,
@@ -143,7 +167,7 @@ export class ChallengeDetailCatalogMetaComponent {
     }));
   }
 
-  getGradient(): string {
+  private calculateGradient(): string {
     if (this.customGradient) {
       return this.customGradient;
     }

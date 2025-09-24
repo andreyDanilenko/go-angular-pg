@@ -60,13 +60,6 @@ import { ChallengeDetailCatalogAbout } from '../../../types/сhallengeCatalogDet
     </div>
   `,
   styles: [`
-    .about-section {
-      padding: 30px;
-      background: var(--md-sys-color-surface);
-      border-radius: 12px;
-      margin: 20px 0;
-    }
-
     .section-title {
       font-size: 24px;
       font-weight: 700;

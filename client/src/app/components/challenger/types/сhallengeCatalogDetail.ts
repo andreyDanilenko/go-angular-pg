@@ -1,5 +1,5 @@
 export interface ChallengeDetailCatalogAbout {
-  id: number;
+  id: string;
   title: string;
   description: string;
   goals?: string[];
@@ -69,7 +69,7 @@ export const MOCK_CHALLENGE_META_ITEMS = [
 
 export const MOCK_CHALLENGE_ABOUT: ChallengeDetailCatalogAbout[] = [
   {
-    id: 1,
+    id: '1',
     title: 'О челлендже',
     description: 'Этот 30-дневный фитнес-челлендж специально разработан для тех, кто только начинает свой путь в мире фитнеса. Программа построена по принципу постепенного увеличения нагрузки, что позволяет телу адаптироваться без риска травм. Каждый день вы будете выполнять короткие, но эффективные тренировки продолжительностью 30 минут, которые можно проводить дома без специального оборудования.',
     goals: [
@@ -92,7 +92,7 @@ export const MOCK_CHALLENGE_ABOUT: ChallengeDetailCatalogAbout[] = [
     ]
   },
   {
-    id: 2,
+    id: '2',
     title: 'О программе йоги',
     description: '21-дневная программа утренней йоги поможет вам пробудиться с энергией и гармонией. Каждое утро начинайте с последовательности асан, которые пробудят ваше тело и подготовят разум к новому дню.',
     goals: [
@@ -115,7 +115,7 @@ export const MOCK_CHALLENGE_ABOUT: ChallengeDetailCatalogAbout[] = [
     ]
   },
   {
-    id: 3,
+    id: '3',
     title: 'О питании',
     description: '14-дневная программа здорового питания научит вас основам правильного питания и поможет изменить пищевые привычки для долгосрочного здоровья и благополучия.',
     goals: [
