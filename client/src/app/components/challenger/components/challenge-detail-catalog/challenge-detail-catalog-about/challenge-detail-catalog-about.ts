@@ -9,9 +9,11 @@ import { ChallengeDetailCatalogAbout } from '../../../types/сhallengeCatalogDet
     <div class="about-section">
       <h2 class="section-title">{{ data?.title || 'О челлендже' }}</h2>
 
-      <p class="challenge-description">
-        {{ data?.description || 'Описание челленджа' }}
-      </p>
+      @if (data?.description) {
+        <p class="challenge-description">
+          {{ data?.description || 'Описание челленджа' }}
+        </p>
+      }
 
       @if (data?.goals && data?.goals!.length > 0) {
         <div class="info-block">
@@ -54,7 +56,7 @@ import { ChallengeDetailCatalogAbout } from '../../../types/сhallengeCatalogDet
 
       @if (!data) {
         <div class="placeholder">
-          <p>Загрузка информации о челлендже...</p>
+          <p>Описание челленджа отсутствует</p>
         </div>
       }
     </div>
@@ -133,8 +135,7 @@ import { ChallengeDetailCatalogAbout } from '../../../types/сhallengeCatalogDet
     /* Адаптивность */
     @media (max-width: 768px) {
       .about-section {
-        padding: 20px;
-        margin: 15px 0;
+        padding: 20px 0;
       }
 
       .section-title {
