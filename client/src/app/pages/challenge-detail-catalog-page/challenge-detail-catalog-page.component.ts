@@ -1,35 +1,58 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/challenger/components/header/header.component';
 import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
+import { ChallengeDetailCatalogMeta, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_META } from '../../components/challenger/types/сhallengeCatalogDetail';
+import { ChallengeDetailCatalogMetaComponent } from '../../components/challenger/components/challenge-detaile-catalog/challenge-detail-catalog-meta/challenge-detail-catalog-meta';
+import { ChallengeDetailCatalogAboutComponent } from '../../components/challenger/components/challenge-detaile-catalog/challenge-detaile-catalog-about/challenge-detaile-catalog-about';
 
 
 @Component({
   selector: 'app-challenge-detail-catalog-page',
   standalone: true,
   imports: [
-    RouterLink,
     CommonModule,
     HeaderComponent,
     FooterComponent,
+    ChallengeDetailCatalogMetaComponent,
+    ChallengeDetailCatalogAboutComponent
   ],
   templateUrl: './challenge-detail-catalog-page.component.html',
   styleUrls: ['./challenge-detail-catalog-page.component.css']
 })
+
 export class ChallengeDetailCatalogPageComponent implements OnInit {
-  // challengeId: number;
+  challengeId!: string;
+  challengeMetaData!: ChallengeDetailCatalogMeta | null;
+
+  challengeAboutData = MOCK_CHALLENGE_ABOUT[0]
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    // Получение id из параметров маршрута
-    const articleId = this.route.snapshot.paramMap.get('id');
+    this.challengeId = this.route.snapshot.paramMap.get('id') || '1';
+    this.loadChallengeData(this.challengeId);
+  }
 
-    // Или для отслеживания изменений параметров:
-    // this.route.paramMap.subscribe(params => {
-    //   this.challengeId = +params.get('id');
-    //   this.loadChallengeData(this.challengeId);
-    // });
+  private loadChallengeData(id: string): void {
+    this.challengeMetaData = MOCK_CHALLENGE_META.find(challenge => challenge.id === id) || null;
+
+    if (!this.challengeMetaData) {
+      this.challengeMetaData = this.getNotFoundChallengeData(id);
+    }
+  }
+
+  private getNotFoundChallengeData(id: string): ChallengeDetailCatalogMeta {
+    return {
+      id: id,
+      category: 'Не найдено',
+      title: 'Челлендж не найден',
+      subtitle: 'Запрошенный челлендж не существует',
+      duration: '0 дней',
+      timePerDay: '0 мин/день',
+      difficulty: 'Неизвестно',
+      location: 'Неизвестно'
+    };
   }
 }

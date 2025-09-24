@@ -57,10 +57,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'profile', component: ChallengeProfilePageComponent },
+      // { path: 'profile/challenge/:id', component: ChallengeProfilePageComponent },
+
       { path: 'catalog', component: ChallengeCatalogPageComponent },
       { path: 'catalog/:id', component: ChallengeDetailCatalogPageComponent },
-      // { path: 'create', component: PostEditorComponent },
-      // { path: ':id/edit', component: PostEditorComponent }
     ]
   },
   {
