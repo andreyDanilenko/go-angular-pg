@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/challenger/components/header/header.component';
 import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
-import { ChallengeDetailCatalogAbout, ChallengeDetailCatalogMeta, ChallengeDetailCatalogSchedule, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_META, MOCK_CHALLENGE_SCHEDULE } from '../../components/challenger/types/сhallengeCatalogDetail';
+import { ChallengeDetailCatalogAbout, ChallengeDetailCatalogIncreases, ChallengeDetailCatalogMeta, ChallengeDetailCatalogSchedule, MOCK_CHALLENGE_ABOUT, MOCK_CHALLENGE_INCREASES, MOCK_CHALLENGE_META, MOCK_CHALLENGE_SCHEDULE } from '../../components/challenger/types/сhallengeCatalogDetail';
 import { ChallengeDetailCatalogMetaComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-meta/challenge-detail-catalog-meta';
 import { ChallengeDetailCatalogAboutComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-about/challenge-detail-catalog-about';
 import { ChallengeDetailCatalogScheduleComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-schedule/challenge-detail-catalog-schedule';
-
+import { ChallengeDetailCatalogIncreasesComponent } from '../../components/challenger/components/challenge-detail-catalog/challenge-detail-catalog-increases/challenge-detail-catalog-increases';
 
 @Component({
   selector: 'app-challenge-detail-catalog-page',
@@ -18,7 +18,8 @@ import { ChallengeDetailCatalogScheduleComponent } from '../../components/challe
     FooterComponent,
     ChallengeDetailCatalogMetaComponent,
     ChallengeDetailCatalogAboutComponent,
-    ChallengeDetailCatalogScheduleComponent
+    ChallengeDetailCatalogScheduleComponent,
+    ChallengeDetailCatalogIncreasesComponent
   ],
   templateUrl: './challenge-detail-catalog-page.component.html',
   styleUrls: ['./challenge-detail-catalog-page.component.css']
@@ -29,6 +30,8 @@ export class ChallengeDetailCatalogPageComponent implements OnInit {
   challengeMetaData: ChallengeDetailCatalogMeta | null = null;
   challengeAboutData: ChallengeDetailCatalogAbout | null = null;
   scheduleData: ChallengeDetailCatalogSchedule | null = null;
+  increasesData: ChallengeDetailCatalogIncreases | null = null;
+
 
   constructor(private route: ActivatedRoute) {}
 
@@ -41,6 +44,8 @@ export class ChallengeDetailCatalogPageComponent implements OnInit {
     this.challengeMetaData = MOCK_CHALLENGE_META.find(challenge => challenge.id === id) || null;
     this.challengeAboutData = MOCK_CHALLENGE_ABOUT.find(challenge => challenge.id === id) || null;
     this.scheduleData = MOCK_CHALLENGE_SCHEDULE.find(challenge => challenge.id === id) || null;
+    this.increasesData = MOCK_CHALLENGE_INCREASES.find(challenge => challenge.id === id) || null;
+
   }
 
   private getNotFoundChallengeData(id: string): ChallengeDetailCatalogMeta {
