@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/challenger/components/header/header.component';
 import { FooterComponent } from '../../components/challenger/components/footer/footer.component';
-import { ChallengeGeneral, MOCK_GENERAL_CHALLENGES } from '../../components/challenger/types/challengeGeneral';
+import { ChallengeGeneral, challengesListMock } from '../../components/challenger/types/challengeGeneral';
 import { ChallengeCardGeneralComponent } from '../../components/challenger/components/challenge-card-general/challenge-card-general.component';
 import { ChallengePaginatorComponent } from '../../components/challenger/components/challenge-paginator/challenge-paginator';
 import { Router } from '@angular/router';
@@ -24,8 +24,8 @@ export class ChallengeCatalogPageComponent {
 
   constructor(private router: Router) {}
 
-  challenges: ChallengeGeneral[] = MOCK_GENERAL_CHALLENGES;
-  onChallengeClick(challengeId: number): void {
+  challenges: ChallengeGeneral[] = challengesListMock;
+  onChallengeClick(challengeId: string): void {
     this.router.navigate(['/challenger/catalog', challengeId]);
   }
 
@@ -44,7 +44,5 @@ export class ChallengeCatalogPageComponent {
   onPageChange(page: number): void {
     console.log('Переход на страницу:', page);
     this.paginationConfig = { ...this.paginationConfig, currentPage: page };
-
-    // this.loadData(page);
   }
 }

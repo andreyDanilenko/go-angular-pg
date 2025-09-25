@@ -14,13 +14,13 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
         <p class="section-subtitle">{{ data!.subtitle }}</p>
       }
 
-      <!-- Предупреждение -->
+      <!-- Мотивирующий баннер -->
       @if (data?.warningLevel) {
-        <div class="warning-banner" [class]="getWarningLevelClass()">
-          <span class="warning-icon">{{ getWarningIcon() }}</span>
-          <div class="warning-content">
-            <h3 class="warning-title">{{ getWarningTitle() }}</h3>
-            <p class="warning-description">{{ getWarningDescription() }}</p>
+        <div class="motivation-banner" [class]="getMotivationLevelClass()">
+          <span class="motivation-icon">{{ getMotivationIcon() }}</span>
+          <div class="motivation-content">
+            <h3 class="motivation-title">{{ getMotivationTitle() }}</h3>
+            <p class="motivation-description">{{ getMotivationDescription() }}</p>
           </div>
         </div>
       }
@@ -28,8 +28,8 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
       <!-- Стратегии коррекции -->
       @if (data?.strategies && data!.strategies.length > 0) {
         <div class="strategies-section">
-          <h3 class="strategies-title">Стратегии коррекции нагрузки</h3>
-          <p class="strategies-subtitle">Выберите подходящую стратегию в зависимости от вашего самочувствия:</p>
+          <h3 class="strategies-title">Адаптация программы под ваши ощущения</h3>
+          <p class="strategies-subtitle">Каждый организм уникален - выбирайте подходящий вариант коррекции:</p>
 
           <div class="strategies-grid">
             @for (strategy of data!.strategies; track strategy.title; let i = $index) {
@@ -37,12 +37,10 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
                 <div class="strategy-header">
                   <span class="strategy-icon">{{ strategy.icon }}</span>
                   <div class="strategy-intensity">
-                    <div class="intensity-dots">
-                      @for (dot of [1,2,3,4,5]; track dot) {
-                        <span class="intensity-dot" [class.active]="dot <= strategy.intensity"></span>
-                      }
+                    <div class="intensity-bar">
+                      <div class="intensity-fill" [style.width.%]="strategy.intensity * 20"></div>
                     </div>
-                    <span class="intensity-label">Уровень коррекции: {{ strategy.intensity }}/5</span>
+                    <span class="intensity-label">Уровень адаптации: {{ strategy.intensity }}/5</span>
                   </div>
                 </div>
 
@@ -51,7 +49,7 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
 
                 @if (strategy.conditions && strategy.conditions.length > 0) {
                   <div class="strategy-conditions">
-                    <span class="conditions-label">Когда применять:</span>
+                    <span class="conditions-label">Когда это поможет:</span>
                     <ul class="conditions-list">
                       @for (condition of strategy.conditions; track condition) {
                         <li class="condition-item">{{ condition }}</li>
@@ -59,16 +57,20 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
                     </ul>
                   </div>
                 }
+
+                <div class="strategy-encouragement">
+                  {{ getEncouragementText(strategy.intensity) }}
+                </div>
               </div>
             }
           </div>
         </div>
       }
 
-      <!-- Рекомендации -->
+      <!-- Позитивные рекомендации -->
       @if (data?.recommendations && data!.recommendations.length > 0) {
         <div class="recommendations-section">
-          <h3 class="recommendations-title">Общие рекомендации</h3>
+          <h3 class="recommendations-title">💫 Советы для комфортного прогресса</h3>
           <div class="recommendations-list">
             @for (recommendation of data!.recommendations; track recommendation.text) {
               <div class="recommendation-item" [class]="'type-' + recommendation.type">
@@ -80,22 +82,22 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
         </div>
       }
 
-      <!-- Экстренные действия -->
+      <!-- Забота о себе (бывшие экстренные ситуации) -->
       @if (data?.emergencyActions && data!.emergencyActions!.length > 0) {
-        <div class="emergency-section">
-          <h3 class="emergency-title">🚨 Экстренные ситуации</h3>
-          <p class="emergency-subtitle">Что делать в критических ситуациях:</p>
+        <div class="selfcare-section">
+          <h3 class="selfcare-title">❤️ Забота о себе</h3>
+          <p class="selfcare-subtitle">Ваше здоровье - главный приоритет. Обратите внимание на эти сигналы:</p>
 
-          <div class="emergency-cards">
+          <div class="selfcare-cards">
             @for (action of data!.emergencyActions; track action.situation) {
-              <div class="emergency-card" [class.immediate]="action.immediate">
-                <div class="emergency-header">
-                  <span class="emergency-alert">⚠️</span>
-                  <h4 class="emergency-situation">{{ action.situation }}</h4>
+              <div class="selfcare-card" [class.important]="action.immediate">
+                <div class="selfcare-header">
+                  <span class="selfcare-alert">{{ getSelfcareIcon(action.immediate) }}</span>
+                  <h4 class="selfcare-situation">{{ action.situation }}</h4>
                 </div>
-                <p class="emergency-action">{{ action.action }}</p>
+                <p class="selfcare-action">{{ action.action }}</p>
                 @if (action.immediate) {
-                  <div class="emergency-badge">Требует немедленных действий</div>
+                  <div class="selfcare-priority">Особое внимание</div>
                 }
               </div>
             }
@@ -103,430 +105,523 @@ import { ChallengeDetailCatalogCorrection } from '../../../types/сhallengeCatal
         </div>
       }
 
+      <!-- Финальное мотивирующее сообщение -->
+      <div class="final-motivation">
+        <div class="motivation-heart">💖</div>
+        <h3>Помните: адаптация - это признак роста</h3>
+        <p>Корректируя нагрузку, вы не сдаетесь, а проявляете мудрость и заботу о своем теле. Каждый шаг - это прогресс!</p>
+      </div>
+
       <!-- Плейсхолдер -->
       @if (!data) {
-        <div class="placeholder">
-          <p>Коррекция челленджа отсутствует</p>
+        <div class="loading-placeholder">
+          <div class="placeholder-banner"></div>
+          <div class="placeholder-grid">
+            @for (item of [1,2,3,4,5,6]; track item) {
+              <div class="placeholder-card"></div>
+            }
+          </div>
         </div>
       }
     </div>
   `,
   styles: [`
-    .correction-section {
-      padding: 20px 0;
-    }
+/* Обновленные стили для компонента коррекции */
+.correction-section {
+  padding: 20px 0;
+}
 
-    .section-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--md-sys-color-on-surface);
-      position: relative;
-      padding-bottom: 10px;
-    }
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--md-sys-color-on-surface);
+  position: relative;
+  padding-bottom: 10px;
+}
 
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 3px;
-      background-color: var(--md-sys-color-primary);
-      border-radius: 3px;
-    }
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--md-sys-color-primary);
+  border-radius: 3px;
+}
 
-    .section-subtitle {
-      font-size: 16px;
-      color: var(--md-sys-color-on-surface-variant);
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
+.section-subtitle {
+  font-size: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
 
-    /* Баннер предупреждения */
-    .warning-banner {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 32px;
-      border-left: 4px solid;
-    }
+/* Мотивирующий баннер - используем surface-variant для контраста */
+.motivation-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
 
-    .warning-banner.low {
-      background-color: var(--md-sys-color-tertiary-container);
-      border-left-color: var(--md-sys-color-tertiary);
-      color: var(--md-sys-color-on-tertiary-container);
-    }
+.motivation-banner.low {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  border-left: 4px solid var(--md-sys-color-tertiary);
+}
 
-    .warning-banner.medium {
-      background-color: var(--md-sys-color-warning-container);
-      border-left-color: var(--md-sys-color-warning);
-      color: var(--md-sys-color-on-warning-container);
-    }
+.motivation-banner.medium {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-left: 4px solid var(--md-sys-color-primary);
+}
 
-    .warning-banner.high {
-      background-color: var(--md-sys-color-error-container);
-      border-left-color: var(--md-sys-color-error);
-      color: var(--md-sys-color-on-error-container);
-    }
+.motivation-banner.high {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-left: 4px solid var(--md-sys-color-secondary);
+}
 
-    .warning-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
+.motivation-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
 
-    .warning-content {
-      flex: 1;
-    }
+.motivation-content {
+  flex: 1;
+}
 
-    .warning-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0 0 8px 0;
-    }
+.motivation-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
 
-    .warning-description {
-      font-size: 14px;
-      margin: 0;
-      opacity: 0.9;
-    }
+.motivation-description {
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
 
-    /* Сетка стратегий */
-    .strategies-section {
-      margin-bottom: 40px;
-    }
+/* Сетка стратегий */
+.strategies-section {
+  margin-bottom: 40px;
+}
 
-    .strategies-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--md-sys-color-on-surface);
-    }
+.strategies-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--md-sys-color-on-surface);
+}
 
-    .strategies-subtitle {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      margin-bottom: 24px;
-    }
+.strategies-subtitle {
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 24px;
+}
 
-    .strategies-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
-    }
+.strategies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
 
-    .strategy-card {
-      background: var(--md-sys-color-surface);
-      border-radius: 12px;
-      padding: 20px;
-      border: 1px solid var(--md-sys-color-outline-variant);
-      transition: all 0.3s ease;
-    }
+.strategy-card {
+  background: var(--md-sys-color-surface);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
 
-    .strategy-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
+.strategy-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--md-sys-color-primary);
+}
 
-    .strategy-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
+.strategy-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
 
-    .strategy-icon {
-      font-size: 28px;
-    }
+.strategy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
 
-    .strategy-intensity {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-    }
+.strategy-icon {
+  font-size: 32px;
+}
 
-    .intensity-dots {
-      display: flex;
-      gap: 2px;
-    }
+.strategy-intensity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
 
-    .intensity-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--md-sys-color-outline-variant);
-      transition: all 0.3s ease;
-    }
+.intensity-bar {
+  width: 80px;
+  height: 6px;
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: 3px;
+  overflow: hidden;
+}
 
-    .intensity-dot.active {
-      background-color: var(--md-sys-color-primary);
-    }
+.intensity-fill {
+  height: 100%;
+  background: var(--md-sys-color-primary);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
 
-    .intensity-label {
-      font-size: 11px;
-      color: var(--md-sys-color-on-surface-variant);
-      font-weight: 500;
-    }
+.intensity-label {
+  font-size: 11px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
 
-    .strategy-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0 0 8px 0;
-      color: var(--md-sys-color-on-surface);
-    }
+.strategy-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--md-sys-color-on-surface);
+}
 
-    .strategy-description {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
+.strategy-description {
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
 
-    .strategy-conditions {
-      margin-top: 12px;
-    }
+.strategy-conditions {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 8px;
+}
 
-    .conditions-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--md-sys-color-primary);
-      display: block;
-      margin-bottom: 6px;
-    }
+.conditions-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+  display: block;
+  margin-bottom: 8px;
+}
 
-    .conditions-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+.conditions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-    .condition-item {
-      font-size: 12px;
-      color: var(--md-sys-color-on-surface);
-      padding: 2px 0;
-      padding-left: 12px;
-      position: relative;
-    }
+.condition-item {
+  font-size: 13px;
+  color: var(--md-sys-color-on-surface);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
 
-    .condition-item::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: var(--md-sys-color-primary);
-    }
+.condition-item::before {
+  content: '🌱';
+  position: absolute;
+  left: 0;
+  font-size: 12px;
+}
 
-    /* Рекомендации */
-    .recommendations-section {
-      margin-bottom: 40px;
-    }
+.strategy-encouragement {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 8px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--md-sys-color-on-surface-variant);
+  text-align: center;
+}
 
-    .recommendations-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--md-sys-color-on-surface);
-    }
+/* Рекомендации */
+.recommendations-section {
+  margin-bottom: 40px;
+}
 
-    .recommendations-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+.recommendations-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .recommendation-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      background: var(--md-sys-color-surface-variant);
-    }
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-    .recommendation-item.type-important {
-      background: var(--md-sys-color-primary-container);
-      color: var(--md-sys-color-on-primary-container);
-    }
+.recommendation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  transition: all 0.3s ease;
+}
 
-    .recommendation-item.type-warning {
-      background: var(--md-sys-color-error-container);
-      color: var(--md-sys-color-on-error-container);
-    }
+.recommendation-item:hover {
+  background: var(--md-sys-color-surface-container-low);
+}
 
-    .recommendation-item.type-tip {
-      background: var(--md-sys-color-tertiary-container);
-      color: var(--md-sys-color-on-tertiary-container);
-    }
+.recommendation-item.type-important {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
 
-    .recommendation-icon {
-      font-size: 16px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
+.recommendation-item.type-warning {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  border-color: var(--md-sys-color-tertiary);
+}
 
-    .recommendation-text {
-      font-size: 14px;
-      line-height: 1.4;
-    }
+.recommendation-item.type-tip {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-color: var(--md-sys-color-secondary);
+}
 
-    /* Экстренные ситуации */
-    .emergency-section {
-      margin-bottom: 20px;
-    }
+.recommendation-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
-    .emergency-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--md-sys-color-error);
-    }
+.recommendation-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-    .emergency-subtitle {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      margin-bottom: 20px;
-    }
+/* Забота о себе */
+.selfcare-section {
+  margin-bottom: 40px;
+}
 
-    .emergency-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-    }
+.selfcare-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .emergency-card {
-      background: var(--md-sys-color-surface);
-      border: 2px solid var(--md-sys-color-outline-variant);
-      border-radius: 12px;
-      padding: 16px;
-      position: relative;
-    }
+.selfcare-subtitle {
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 24px;
+}
 
-    .emergency-card.immediate {
-      border-color: var(--md-sys-color-error);
-      background: var(--md-sys-color-error-container);
-    }
+.selfcare-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
 
-    .emergency-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
+.selfcare-card {
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
 
-    .emergency-alert {
-      font-size: 20px;
-    }
+.selfcare-card.important {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  border-color: var(--md-sys-color-error);
+}
 
-    .emergency-situation {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 0;
-      color: var(--md-sys-color-on-surface);
-    }
+.selfcare-card:hover {
+  transform: translateY(-2px);
+}
 
-    .emergency-card.immediate .emergency-situation {
-      color: var(--md-sys-color-on-error-container);
-    }
+.selfcare-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
 
-    .emergency-action {
-      font-size: 13px;
-      color: var(--md-sys-color-on-surface-variant);
-      margin: 0;
-      line-height: 1.4;
-    }
+.selfcare-alert {
+  font-size: 20px;
+}
 
-    .emergency-card.immediate .emergency-action {
-      color: var(--md-sys-color-on-error-container);
-    }
+.selfcare-situation {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
 
-    .emergency-badge {
-      position: absolute;
-      top: -8px;
-      right: 12px;
-      background: var(--md-sys-color-error);
-      color: white;
-      font-size: 10px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 8px;
-    }
+.selfcare-action {
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.9;
+}
 
-    .placeholder {
-      text-align: center;
-      padding: 40px;
-      color: var(--md-sys-color-outline);
-      font-style: italic;
-    }
+.selfcare-priority {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
 
-    /* Адаптивность */
-    @media (max-width: 768px) {
-      .strategies-grid {
-        grid-template-columns: 1fr;
-      }
+/* Финальная мотивация */
+.final-motivation {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: 20px;
+  margin-top: 40px;
+}
 
-      .emergency-cards {
-        grid-template-columns: 1fr;
-      }
+.motivation-heart {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
 
-      .strategy-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
+.final-motivation h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
 
-      .strategy-intensity {
-        align-items: flex-start;
-      }
+.final-motivation p {
+  font-size: 16px;
+  opacity: 0.9;
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
-      .warning-banner {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
+/* Адаптивность */
+@media (max-width: 768px) {
+  .strategies-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selfcare-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .strategy-intensity {
+    align-items: flex-start;
+  }
+
+  .motivation-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .final-motivation {
+    padding: 30px 16px;
+  }
+}
   `]
 })
 export class ChallengeDetailCatalogCorrectionComponent {
   @Input() data: ChallengeDetailCatalogCorrection | null = null;
 
-  getWarningLevelClass(): string {
+  getMotivationLevelClass(): string {
     return this.data?.warningLevel || 'medium';
   }
 
-  getWarningIcon(): string {
+  getMotivationIcon(): string {
     const icons = {
-      'low': '💡',
-      'medium': '⚠️',
-      'high': '🚨'
+      'low': '💫',
+      'medium': '🌱',
+      'high': '❤️'
     };
     return icons[this.data?.warningLevel || 'medium'];
   }
 
-  getWarningTitle(): string {
+  getMotivationTitle(): string {
     const titles = {
-      'low': 'Рекомендации по нагрузке',
-      'medium': 'Важная информация',
-      'high': 'Внимание! Особые указания'
+      'low': 'Вы на правильном пути!',
+      'medium': 'Забота о себе - это мудрость',
+      'high': 'Ваше здоровье - главный приоритет'
     };
     return titles[this.data?.warningLevel || 'medium'];
   }
 
-  getWarningDescription(): string {
+  getMotivationDescription(): string {
     const descriptions = {
-      'low': 'Следующие рекомендации помогут вам адаптировать программу под свои возможности',
-      'medium': 'Обратите внимание на эти стратегии коррекции для безопасного прогресса',
-      'high': 'Строго следуйте указаниям для предотвращения травм и проблем со здоровьем'
+      'low': 'Небольшие корректировки помогут сделать тренировки еще комфортнее и эффективнее',
+      'medium': 'Умение адаптировать программу под свои ощущения - признак опытного практика',
+      'high': 'Проявление заботы о себе сейчас обеспечит устойчивый прогресс в будущем'
     };
     return descriptions[this.data?.warningLevel || 'medium'];
   }
 
   getRecommendationIcon(type: string): string {
     const icons = {
-      'warning': '⚠️',
-      'tip': '💡',
+      'warning': '💡',
+      'tip': '🌟',
       'important': '🎯'
     };
     return icons[type as keyof typeof icons] || '💡';
+  }
+
+  getSelfcareIcon(immediate: boolean): string {
+    return immediate ? '❤️' : '💫';
+  }
+
+  getEncouragementText(intensity: number): string {
+    const encouragements = {
+      1: 'Небольшая настройка для идеального комфорта',
+      2: 'Мудрое решение для плавного прогресса',
+      3: 'Гибкость - ключ к устойчивым результатам',
+      4: 'Забота о себе сегодня - инвестиция в завтрашний успех',
+      5: 'Отдых - это тоже тренировка. Вы даете телу возможность стать сильнее'
+    };
+    return encouragements[intensity as keyof typeof encouragements] || 'Ваш прогресс важен на любом этапе';
   }
 }

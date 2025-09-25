@@ -2,27 +2,6 @@
 
 
 <div class="container">
-    <!-- Фильтры -->
-    <section class="filters-section">
-        <div class="filters-header">
-            <h2 class="section-title">Каталог челленджей</h2>
-        </div>
-
-        <div class="search-filter">
-            <input type="text" class="search-input" placeholder="Поиск челленджей...">
-        </div>
-
-        <div class="filter-buttons">
-            <button class="filter-btn active">Все</button>
-            <button class="filter-btn">Фитнес</button>
-            <button class="filter-btn">Здоровье</button>
-            <button class="filter-btn">Образование</button>
-            <button class="filter-btn">Хобби</button>
-            <button class="filter-btn">Производительность</button>
-            <button class="filter-btn">Финансы</button>
-        </div>
-    </section>
-
     <!-- Каталог челленджей -->
     <section class="challenges-catalog">
         @for (challenge of challenges; track challenge.id) {

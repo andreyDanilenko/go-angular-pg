@@ -218,7 +218,7 @@ import { ChallengeGeneral, ChallengeLevel } from '../../types/challengeGeneral';
 })
 export class ChallengeCardGeneralComponent {
   @Input() challenge: ChallengeGeneral | null = null;
-  @Output() cardClick = new EventEmitter<number>();
+  @Output() cardClick = new EventEmitter<string>();
   @Output() imageError = new EventEmitter<string>();
 
   getDurationText(duration?: number): string {
