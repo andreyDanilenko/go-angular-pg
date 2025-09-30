@@ -1,6 +1,7 @@
 @import './app/styles/reset.css';
 @import './app/styles/typography.css';
 @import './app/styles/button.css';
+@import "tailwindcss";
 
 :root {
     /* Интервалы */
