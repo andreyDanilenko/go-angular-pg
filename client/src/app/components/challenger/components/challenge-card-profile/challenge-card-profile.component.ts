@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import type { ProfileChallengeCardProfile } from '../../types/challengeProfile';
 
@@ -6,8 +6,9 @@ import type { ProfileChallengeCardProfile } from '../../types/challengeProfile';
   selector: 'app-challenge-card',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="challenge-card">
+    <div class="challenge-card" [attr.data-status]="challenge.status">
       <img
         [src]="challenge.image"
         [alt]="challenge.title"
@@ -17,13 +18,7 @@ import type { ProfileChallengeCardProfile } from '../../types/challengeProfile';
       <div class="challenge-info">
         <h3 class="challenge-title">{{ challenge.title }}</h3>
 
-        <span
-          class="challenge-status"
-          [class.status-completed]="challenge.status === 'completed'"
-          [class.status-active]="challenge.status === 'active'"
-          [class.status-upcoming]="challenge.status === 'planned'">
-          {{ getStatusText(challenge.status) }}
-        </span>
+        <span class="challenge-status">{{ getStatusText(challenge.status) }}</span>
 
         <div class="challenge-progress">
           <div
@@ -50,26 +45,26 @@ import type { ProfileChallengeCardProfile } from '../../types/challengeProfile';
   `,
   styles: [`
     .challenge-card {
-      border-radius: 12px;
+      border-radius: var(--challenge-card-radius, 12px);
       overflow: hidden;
       background: var(--md-sys-color-surface);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--challenge-elevation-rest, 0 4px 12px rgba(0, 0, 0, 0.1));
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .challenge-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--challenge-elevation-hover, 0 8px 24px rgba(0, 0, 0, 0.15));
     }
 
     .challenge-image {
       width: 100%;
-      height: 180px;
+      height: var(--challenge-card-image-height, 180px);
       object-fit: cover;
     }
 
     .challenge-info {
-      padding: 16px;
+      padding: var(--challenge-card-padding, 16px);
     }
 
     .challenge-title {
@@ -79,45 +74,7 @@ import type { ProfileChallengeCardProfile } from '../../types/challengeProfile';
       color: var(--md-sys-color-on-surface);
     }
 
-    .challenge-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      margin-bottom: 16px;
-    }
-
-    .status-completed {
-        background-color: var(--md-sys-color-secondary-container);
-        color: var(--md-sys-color-on-secondary-container);
-    }
-
-    .status-active {
-        background-color: var(--md-sys-color-primary-container);
-        color: var(--md-sys-color-on-primary-container);
-    }
-
-    .status-upcoming {
-        background-color: var(--md-sys-color-tertiary-container);
-        color: var(--md-sys-color-on-tertiary-container);
-    }
-
-    .challenge-progress {
-      height: 8px;
-      background-color: var(--md-sys-color-surface-variant);
-      border-radius: 4px;
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .challenge-progress-bar {
-      height: 100%;
-      background-color: var(--md-sys-color-primary);
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-
+    /* Remaining styles for progress, status and meta are shared globally */
     .challenge-meta {
       display: flex;
       justify-content: space-between;
