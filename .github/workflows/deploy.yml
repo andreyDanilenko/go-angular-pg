@@ -12,62 +12,61 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ssh-key: ${{ secrets.PAT_TOKEN }}
 
       - name: Deploy
-
-      
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
-            # Переходим в папку проекта
+            # ===== ФИКС ДЛЯ SSH АВТОРИЗАЦИИ =====
+            # Добавляем ключ в агент на сервере для GitHub
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/github_keys
+            
+            # Тестируем подключение к GitHub
+            ssh -T git@github.com || echo "GitHub SSH connection verified"
+            
+            # ===== ОСНОВНОЙ СКРИПТ ДЕПЛОЯ =====
+            echo "=== Начинаем деплой ==="
+            
+            # 1. СОЗДАЕМ ПАПКУ api-admin-marketplace если её нет
+            mkdir -p /root/project/api-admin-marketplace
             cd /root/project/api-admin-marketplace
+            echo "Рабочая директория: $(pwd)"
             
-            echo "=== Проверяем состояние папки ==="
-            
-            # ЕСЛИ ПАПКА ПУСТАЯ - КЛОНИРУЕМ РЕПОЗИТОРИЙ
+            # 2. ЕСЛИ ПАПКА ПУСТАЯ ИЛИ НЕТ .git - КЛОНИРУЕМ
             if [ ! -d ".git" ]; then
               echo "❌ Git репозиторий не найден. Клонируем..."
               rm -rf ./* 2>/dev/null || true
               git clone git@github.com:andreyDanilenko/admin-panel-golang.git .
+              echo "✅ Репозиторий успешно клонирован"
             else
               echo "✅ Git репозиторий найден"
             fi
             
-            # Настройка SSH для работы с GitHub
-            echo "=== Настраиваем SSH ==="
-            eval "$(ssh-agent -s)"
-            ssh-add ~/.ssh/github_keys
-            
-            # Проверяем подключение
-            ssh -T git@github.com || echo "SSH подключение к GitHub проверено"
-            
-            # Убедимся что мы в master ветке
+            # 3. ОБНОВЛЯЕМ КОД
             echo "=== Обновляем код ==="
             git fetch --all
-            git checkout master 2>/dev/null || git checkout -b master origin/master
+            git checkout master
             git reset --hard origin/master
+            git pull origin master
             
-            # Если нужно, добавляем upstream
-            if ! git remote | grep -q upstream; then
-              git remote add upstream git@github.com:andreyDanilenko/admin-panel-golang.git
-            fi
-            
-            # Перезапускаем контейнеры (если docker-compose существует)
+            # 4. ЗАПУСКАЕМ DOCKER-COMPOSE
             echo "=== Деплой приложения ==="
             if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
+              echo "Найден docker-compose, перезапускаем контейнеры..."
               docker-compose down
               docker-compose up -d --build
               echo "✅ Контейнеры перезапущены"
             else
-              echo "⚠️ docker-compose.yml не найден. Проверяем структуру:"
+              echo "⚠️ docker-compose.yml не найден. Содержимое папки:"
               ls -la
             fi
             
+            # 5. ФИНАЛЬНЫЙ СТАТУС
+            echo "=== Статус деплоя ==="
             echo "✅ Деплой завершён успешно!"
             echo "Текущая ветка: $(git branch --show-current)"
             echo "Последний коммит: $(git log --oneline -1)"
