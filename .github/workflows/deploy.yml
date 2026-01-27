@@ -16,6 +16,8 @@ jobs:
           ssh-key: ${{ secrets.PAT_TOKEN }}
 
       - name: Deploy
+
+      
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
