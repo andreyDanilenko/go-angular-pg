@@ -22,30 +22,50 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SECRET_KEY }}
           script: |
-            cd /root/project/api-admin-marketplace || exit 1
-
+            # Переходим в папку проекта
+            cd /root/project/api-admin-marketplace
+            
+            echo "=== Проверяем состояние папки ==="
+            
+            # ЕСЛИ ПАПКА ПУСТАЯ - КЛОНИРУЕМ РЕПОЗИТОРИЙ
+            if [ ! -d ".git" ]; then
+              echo "❌ Git репозиторий не найден. Клонируем..."
+              rm -rf ./* 2>/dev/null || true
+              git clone git@github.com:andreyDanilenko/admin-panel-golang.git .
+            else
+              echo "✅ Git репозиторий найден"
+            fi
+            
             # Настройка SSH для работы с GitHub
+            echo "=== Настраиваем SSH ==="
             eval "$(ssh-agent -s)"
             ssh-add ~/.ssh/github_keys
-            ssh -T git@github.com  # Проверка подключения
-
-            # Добавляем основной репозиторий как upstream (если ещё не добавлен)
+            
+            # Проверяем подключение
+            ssh -T git@github.com || echo "SSH подключение к GitHub проверено"
+            
+            # Убедимся что мы в master ветке
+            echo "=== Обновляем код ==="
+            git fetch --all
+            git checkout master 2>/dev/null || git checkout -b master origin/master
+            git reset --hard origin/master
+            
+            # Если нужно, добавляем upstream
             if ! git remote | grep -q upstream; then
               git remote add upstream git@github.com:andreyDanilenko/admin-panel-golang.git
             fi
-
-            # Получаем все изменения
-            git fetch --all
-
-            # Переключаемся на master и жестко сбрасываем его до upstream/master
-            git checkout master
-            git reset --hard upstream/master
-
-            # Принудительно синхронизируем с origin (если нужно)
-            git push --force origin master
-
-            # Перезапускаем контейнеры
-            docker-compose down
-            docker-compose up -d --build
-
-            echo "Деплой завершён. Master синхронизирован с основным репозиторием."
+            
+            # Перезапускаем контейнеры (если docker-compose существует)
+            echo "=== Деплой приложения ==="
+            if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
+              docker-compose down
+              docker-compose up -d --build
+              echo "✅ Контейнеры перезапущены"
+            else
+              echo "⚠️ docker-compose.yml не найден. Проверяем структуру:"
+              ls -la
+            fi
+            
+            echo "✅ Деплой завершён успешно!"
+            echo "Текущая ветка: $(git branch --show-current)"
+            echo "Последний коммит: $(git log --oneline -1)"
