@@ -22,7 +22,7 @@ ufw enable
 docker ps
 Для обращения к докер контейнеру и запуска скриптов в проекте
 sudo docker exec -it api-admin-marketplace-app bash
-
+cat /root/.ssh/vps_access_key
 Обрати внимание если какая то команда не работает убедись что ты в нужной директории сервера
 ssh root@62.113.103.222
 
