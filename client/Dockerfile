@@ -1,10 +1,13 @@
-# Этап 1: Сборка Angular-приложения
+# syntax=docker/dockerfile:1
+# Этап 1: Сборка Angular-приложения (BuildKit: DOCKER_BUILDKIT=1 для кэша npm)
 FROM node:22-alpine AS build
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+# Кэш npm между сборками; npm ci быстрее и детерминирован при наличии package-lock.json
+RUN --mount=type=cache,target=/root/.npm \
+    if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 COPY . .
 RUN npm run build --prod
