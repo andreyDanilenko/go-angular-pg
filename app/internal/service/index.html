@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Геолокация</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #2d3748;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        p {
+            color: #4a5568;
+            margin: 8px 0 24px;
+            line-height: 1.5;
+        }
+        
+        .location-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .location-box.active {
+            border-style: solid;
+            border-color: #48bb78;
+            background: #f0fdf4;
+        }
+        
+        .coordinates {
+            font-family: monospace;
+            font-size: 18px;
+            color: #2d3748;
+            margin: 8px 0;
+            word-break: break-all;
+        }
+        
+        .accuracy {
+            color: #4a5568;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .status.granted {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status.denied {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        
+        .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .footer {
+            margin-top: 24px;
+            color: #718096;
+            font-size: 14px;
+            padding-top: 16px;
+            border-top: 1px solid #edf2f7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📍</div>
+        <h1>Определение местоположения</h1>
+        <p>Нажмите кнопку ниже, чтобы получить ваши координаты</p>
+        
+        <div id="locationBox" class="location-box">
+            <p>Ваше местоположение появится здесь</p>
+            <p style="font-size: 14px; color: #718096; margin-top: 8px">Нажмите кнопку для получения данных</p>
+        </div>
+        
+        <div id="errorBox" class="error" style="display: none;"></div>
+        
+        <button id="getLocationBtn" class="btn">
+            <span>Получить геолокацию</span>
+        </button>
+        
+        <div class="footer">
+            <p>Данные не сохраняются и не передаются третьим лицам</p>
+            <div id="statusIndicator" style="margin-top: 8px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const locationBox = document.getElementById('locationBox');
+        const errorBox = document.getElementById('errorBox');
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        
+        let currentStatus = 'prompt';
+        
+        getLocationBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                showError('Ваш браузер не поддерживает геолокацию');
+                updateStatus('denied');
+                return;
+            }
+            
+            // Reset states
+            errorBox.style.display = 'none';
+            locationBox.innerHTML = '<div class="spinner"></div><p>Определение местоположения...</p>';
+            locationBox.className = 'location-box';
+            getLocationBtn.disabled = true;
+            getLocationBtn.innerHTML = '<div class="spinner"></div><span>Ожидание данных...</span>';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Success
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+                    const accuracy = position.coords.accuracy.toFixed(1);
+                    const timestamp = new Date(position.timestamp).toLocaleString('ru-RU');
+                    
+                    locationBox.className = 'location-box active';
+                    locationBox.innerHTML = `
+                        <div>✓ Местоположение получено!</div>
+                        <div class="coordinates">Широта: ${lat}</div>
+                        <div class="coordinates">Долгота: ${lng}</div>
+                        <div class="accuracy">Точность: ${accuracy} метров</div>
+                        <div class="accuracy">Время: ${timestamp}</div>
+                    `;
+                    
+                    updateStatus('granted');
+                    getLocationBtn.innerHTML = '<span>Обновить местоположение</span>';
+                },
+                (error) => {
+                    // Error handling
+                    let message = 'Неизвестная ошибка геолокации';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Доступ к геолокации запрещен. Разрешите доступ в настройках браузера.';
+                            updateStatus('denied');
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Невозможно определить местоположение. Проверьте подключение к сети.';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Превышено время ожидания определения местоположения.';
+                            break;
+                        default:
+                            message = `Ошибка: ${error.message}`;
+                    }
+                    
+                    showError(message);
+                    locationBox.innerHTML = `
+                        <p>Местоположение недоступно</p>
+                        <p style="font-size: 14px; color: #718096; margin-top: 8px">Разрешите доступ к геолокации</p>
+                    `;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            ).finally(() => {
+                getLocationBtn.disabled = false;
+            });
+        });
+        
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
+        }
+        
+        function updateStatus(status) {
+            currentStatus = status;
+            statusIndicator.style.display = 'block';
+            
+            if (status === 'granted') {
+                statusIndicator.className = 'status granted';
+                statusIndicator.textContent = 'Доступ разрешен';
+            } else if (status === 'denied') {
+                statusIndicator.className = 'status denied';
+                statusIndicator.textContent = 'Доступ запрещен';
+            }
+        }
+        
+        // Check initial permission status
+        if (navigator.permissions) {
+            navigator.permissions.query({name: 'geolocation'})
+                .then(result => {
+                    if (result.state === 'granted') {
+                        updateStatus('granted');
+                    } else if (result.state === 'denied') {
+                        updateStatus('denied');
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
