@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { DatePipe } from '@angular/common';
 import { UserService } from '../../core/services/user.service';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/types/user.model';
 
 @Component({
@@ -20,6 +21,7 @@ export class ProfilePageComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private authService: AuthService,
     private router: Router,
     private datePipe: DatePipe
   ) {}
@@ -79,5 +81,10 @@ DevOps: Docker, Nginx, CI/CD (GitHub Actions), Linux
 
   editProfile(): void {
     this.router.navigate(['/profile/edit']);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
   }
 }

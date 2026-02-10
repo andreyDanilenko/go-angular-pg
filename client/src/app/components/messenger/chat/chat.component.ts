@@ -115,10 +115,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       .getChatMessages(this.chatId)
       .subscribe({
         next: (event: { payload?: Record<string, unknown> }) => {
-          const raw = event?.payload ?? event;
+          const raw = (event?.payload ?? event) as Record<string, unknown>;
           const id = String(raw?.['id'] ?? '');
           if (!id || this.messages.some((m) => m.id === id)) return;
-          this.messages.push(toChatMessage(raw as Record<string, unknown>));
+          this.messages.push(toChatMessage(raw));
           this.sortMessages();
           this.shouldScroll = true;
         },

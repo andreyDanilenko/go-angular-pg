@@ -63,7 +63,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 type SignInInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
-	Invite   string `gorm:"not null"`
 }
 type EmailCode struct {
 	ID        string `gorm:"primaryKey"`

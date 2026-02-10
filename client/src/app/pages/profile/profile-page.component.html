@@ -4,7 +4,10 @@
     <div class="profile-content">
       <div class="profile-header">
         <h1 class="text-3xl">Профиль</h1>
-        <button class="btn-primary btn-sm" (click)="editProfile()">Редактировать</button>
+        <div class="profile-header-actions">
+          <button type="button" class="btn-primary btn-sm" (click)="editProfile()">Редактировать</button>
+          <button type="button" class="btn-gray-outline btn-sm" (click)="logout()">Выйти</button>
+        </div>
       </div>
 
       <div class="profile-card">
@@ -51,14 +54,16 @@
         </div>
       </div>
 
-      <section class="profile-about">
-        <h2 class="profile-about__title">Обо мне</h2>
-        @if (user.bio) {
-          <div class="profile-about__content">{{ user.bio }}</div>
-        } @else {
-          <div class="profile-about__content">{{ getDefaultBio() }}</div>
-        }
-      </section>
+      @if (user.role === 'admin') {
+        <section class="profile-about">
+          <h2 class="profile-about__title">Обо мне</h2>
+          @if (user.bio) {
+            <div class="profile-about__content">{{ user.bio }}</div>
+          } @else {
+            <div class="profile-about__content">{{ getDefaultBio() }}</div>
+          }
+        </section>
+      }
 
     </div>
   } @else {

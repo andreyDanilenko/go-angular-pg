@@ -38,11 +38,6 @@ func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput
 	}
 
 	if user == nil {
-		/// Хардкод убрать!
-		if input.Invite != "y5B0_3nnVW2G" {
-			return nil, fmt.Errorf("Wrong invite code")
-		}
-
 		user, err = s.repo.Create(ctx, model.SignInInput{
 			Email:    input.Email,
 			Password: input.Password,
