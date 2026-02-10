@@ -1,0 +1,79 @@
+<div class="post-editor">
+  @if (isLoading) {
+    <p>Загрузка...</p>
+  } @else {
+    <div class="post-editor__inner">
+      <nav class="breadcrumb">
+        <a routerLink="/" class="breadcrumb-link">Главная</a>
+        <span>/</span>
+        <a routerLink="/articles" class="breadcrumb-link">Статьи</a>
+        <span>/</span>
+        <span class="breadcrumb-current">Редактирование</span>
+      </nav>
+
+      <h1 class="post-editor__title">Редактирование</h1>
+
+      <form class="post-form" [formGroup]="form">
+        @if (error) {
+          <div class="post-form__error">{{ error }}</div>
+        }
+
+        <div class="post-form__field">
+          <label for="title" class="post-form__label">Заголовок</label>
+          <input
+            id="title"
+            type="text"
+            class="post-form__input"
+            formControlName="title"
+            placeholder="Минимум 5 символов"
+          />
+          @if (form.get('title')?.invalid && form.get('title')?.touched) {
+            <span class="post-form__hint">Минимум 5 символов</span>
+          }
+        </div>
+
+        <div class="post-form__field">
+          <label for="content" class="post-form__label">Текст</label>
+          <textarea
+            id="content"
+            rows="6"
+            class="post-form__textarea"
+            formControlName="content"
+            placeholder="Минимум 10 символов"
+          ></textarea>
+          @if (form.get('content')?.invalid && form.get('content')?.touched) {
+            @if (form.get('content')?.errors?.['minlength']) {
+              <span class="post-form__hint">Минимум 10 символов</span>
+            }
+            @if (form.get('content')?.errors?.['maxlength']) {
+              <span class="post-form__hint">Максимум 50 000 символов</span>
+            }
+          }
+        </div>
+
+        <div class="post-form__field">
+          <label for="category" class="post-form__label">Категория</label>
+          <select id="category" class="post-form__select" formControlName="category">
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ categoryLabels[cat] }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="post-form__actions">
+          <button type="button" class="btn-gray-outline btn-md" (click)="cancel()">
+            Отмена
+          </button>
+          <button
+            type="button"
+            class="btn-primary btn-md"
+            [disabled]="isSubmitting"
+            (click)="submit()"
+          >
+            Сохранить
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -11,6 +11,7 @@ import { ArticlesPageComponent } from './pages/articles-page/articles-page.compo
 import { ArticlePageComponent } from './pages/article-page/article-page.component';
 import { ProfileEditComponent } from './pages/profile-edit/profile-edit.component';
 import { PostCreateComponent } from './pages/post-create/post-create.component';
+import { ArticleEditComponent } from './pages/article-edit/article-edit.component';
 export const routes: Routes = [
   {
     path: '',
@@ -43,9 +44,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: ArticlesPageComponent },
       { path: ':id', component: ArticlePageComponent },
-      // { path: 'create', component: PostEditorComponent },
-      // { path: ':id', component: PostEditorComponent },
-      // { path: ':id/edit', component: PostEditorComponent }
+      { path: ':id/edit', component: ArticleEditComponent },
     ]
   },
   {

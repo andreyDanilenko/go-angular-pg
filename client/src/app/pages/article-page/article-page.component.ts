@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Article, ArticleCategory } from '../../core/types/article.model';
 import { ArticleService } from '../../core/services/article.service';
+import { UserStore } from '../../stores/user-store/user.store';
+import { PermissionService } from '../../core/services/permission.service';
 
 @Component({
   selector: 'app-article',
@@ -19,7 +21,9 @@ export class ArticlePageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private userStore: UserStore,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit(): void {
@@ -75,5 +79,32 @@ export class ArticlePageComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/articles']);
+  }
+
+  get canEdit(): boolean {
+    return this.article ? this.permissionService.canEditArticle(this.article, this.userStore.state.currentUser) : false;
+  }
+
+  get canDelete(): boolean {
+    return this.article ? this.permissionService.canDeleteArticle(this.article, this.userStore.state.currentUser) : false;
+  }
+
+  editArticle(): void {
+    if (this.article) {
+      this.router.navigate(['/articles', this.article.id, 'edit']);
+    }
+  }
+
+  deleteArticle(): void {
+    if (!this.article) return;
+    if (!confirm('Вы уверены, что хотите удалить статью?')) return;
+
+    this.articleService.deleteArticle(this.article.id).subscribe({
+      next: () => this.router.navigate(['/articles']),
+      error: (err) => {
+        console.error('Ошибка удаления:', err);
+        this.error = 'Не удалось удалить статью';
+      }
+    });
   }
 }

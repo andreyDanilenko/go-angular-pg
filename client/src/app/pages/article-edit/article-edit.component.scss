@@ -1,0 +1,112 @@
+.post-editor {
+  padding: var(--space-4);
+  display: flex;
+  justify-content: center;
+}
+
+.post-editor__inner {
+  width: 100%;
+  max-width: 800px;
+}
+
+.post-editor__title {
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.breadcrumb-link {
+  color: inherit;
+}
+
+.breadcrumb-current {
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
+}
+
+.post-form {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background-color: var(--md-sys-color-surface);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.post-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.post-form__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.post-form__hint {
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-error);
+  margin-top: var(--space-1);
+}
+
+.post-form__error {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in srgb, var(--md-sys-color-error) 12%, transparent);
+  color: var(--md-sys-color-on-error);
+  font-size: 0.875rem;
+}
+
+.post-form__input,
+.post-form__textarea,
+.post-form__select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+}
+
+.post-form__textarea {
+  resize: vertical;
+}
+
+.post-form__input:focus,
+.post-form__textarea:focus,
+.post-form__select:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+}
+
+.post-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .post-editor {
+    padding: var(--space-3);
+  }
+
+  .post-form {
+    padding: var(--space-3);
+  }
+}

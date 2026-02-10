@@ -1,6 +1,8 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserStore } from '../../../stores/user-store/user.store';
+import { PermissionService } from '../../../core/services/permission.service';
 
 @Component({
   selector: 'app-articles-list-header',
@@ -24,6 +26,15 @@ export class ArticlesHeaderHeaderComponent {
   @Output() sortChanged = new EventEmitter<string>();
   @Output() addArticle = new EventEmitter<void>();
   @Output() openFilters = new EventEmitter<void>();
+
+  constructor(
+    private userStore: UserStore,
+    private permissionService: PermissionService
+  ) {}
+
+  get canCreate(): boolean {
+    return this.permissionService.canCreateArticle(this.userStore.state.currentUser);
+  }
 
   onSearchChange(): void {
     this.searchChanged.emit(this.searchQuery);

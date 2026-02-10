@@ -158,6 +158,16 @@
   border-top: 1px solid var(--md-sys-color-outline-variant);
   font-size: var(--font-size-sm);
   color: var(--md-sys-color-on-surface-variant);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.article-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .loading {
