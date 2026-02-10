@@ -14,7 +14,7 @@ type UserShort struct {
 	FirstName string   `json:"first_name,omitempty"`
 	LastName  string   `json:"last_name,omitempty"`
 	Email     string   `json:"email"`
-	Role      UserRole `gorm:"size:20;default:'guest'" json:"role"`
+	Role      UserRole `gorm:"size:20;default:'user'" json:"role"`
 }
 
 type User struct {
@@ -26,7 +26,7 @@ type User struct {
 	Bio          string    `gorm:"type:text" json:"bio,omitempty"`
 	Email        string    `gorm:"uniqueIndex;size:255;not null" json:"email" validate:"required,email"`
 	Password     string    `gorm:"size:255;not null" json:"-"` // Пароль исключён
-	Role         UserRole  `gorm:"size:20;default:'guest'" json:"role"`
+	Role         UserRole  `gorm:"size:20;default:'user'" json:"role"`
 	Token        string    `gorm:"index" json:"token"`
 	TokenExpires time.Time `json:"token_expires"`
 	CreatedAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
