@@ -45,6 +45,38 @@ export class ProfilePageComponent implements OnInit {
     return this.datePipe.transform(date, 'dd.MM.yyyy') || '';
   }
 
+  getDefaultBio(): string {
+    return `Даниленко Андрей Георгиевич
+Fullstack-разработчик с опытом DevOps
+
+Контакты:
+Email: danilenko.a.g@mail.ru
+Telegram: @danilllenko
+GitHub: github.com/andreyDanilenko
+
+Ключевые навыки:
+Frontend: Vue.js (Nuxt 2/3), React (Next.js), Angular, TypeScript
+Backend: Node.js (Express, Nest.js), Go (Gin), REST API
+Базы данных: PostgreSQL
+DevOps: Docker, Nginx, CI/CD (GitHub Actions), Linux
+
+Опыт: 4+ года в коммерческой разработке (Garwin, buzz.ai, lifedream.tech)
+
+Обо мне: Опытный разработчик, фокусирующийся на качестве архитектуры. Осваиваю новые технологии в пет-проектах (Golang, Svelte).`;
+  }
+
+  getAvatarInitials(): string {
+    if (!this.user) return '?';
+    const f = this.user.first_name?.trim();
+    const l = this.user.last_name?.trim();
+    if (f && l) return (f[0] + l[0]).toUpperCase();
+    if (f) return f[0].toUpperCase();
+    if (l) return l[0].toUpperCase();
+    if (this.user.username?.trim()) return this.user.username[0].toUpperCase();
+    if (this.user.email?.trim()) return this.user.email[0].toUpperCase();
+    return '?';
+  }
+
   editProfile(): void {
     this.router.navigate(['/profile/edit']);
   }

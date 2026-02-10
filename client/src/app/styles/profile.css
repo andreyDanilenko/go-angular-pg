@@ -1,12 +1,13 @@
 :host {
-  height: calc(100dvh - var(--app-height));
-  overflow: auto;
+  display: block;
+  min-height: 100%;
 }
 
 .profile, .profile-edit {
   max-width: 600px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: var(--space-10) var(--space-6);
+  padding-bottom: var(--space-16);
 }
 
 .profile-header, .edit-header {
@@ -126,6 +127,42 @@
   font-weight: 500;
 }
 
+.profile-about {
+  margin-top: 2rem;
+}
+
+.profile-about__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--md-sys-color-on-surface);
+}
+
+.profile-about__content {
+  background: var(--md-sys-color-surface);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+  color: var(--md-sys-color-on-surface);
+  white-space: pre-wrap;
+}
+
+.profile-about__empty {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.profile-about__link {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+.profile-about__link:hover {
+  text-decoration: underline;
+}
+
 .edit-form {
   background: var(--md-sys-color-surface);
   border-radius: 1rem;
@@ -144,6 +181,25 @@
   color: var(--md-sys-color-on-surface-variant);
   font-weight: 500;
   margin-bottom: 0.25rem;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-3);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-lg);
+  resize: vertical;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
 }
 
 .error-message {

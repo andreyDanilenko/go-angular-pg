@@ -10,7 +10,7 @@
       <div class="profile-card">
         <div class="profile-avatar">
           <div class="avatar-placeholder">
-            {{ user.first_name![0] }}{{ user.last_name![0] }}
+            {{ getAvatarInitials() }}
           </div>
         </div>
 
@@ -45,21 +45,20 @@
       </div>
 
       <div class="profile-stats">
-        <!-- <div class="stat-item">
-          <span class="stat-number">{{ user.articlesCount }}</span>
-          <span class="stat-label">статей</span>
-        </div>
-
-        <div class="stat-item">
-          <span class="stat-label">Последняя активность</span>
-          <span class="stat-date">{{ formatDate(user.lastActivity) }}</span>
-        </div> -->
-
         <div class="stat-item">
           <span class="stat-label">Зарегистрирован</span>
           <span class="stat-date">{{ formatDate(user.created_at) }}</span>
         </div>
       </div>
+
+      <section class="profile-about">
+        <h2 class="profile-about__title">Обо мне</h2>
+        @if (user.bio) {
+          <div class="profile-about__content">{{ user.bio }}</div>
+        } @else {
+          <div class="profile-about__content">{{ getDefaultBio() }}</div>
+        }
+      </section>
 
     </div>
   } @else {

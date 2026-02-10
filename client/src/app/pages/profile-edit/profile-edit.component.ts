@@ -26,9 +26,11 @@ export class ProfileEditComponent implements OnInit {
   ) {
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      first_name: ['', [Validators.required, Validators.minLength(2)]],
-      last_name: ['', [Validators.required, Validators.minLength(2)]],
-      middle_name: ['']
+      username: ['', [Validators.minLength(3), Validators.maxLength(50)]],
+      first_name: ['', [Validators.minLength(2)]],
+      last_name: ['', [Validators.minLength(2)]],
+      middle_name: [''],
+      bio: ['']
     });
   }
 
@@ -44,9 +46,11 @@ export class ProfileEditComponent implements OnInit {
 
         this.profileForm.patchValue({
           email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          middle_name: user.middle_name || ''
+          username: user.username || '',
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
+          middle_name: user.middle_name || '',
+          bio: user.bio || ''
         });
 
         this.loading = false;
@@ -87,6 +91,7 @@ export class ProfileEditComponent implements OnInit {
   }
 
   get email() { return this.profileForm.get('email'); }
+  get username() { return this.profileForm.get('username'); }
   get first_name() { return this.profileForm.get('first_name'); }
   get last_name() { return this.profileForm.get('last_name'); }
 }
