@@ -9,8 +9,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./button.component.css']
 })
 export class ButtonComponent {
-  @Input() size: '32' | '40' | '48' = '40';
-  @Input() type: 'primary' | 'secondary' | 'text' = 'primary';
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
+  @Input() type: 'primary' | 'secondary' | 'text' | 'outline' = 'primary';
   @Input() disabled = false;
   @Input() iconLeft?: string;
   @Input() iconRight?: string;

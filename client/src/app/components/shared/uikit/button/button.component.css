@@ -1,3 +1,4 @@
+/* Единый стиль кнопки — токены из app/styles/tokens.css */
 button {
   width: 100%;
   border-radius: var(--radius-lg);
@@ -8,9 +9,10 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   font-family: inherit;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button.btn-primary {
@@ -30,16 +32,28 @@ button.btn-primary:disabled {
 button.btn-secondary {
   background: transparent;
   color: var(--md-sys-color-primary);
-  border: 1px solid var(--md-sys-color-primary);
+  border: 2px solid var(--md-sys-color-primary);
 }
 
 button.btn-secondary:not(:disabled):hover {
-  background: rgba(var(--md-sys-color-primary), 0.08);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary);
 }
 
 button.btn-secondary:disabled {
   opacity: 0.48;
   cursor: not-allowed;
+}
+
+button.btn-outline {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  border: 2px solid var(--md-sys-color-primary);
+}
+
+button.btn-outline:not(:disabled):hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary);
 }
 
 button.btn-text {
@@ -58,39 +72,42 @@ button.btn-text:disabled {
   cursor: not-allowed;
 }
 
-button.btn-size-32 {
-  height: 32px;
-  font-size: var(--font-size-xs);
-  padding: 0 var(--space-2);
-}
-
-button.btn-size-40 {
-  height: 40px;
+/* Размеры из токенов — крупнее и отзывчивее */
+button.btn-size-sm {
+  min-height: var(--ui-btn-h-sm);
   font-size: var(--font-size-sm);
-  padding: 0 var(--space-4);
+  padding: 0 var(--ui-btn-px-sm);
 }
 
-button.btn-size-48 {
-  height: 48px;
+button.btn-size-md {
+  min-height: var(--ui-btn-h-md);
+  font-size: var(--font-size-base);
+  padding: 0 var(--ui-btn-px-md);
+}
+
+button.btn-size-lg {
+  min-height: var(--ui-btn-h-lg);
   font-size: var(--font-size-md);
-  padding: 0 20px;
+  padding: 0 var(--ui-btn-px-lg);
 }
 
 button .icon {
   display: inline-flex;
   align-items: center;
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
 }
 
 button .icon.icon-left {
-  margin-right: 0.4rem;
+  margin-right: var(--space-1);
 }
 
 button .icon.icon-right {
-  margin-left: 0.4rem;
+  margin-left: var(--space-1);
 }
 
 button .icon img {
-  width: 1em;
-  height: 1em;
-  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }

@@ -55,7 +55,7 @@
 
 .message.received .message-time {
   text-align: left;
-  color: var(--color-gray-600);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .message-status {
@@ -65,15 +65,15 @@
   width: 12px;
   height: 12px;
   border-radius: var(--radius-full);
-  background-color: var(--color-gray-400);
+  background-color: var(--md-sys-color-outline);
 }
 
 .message-status.sent {
-  background-color: var(--color-primary);
+  background-color: var(--md-sys-color-primary);
 }
 
 .message-status.read {
-  background-color: var(--color-success);
+  background-color: var(--md-sys-color-secondary);
 }
 
 .message-group {

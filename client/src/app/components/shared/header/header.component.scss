@@ -79,8 +79,8 @@
     font-weight: 500;
 
       &:hover {
-        color: var(--md-sys-color-scrim);
-        background-color: #f0f4f8;
+        background-color: var(--md-sys-color-surface-container);
+        color: var(--md-sys-color-on-surface);
       }
   }
 
@@ -98,7 +98,7 @@
   &__User {
     margin-left: auto;
     font-weight: 500;
-    color: #333;
+    color: var(--md-sys-color-on-surface);
     padding: 0 0.5rem;
   }
 }

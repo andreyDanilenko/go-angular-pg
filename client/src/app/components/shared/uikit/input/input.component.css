@@ -1,3 +1,4 @@
+/* Единый стиль поля ввода — токены из app/styles/tokens.css */
 .input-wrapper {
   display: flex;
   flex-direction: column;
@@ -6,9 +7,10 @@
 }
 
 .input-wrapper label {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   color: var(--md-sys-color-on-background);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
 }
 
 .input-container {
@@ -19,69 +21,80 @@
 
 .input-container input {
   width: 100%;
-  padding: 0 40px 0 12px;
-  border: 1.5px solid var(--md-sys-color-outline);
+  padding: var(--ui-input-py) var(--space-12) var(--ui-input-py) var(--ui-input-px);
+  border: 2px solid var(--md-sys-color-outline);
   background-color: var(--md-sys-color-surface-container);
   border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--md-sys-color-on-surface);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-container input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.8;
 }
 
 .input-container input:focus {
   border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
 }
 
 .input-container input.has-error {
   border-color: var(--md-sys-color-error);
-  color: var(--md-sys-color-on-error-container);
   background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
 }
 
-.icon-btn {
+.input-wrapper .icon-btn {
   position: absolute;
+  width: var(--ui-icon-btn-size);
+  min-width: var(--ui-icon-btn-size);
+  height: var(--ui-icon-btn-size);
+  min-height: var(--ui-icon-btn-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  font-size: 16px;
   cursor: pointer;
   padding: 0;
   color: var(--md-sys-color-outline);
-  transition: color 0.2s;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.icon-btn:hover {
+.input-wrapper .icon-btn:hover {
   color: var(--md-sys-color-primary);
 }
 
-.icon-btn.clear {
-  width: fit-content;
-  right: 8px;
-}
-
-.icon-btn.eye {
-  width: fit-content;
-  right: 16px;
+.input-wrapper .icon-btn.eye {
+  right: 0;
 }
 
 .error-placeholder {
-  min-height: 18px;
-  margin-top: var(--space-1);
+  min-height: 1.25rem;
+  margin-top: var(--space-2);
 }
 
 .error-message {
   color: var(--md-sys-color-error);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
 }
 
+/* Размеры из токенов — крупнее, удобнее для тапов */
 .input-wrapper.sm input {
-  min-height: 32px;
+  min-height: var(--ui-input-h-sm);
+  font-size: var(--font-size-sm);
 }
 
 .input-wrapper.md input {
-  min-height: 40px;
+  min-height: var(--ui-input-h-md);
+  font-size: var(--font-size-base);
 }
 
 .input-wrapper.lg input {
-  min-height: 48px;
+  min-height: var(--ui-input-h-lg);
+  font-size: var(--font-size-lg);
 }

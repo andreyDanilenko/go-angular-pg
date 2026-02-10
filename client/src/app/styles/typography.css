@@ -8,6 +8,7 @@
     --font-size-xs-base: 0.75rem;
     --font-size-sm-base: 0.875rem;
     --font-size-base-base: 1rem;
+    --font-size-md-base: 1.0625rem;
     --font-size-lg-base: 1.125rem;
     --font-size-xl-base: 1.25rem;
     --font-size-2xl-base: 1.5rem;
@@ -17,6 +18,7 @@
     --font-size-xs: calc(var(--font-size-xs-base) * var(--font-scale-factor));
     --font-size-sm: calc(var(--font-size-sm-base) * var(--font-scale-factor));
     --font-size-base: calc(var(--font-size-base-base) * var(--font-scale-factor));
+    --font-size-md: calc(var(--font-size-md-base) * var(--font-scale-factor));
     --font-size-lg: calc(var(--font-size-lg-base) * var(--font-scale-factor));
     --font-size-xl: calc(var(--font-size-xl-base) * var(--font-scale-factor));
     --font-size-2xl: calc(var(--font-size-2xl-base) * var(--font-scale-factor));
@@ -32,6 +34,7 @@
     /* Высоты */
     --app-height: 56px;
     --header-height: 64px;
+    --font-weight-regular: 400;
     --sidebar-width: 300px;
     --chat-list-width: 320px;
     --chat-header-height: 60px;
@@ -47,6 +50,10 @@
 
 .text-base {
     font-size: var(--font-size-base);
+}
+
+.text-md {
+    font-size: var(--font-size-md);
 }
 
 .text-lg {

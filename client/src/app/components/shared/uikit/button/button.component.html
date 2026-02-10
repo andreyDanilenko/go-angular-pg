@@ -1,6 +1,7 @@
 <button
   [type]="typeButton"
   [disabled]="disabled"
+  [attr.aria-busy]="disabled"
   [ngClass]="['btn', 'btn-' + type, 'btn-size-' + size]"
   (click)="onClick($event)"
 >

@@ -37,7 +37,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--color-gray-500);
+  color: var(--md-sys-color-on-surface-variant);
   font-size: 20px;
   width: 48px;
   height: 48px;

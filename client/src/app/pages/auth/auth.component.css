@@ -30,10 +30,10 @@ form {
   opacity: 0.9;
 }
 
-.auth-page .input-container input {
-  background-color: #121212; /* или любой другой темный цвет */
-  border-color: #333;
-  color: #fff;
+.auth .input-container input {
+  background-color: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface);
 }
 
 .error {

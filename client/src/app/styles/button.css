@@ -17,26 +17,44 @@ button, .btn, .link-btn {
   white-space: nowrap; /* Предотвращает перенос текста */
 }
 
-/* .btn по умолчанию (добавлен, чтобы не ломать существующие вызовы) */
+/* .btn по умолчанию — средний размер, удобный для нажатия */
 .btn {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--font-size-sm);
+  padding: 0 var(--ui-btn-px-md);
+  font-size: var(--font-size-base);
+  min-height: var(--ui-btn-h-md);
+  min-width: var(--ui-touch-min);
 }
 
-/* btn модификаторы (маленькая / средняя / большая) */
-.btn-sm, .btn-sm.btn { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); min-height: 32px; min-width: 32px; }
-.btn-md, .btn-md.btn { font-size: var(--font-size-sm); padding: 0 var(--space-4); min-height: 40px; min-width: 40px; }
-.btn-lg, .btn-lg.btn { font-size: var(--font-size-md); padding: 0 20px; min-height: 48px; min-width: 48px; }
+/* btn модификаторы: sm / md / lg — единый UIKit */
+.btn-sm, .btn-sm.btn {
+  font-size: var(--font-size-sm);
+  padding: 0 var(--ui-btn-px-sm);
+  min-height: var(--ui-btn-h-sm);
+  min-width: var(--ui-btn-h-sm);
+}
+.btn-md, .btn-md.btn {
+  font-size: var(--font-size-base);
+  padding: 0 var(--ui-btn-px-md);
+  min-height: var(--ui-btn-h-md);
+  min-width: var(--ui-touch-min);
+}
+.btn-lg, .btn-lg.btn {
+  font-size: var(--font-size-md);
+  padding: 0 var(--ui-btn-px-lg);
+  min-height: var(--ui-btn-h-lg);
+  min-width: var(--ui-btn-h-lg);
+}
 
 .btn-icon {
-  width: 40px;
-  min-height: 40px;
+  width: var(--ui-icon-btn-size);
+  min-width: var(--ui-icon-btn-size);
+  min-height: var(--ui-icon-btn-size);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--md-sys-color-on-surface-variant);
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-icon:hover {
@@ -150,24 +168,27 @@ button.btn-text {
   border: none;
   color: var(--md-sys-color-on-surface);
   text-align: left;
-  padding: 8px 12px;
+  padding: var(--space-3) var(--space-4);
+  min-height: var(--ui-touch-min);
   width: 100%;
   text-decoration: none;
 }
 .link-btn:hover { background-color: var(--md-sys-color-surface-container); }
 .link-btn.active {
-  color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-surface-container);
 }
 
 .icon-btn {
-  width: 40px;
-  min-height: 40px;
+  width: var(--ui-icon-btn-size);
+  min-width: var(--ui-icon-btn-size);
+  min-height: var(--ui-icon-btn-size);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--md-sys-color-on-surface-variant);
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .icon-btn:hover {
