@@ -1,0 +1,73 @@
+<div class="post-editor">
+  <div class="post-editor__inner">
+    <nav class="breadcrumb">
+      <a routerLink="/" class="breadcrumb-link">Главная</a>
+      <span>/</span>
+      <a routerLink="/articles" class="breadcrumb-link">Статьи</a>
+      <span>/</span>
+      <span class="breadcrumb-current">Новый пост</span>
+    </nav>
+
+    <h1 class="post-editor__title">Новый пост</h1>
+
+    <form class="post-form" [formGroup]="form" (ngSubmit)="submit()">
+      @if (error) {
+        <div class="post-form__error">{{ error }}</div>
+      }
+
+      <div class="post-form__field">
+        <label for="title" class="post-form__label">Заголовок</label>
+        <input
+          id="title"
+          type="text"
+          class="post-form__input"
+          formControlName="title"
+          placeholder="Короткий заголовок поста"
+        />
+      </div>
+
+      <div class="post-form__field">
+        <label for="content" class="post-form__label">Текст поста</label>
+        <textarea
+          id="content"
+          rows="6"
+          class="post-form__textarea"
+          formControlName="content"
+          placeholder="Поделитесь новостью или обновлением..."
+        ></textarea>
+      </div>
+
+      <div class="post-form__field">
+        <label for="category" class="post-form__label">Категория</label>
+        <select
+          id="category"
+          class="post-form__select"
+          formControlName="category"
+        >
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ categoryLabels[cat] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="post-form__actions">
+        <button
+          type="button"
+          class="btn-gray-outline btn-md"
+          (click)="cancel()"
+        >
+          Отмена
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary btn-md"
+          [disabled]="isSubmitting || form.invalid"
+        >
+          Опубликовать
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
