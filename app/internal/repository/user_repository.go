@@ -68,6 +68,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, id string, input model.
 	user.FirstName = input.FirstName
 	user.LastName = input.LastName
 	user.MiddleName = input.MiddleName
+	user.Bio = input.Bio
 
 	if err := r.db.WithContext(ctx).Save(&user).Error; err != nil {
 		return nil, err
