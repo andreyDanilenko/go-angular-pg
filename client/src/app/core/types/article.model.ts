@@ -17,3 +17,17 @@ export enum ArticleCategory {
   Health = 'health'
 }
 
+export type CreateArticleInput = {
+  title: string;
+  content: string;
+  category: ArticleCategory;
+};
+
+export const CATEGORY_LABELS: Record<ArticleCategory, string> = {
+  [ArticleCategory.General]: 'Общее',
+  [ArticleCategory.Tech]: 'Технологии',
+  [ArticleCategory.Science]: 'Наука',
+  [ArticleCategory.Politics]: 'Политика',
+  [ArticleCategory.Health]: 'Здоровье',
+};
+

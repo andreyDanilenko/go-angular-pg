@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { TooltipComponent } from '../../uikit/tooltip/tooltip.component';
+import { TooltipComponent } from '../../shared/uikit/tooltip/tooltip.component';
 import { User } from '../../../core/types/user.model';
 @Component({
   selector: 'app-chats-header',

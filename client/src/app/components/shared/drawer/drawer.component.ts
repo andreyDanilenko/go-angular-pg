@@ -1,4 +1,3 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
@@ -6,25 +5,15 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   selector: 'app-drawer',
   standalone: true,
   imports: [CommonModule],
-  animations: [
-    trigger('openClose', [
-      state('open', style({ transform: 'translateX(0)' })),
-      state('closed', style({ transform: 'translateX(-100%)', opacity: '0', visibility: 'hidden' })),
-      transition('open <=> closed', animate('300ms ease-in-out')),
-    ]),
-  ],
   template: `
-    @if (isOpen) {
-      <div
-        class="overlay"
-        (click)="overlayClick.emit()"
-      ></div>
-    }
-
+    <div
+      class="overlay"
+      [class.overlay_visible]="isOpen"
+      (click)="overlayClick.emit()"
+    ></div>
     <div
       class="drawer"
-      [@openClose]="isOpen ? 'open' : 'closed'"
-      [ngStyle]="{ 'min-width': minWidth, 'max-width': maxwidth }"
+      [class.drawer_open]="isOpen"
     >
       <div class="drawer-header">
         <button class="btn-icon" (click)="overlayClick.emit()">
@@ -45,50 +34,52 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       z-index: 99;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.4);
+      background-color: rgba(0, 0, 0, 0.32);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
     }
-
+    .overlay_visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .drawer {
       position: fixed;
       z-index: 100;
-      width: 100%;
       top: 0;
       left: 0;
       height: 100vh;
+      width: 100%;
+      max-width: 320px;
       background-color: var(--md-sys-color-background);
       box-shadow: var(--shadow-md);
       overflow: auto;
       border-right: 1px solid var(--md-sys-color-outline-variant);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+    }
+    .drawer_open {
+      transform: translateX(0);
     }
     .drawer-header {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       height: var(--app-height);
-      padding: var(--space-2)  var(--space-4);
+      padding: var(--space-2) var(--space-4);
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
     }
-
-    .drawer-title {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--md-sys-color-on-surface);
-    }
-
-    .close-button {
-      background: transparent;
-      border: none;
-      padding: 8px;
-      color: var(--md-sys-color-on-surface);
-      font-size: 1.5rem;
-      cursor: pointer;
-      line-height: 1;
+    @media (min-width: 768px) {
+      .drawer {
+        max-width: 360px;
+      }
     }
   `]
 })
 export class DrawerComponent {
-  @Input() isOpen = true;
+  @Input() isOpen = false;
   @Input() minWidth: string = '200px';
   @Input() maxwidth: string = '300px';
 

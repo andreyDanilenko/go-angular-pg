@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 import { HttpClient } from '@angular/common/http';
-import { Article } from '../types/article.model';
+import { Article, CreateArticleInput } from '../types/article.model';
 
 @Injectable({ providedIn: 'root' })
 export class ArticleService extends BaseApiService {
@@ -24,8 +24,8 @@ export class ArticleService extends BaseApiService {
     return this.get<Article>(`${this.articlesEndpoint}/${id}`);
   }
 
-  createArticle(article: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Observable<Article> {
-    return this.post<Article>(this.articlesEndpoint, article);
+  createArticle(input: CreateArticleInput): Observable<Article> {
+    return this.post<Article>(this.articlesEndpoint, input);
   }
 
   updateArticle(id: string, article: Partial<Article>): Observable<Article> {

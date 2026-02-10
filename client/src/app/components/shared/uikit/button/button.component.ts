@@ -14,8 +14,6 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() iconLeft?: string;
   @Input() iconRight?: string;
-
-  /** HTML type кнопки: button, submit, reset */
   @Input() typeButton: 'button' | 'submit' | 'reset' = 'button';
 
   @Output() click = new EventEmitter<Event>();

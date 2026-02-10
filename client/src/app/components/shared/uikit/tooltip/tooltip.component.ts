@@ -57,7 +57,6 @@ import { CommonModule } from '@angular/common';
       font-size: 14px;
       max-width: 300px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      /* Защита от обрезания */
       transform: none !important;
       will-change: unset !important;
       contain: none !important;
@@ -74,7 +73,6 @@ export class TooltipComponent implements AfterViewInit {
   @Output() closed = new EventEmitter<void>();
 
   visible = false;
-  // position = { top: 0, left: 0 };
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -108,7 +106,6 @@ export class TooltipComponent implements AfterViewInit {
     const clickedInsideTooltip = tooltipEl?.contains(event.target as Node);
 
     if (!clickedInsideTrigger && !clickedInsideTooltip) {
-      // Отложенное закрытие для корректного срабатывания событий внутри тултипа
       setTimeout(() => {
         this.closeTooltip();
       }, 0);

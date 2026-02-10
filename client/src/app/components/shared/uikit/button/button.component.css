@@ -1,56 +1,50 @@
 button {
   width: 100%;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-weight: 700;
+  font-weight: var(--font-weight-semibold);
   border: none;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-    box-shadow: 0 0 5px rgba(124, 144, 243, 0.5);
-
-  transition: background-color 0.3s ease, border-color 0.3s ease;
   font-family: inherit;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-/* Типы кнопок */
-
 button.btn-primary {
-  background: #7c90f3;
-  color: white;
-  border: none;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
 button.btn-primary:not(:disabled):hover {
-  background-color: #5a6fcf;
+  background: var(--md-sys-color-primary-container);
 }
 
 button.btn-primary:disabled {
-  background: #b3b9d7;
+  opacity: 0.48;
   cursor: not-allowed;
 }
 
 button.btn-secondary {
   background: transparent;
-  color: #7c90f3;
-  border: 2px solid #7c90f3;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-primary);
 }
 
 button.btn-secondary:not(:disabled):hover {
-  background-color: rgba(124, 144, 243, 0.1);
+  background: rgba(var(--md-sys-color-primary), 0.08);
 }
 
 button.btn-secondary:disabled {
-  border-color: #b3b9d7;
-  color: #b3b9d7;
+  opacity: 0.48;
   cursor: not-allowed;
 }
 
 button.btn-text {
   background: transparent;
-  color: #7c90f3;
+  color: var(--md-sys-color-primary);
   border: none;
   padding: 0;
 }
@@ -60,31 +54,27 @@ button.btn-text:not(:disabled):hover {
 }
 
 button.btn-text:disabled {
-  color: #b3b9d7;
+  opacity: 0.48;
   cursor: not-allowed;
 }
 
-/* Размеры кнопок */
-
 button.btn-size-32 {
   height: 32px;
-  font-size: 0.8rem;
-  padding: 0 12px;
+  font-size: var(--font-size-xs);
+  padding: 0 var(--space-2);
 }
 
 button.btn-size-40 {
   height: 40px;
-  font-size: 1rem;
-  padding: 0 16px;
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-4);
 }
 
 button.btn-size-48 {
   height: 48px;
-  font-size: 1.1rem;
+  font-size: var(--font-size-md);
   padding: 0 20px;
 }
-
-/* Иконки */
 
 button .icon {
   display: inline-flex;

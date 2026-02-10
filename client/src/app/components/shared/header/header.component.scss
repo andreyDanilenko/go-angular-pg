@@ -1,14 +1,65 @@
+:host {
+  position: relative;
+  z-index: 50;
+}
+
 .Header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: var(--space-3) var(--space-6);
+  padding: 0 var(--space-4);
   height: var(--app-height);
   background-color: var(--md-sys-color-background);
   box-shadow: var(--shadow-md);
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
+.Header__Left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.Header__Right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.Header__Title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+}
+
+.Header__MenuButton {
+  border-radius: 999px;
+}
+
+.Header__MenuIcon {
+  display: block;
+  color: var(--md-sys-color-on-surface);
+}
+
+.Header__UserChip {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .NavList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   padding: var(--space-3) 0;
 
   &__Item__Profile {
@@ -34,7 +85,8 @@
   }
 
   .active-link {
-    color: #1976d2;
+    color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-variant);
   }
 
   &__Menu {

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BaseApiService } from '../../core/services/base-api.service';
 import { AuthService } from '../../core/services/auth.service';
-import { InputComponent } from '../../components/uikit/input/input.component';
+import { InputComponent } from '../../components/shared/uikit/input/input.component';
 import { ModalComponent } from '../../components/shared/modal/modal.component';
 import { AuthInfoComponent } from '../../components/modalContents/auth-info-modal/auth-info-modal';
 import { ModalService } from '../../core/services/modal.service';

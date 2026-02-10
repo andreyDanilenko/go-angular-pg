@@ -1,20 +1,41 @@
 <header class="Header">
-  <nav class="Header__Nav">
-    <ul>
-      <li class="NavList__Item"><button class="btn-gray-outline btn-sm" (click)="isDrawerOpen = !isDrawerOpen">Menu</button></li>
-    </ul>
-  </nav>
-  <app-theme-toggle></app-theme-toggle>
+  <div class="Header__Left">
+    <button
+      type="button"
+      class="btn-icon Header__MenuButton"
+      (click)="isDrawerOpen = true"
+      aria-label="Открыть меню"
+    >
+      <svg class="Header__MenuIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="18" x2="20" y2="18"/>
+      </svg>
+    </button>
+
+    <a class="Header__Title" routerLink="/">
+      Главная
+    </a>
+  </div>
+
+  <div class="Header__Right">
+    @if (currentUser) {
+      <span class="Header__UserChip">
+        {{ displayName }}
+      </span>
+    }
+    <app-theme-toggle></app-theme-toggle>
+  </div>
 </header>
 
 <app-drawer
   [isOpen]="isDrawerOpen"
   (overlayClick)="isDrawerOpen = false"
 >
-  <ul class="NavList">
-    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/" [class.active-link]="isActive('/')">Главная</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/articles" [class.active-link]="isActive('/articles')">Статьи</a></li>
-    <li class="NavList__Item"><a class="link-btn btn-md" routerLink="/messenger"  [class.active-link]="isActive('/messenger')">Мессенджер</a></li>
-  </ul>
+  <nav class="NavList">
+    <a class="NavList__Link" routerLink="/" [class.active-link]="isActive('/')">Главная</a>
+    <a class="NavList__Link" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a>
+    <a class="NavList__Link" routerLink="/articles" [class.active-link]="isActive('/articles')">Статьи</a>
+    <a class="NavList__Link" routerLink="/messenger" [class.active-link]="isActive('/messenger')">Мессенджер</a>
+  </nav>
 </app-drawer>

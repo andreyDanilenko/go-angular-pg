@@ -23,7 +23,7 @@
   border: 1.5px solid var(--md-sys-color-outline);
   background-color: var(--md-sys-color-surface-container);
   border-radius: var(--radius-lg);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   color: var(--md-sys-color-on-surface);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -74,7 +74,6 @@
   font-size: var(--font-size-xs);
 }
 
-/* Размеры */
 .input-wrapper.sm input {
   min-height: 32px;
 }

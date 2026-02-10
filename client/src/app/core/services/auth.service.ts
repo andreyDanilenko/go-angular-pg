@@ -35,11 +35,11 @@ export class AuthService {
 
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
-    this.authState.next(true); // Уведомляем об успешной авторизации
+    this.authState.next(true);
   }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
-    this.authState.next(false); // Уведомляем о выходе
+    this.authState.next(false);
   }
 }
