@@ -27,6 +27,7 @@ func (r *UserRepository) Create(ctx context.Context, input model.SignInInput) (*
 	user := &model.User{
 		Email:    input.Email,
 		Password: string(hashedPassword),
+		Role:     model.RoleUser, // все зарегистрированные пользователи по умолчанию — user
 	}
 
 	if err := r.db.WithContext(ctx).Create(user).Error; err != nil {
