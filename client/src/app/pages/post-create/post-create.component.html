@@ -10,7 +10,7 @@
 
     <h1 class="post-editor__title">Новый пост</h1>
 
-    <form class="post-form" [formGroup]="form" (ngSubmit)="submit()">
+    <form class="post-form" [formGroup]="form">
       @if (error) {
         <div class="post-form__error">{{ error }}</div>
       }
@@ -22,8 +22,11 @@
           type="text"
           class="post-form__input"
           formControlName="title"
-          placeholder="Короткий заголовок поста"
+          placeholder="Минимум 5 символов"
         />
+        @if (form.get('title')?.invalid && form.get('title')?.touched) {
+          <span class="post-form__hint">Минимум 5 символов</span>
+        }
       </div>
 
       <div class="post-form__field">
@@ -33,8 +36,16 @@
           rows="6"
           class="post-form__textarea"
           formControlName="content"
-          placeholder="Поделитесь новостью или обновлением..."
+          placeholder="Минимум 10 символов"
         ></textarea>
+        @if (form.get('content')?.invalid && form.get('content')?.touched) {
+          @if (form.get('content')?.errors?.['minlength']) {
+            <span class="post-form__hint">Минимум 10 символов</span>
+          }
+          @if (form.get('content')?.errors?.['maxlength']) {
+            <span class="post-form__hint">Максимум 50 000 символов</span>
+          }
+        }
       </div>
 
       <div class="post-form__field">
@@ -60,9 +71,10 @@
         </button>
 
         <button
-          type="submit"
+          type="button"
           class="btn-primary btn-md"
-          [disabled]="isSubmitting || form.invalid"
+          [disabled]="isSubmitting"
+          (click)="submit()"
         >
           Опубликовать
         </button>

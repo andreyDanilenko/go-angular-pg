@@ -26,7 +26,7 @@ export class PostCreateComponent {
   ) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-      content: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
+      content: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50000)]],
       category: [ArticleCategory.General],
     });
   }
