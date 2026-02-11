@@ -342,6 +342,13 @@
   color: var(--md-sys-color-on-surface);
 }
 
+.chat-textarea {
+  resize: none;
+  overflow-y: hidden;
+  line-height: 1.4;
+  max-height: 200px;
+}
+
 .chat-input::placeholder {
   color: var(--md-sys-color-on-surface-variant);
   opacity: 0.8;

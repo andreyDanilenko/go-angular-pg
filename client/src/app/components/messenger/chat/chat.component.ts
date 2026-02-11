@@ -148,13 +148,30 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.messageSubscription?.unsubscribe();
   }
 
-  sendMessage(): void {
+  sendMessage(textarea?: HTMLTextAreaElement): void {
     if (!this.chatId) return;
     const text = this.newMessage.value?.trim();
     if (text && this.isConnected) {
       this.wsService.sendMessage(this.chatId, text);
       this.newMessage.reset('');
+      if (textarea) {
+        textarea.style.height = 'auto';
+      }
     }
+  }
+
+  autoResize(textarea: HTMLTextAreaElement): void {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+
+  onEnterPress(event: Event, textarea: HTMLTextAreaElement): void {
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.shiftKey) {
+      return;
+    }
+    keyboardEvent.preventDefault();
+    this.sendMessage(textarea);
   }
 
   loadChatHistory(): void {
