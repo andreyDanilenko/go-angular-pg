@@ -173,6 +173,7 @@
   border-radius: 18px;
   box-shadow: var(--shadow-sm);
   word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .message-wrapper.sent .message-bubble {
@@ -237,6 +238,8 @@
   font-size: var(--font-size-base);
   line-height: 1.45;
   white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .message-meta {
