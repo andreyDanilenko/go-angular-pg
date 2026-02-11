@@ -9,6 +9,7 @@ import { ChatHeaderComponent } from '../../components/messenger/chat-header/chat
 // import { DrawerComponent } from '../../components/shared/drawer/drawer.component';
 import { CommonModule } from '@angular/common';
 import { ChatsEditComponent } from '../../components/messenger/chats-edit/chats-edit.component';
+import { ChatUsersComponent } from '../../components/messenger/chat-users/chat-users.component';
 import { ChatService } from '../../core/services/chat.service';
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { UserService } from '../../core/services/user.service';
@@ -24,7 +25,8 @@ import { UserService } from '../../core/services/user.service';
     ChatHeaderComponent,
     // DrawerComponent,
     CommonModule,
-    ChatsEditComponent
+    ChatsEditComponent,
+    ChatUsersComponent
   ],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.css'
@@ -36,6 +38,7 @@ export class MessengerPageComponent implements OnDestroy {
   users: User[] = [];
   isDrawerOpen = false;
   isEditMode = false;
+  isUsersMode = false;
 
 
   onChatSelected(chatId: string) {
@@ -62,12 +65,7 @@ export class MessengerPageComponent implements OnDestroy {
       distinctUntilChanged((prev, curr) => prev.currentUser?.role === curr.currentUser?.role)
     ).subscribe(state => {
       this.currentUser = state.currentUser;
-
-      if (state.currentUser?.role === 'admin') {
-        this.loadUsers();
-      } else {
-        this.loadAdminUsers();
-      }
+      this.loadUsers();
     });
   }
 
@@ -77,7 +75,8 @@ export class MessengerPageComponent implements OnDestroy {
   }
 
   handleEditClick() {
-    this.isEditMode = true
+    this.isEditMode = true;
+    this.isUsersMode = false;
   }
 
   handleCreateClick(userId: string) {
@@ -85,6 +84,7 @@ export class MessengerPageComponent implements OnDestroy {
       next: (chat) => {
         this.selectedChatId = chat.id;
         this.isEditMode = false;
+        this.isUsersMode = false;
       },
       error: (err) => {
         console.error('Ошибка при создании чата:', err);
@@ -111,6 +111,16 @@ export class MessengerPageComponent implements OnDestroy {
 
   handleBackToChats() {
     this.isEditMode = false;
+    this.isUsersMode = false;
+  }
+
+  handleOpenUsers() {
+    this.isEditMode = false;
+    this.isUsersMode = true;
+  }
+
+  handleUserSelected(user: User) {
+    this.handleCreateClick(user.id);
   }
 
   get displayName(): string {
@@ -120,6 +130,12 @@ export class MessengerPageComponent implements OnDestroy {
     }
 
     return `${this.currentUser.email}`;
+  }
+
+  get sidebarHeaderTitle(): string {
+    if (this.isEditMode) return 'Меню';
+    if (this.isUsersMode) return 'Контакты';
+    return 'Чаты';
   }
 
 }

@@ -3,9 +3,8 @@
   background-color: var(--md-sys-color-background);
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
   display: flex;
-  gap: 16px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: var(--space-4);
 }
 
@@ -13,6 +12,8 @@
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--md-sys-color-on-surface);
+  flex: 1;
+  text-align: center;
 }
 
 .chat-header .chat-header-burger rect {

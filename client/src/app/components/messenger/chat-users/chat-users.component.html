@@ -1,0 +1,20 @@
+<div class="chat-items">
+  @for (user of filteredUsers; track user.id) {
+    <div
+      class="chat-item"
+      (click)="onUserClick(user)">
+      <div class="chat-avatar">
+        <div>{{ getUserInitials(user) }}</div>
+      </div>
+      <div class="chat-info">
+        <div class="chat-name">
+          {{ getUserName(user) }}
+        </div>
+        <div class="chat-last-message">
+          {{ getUserStatus(user) }}
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

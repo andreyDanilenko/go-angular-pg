@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { User } from '../../../core/types/user.model';
 
 @Component({
   selector: 'app-chats-edit',
@@ -14,9 +15,15 @@ import { RouterLink } from '@angular/router';
 })
 export class ChatsEditComponent {
   @Output() backToChats = new EventEmitter<void>();
+  @Output() openUsers = new EventEmitter<void>();
+  @Output() createChat = new EventEmitter<string>();
+
+  @Input() users: User[] = [];
+  @Input() currentUser: User | null = null;
 
   editOptions = [
-    { id: 4, name: 'Чаты', icon: 'forum' }
+    { id: 1, name: 'Чаты', icon: 'chats' },
+    { id: 2, name: 'Пользователи', icon: 'users' },
   ];
 
   onBackClick(): void {
@@ -25,10 +32,16 @@ export class ChatsEditComponent {
 
   onEditOptionSelected(option: any): void {
     switch (option.icon) {
-      case 'forum':
-        return this.backToChats.emit();
-      default:
-        return this.backToChats.emit();
+      case 'chats':
+        this.backToChats.emit();
+        break;
+      case 'users':
+        this.openUsers.emit();
+        break;
     }
+  }
+  
+  onUserSelected(user: User): void {
+    this.createChat.emit(user.id);
   }
 }
