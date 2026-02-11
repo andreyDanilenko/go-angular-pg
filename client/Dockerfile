@@ -5,8 +5,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
+# Только .npm cache — node_modules/.cache вызывает EBUSY при npm ci
 RUN --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/app/node_modules/.cache \
     if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
@@ -16,8 +16,7 @@ COPY src src/
 
 COPY . .
 
-RUN --mount=type=cache,target=/app/node_modules/.cache \
-    npm run build --prod
+RUN npm run build --prod
 
 FROM nginx:stable-alpine
 
