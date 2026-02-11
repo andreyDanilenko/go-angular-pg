@@ -40,7 +40,7 @@ export class ChatsEditComponent {
         break;
     }
   }
-  
+
   onUserSelected(user: User): void {
     this.createChat.emit(user.id);
   }
