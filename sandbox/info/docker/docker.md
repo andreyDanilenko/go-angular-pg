@@ -54,7 +54,7 @@ docker exec -it container_name psql -U POSTGRES_USER
 ### Примеры SQL-запросов
 - Обновление данных:
   ```sql
-  UPDATE users SET role = 'admin' WHERE id = 'ваш_user_id';
+  UPDATE users SET role = 'ADMIN' WHERE id = '03689968-cca2-4c57-a94f-160e0fdd853d';
   ```
 
 - Удаление данных:
