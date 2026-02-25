@@ -89,6 +89,7 @@ func main() {
 	hub := ws.NewHub(chatService)
 	go hub.Run()
 	chatHandler := handler.NewChatHandler(chatService, hub, errorWriter, responseWriter)
+	healthHandler := handler.NewHealthHandler(gormDB, telegramService)
 
 	// Настройка роутера
 	r := chi.NewRouter()
@@ -104,6 +105,10 @@ func main() {
 
 	// Публичные маршруты
 	r.Route("/api", func(r chi.Router) {
+
+		r.Get("/health", healthHandler.HealthCheck)
+		r.Get("/live", healthHandler.LivenessCheck)
+		r.Get("/ready", healthHandler.ReadinessCheck)
 		// Публичные маршруты
 		r.Group(func(r chi.Router) {
 			r.Post("/auth", authHandler.StartAuthFlow)
