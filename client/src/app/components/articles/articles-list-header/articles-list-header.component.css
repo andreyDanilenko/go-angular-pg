@@ -1,76 +1,66 @@
-.articles-panel {
+.articles-header {
+  padding: var(--space-6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  background-color: var(--md-sys-color-surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  margin: var(--space-6);
-  box-shadow: var(--shadow-md);
-}
-
-.panel-header {
-  display: flex;
+  align-items: end;
   justify-content: space-between;
-  align-items: center;
+  gap: var(--space-6);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
-.panel-title {
-  margin: 0;
-  color: var(--md-sys-color-on-surface);
+.articles-header__eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--color-action);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.panel-controls {
+.articles-header h1 {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading);
+}
+
+.articles-header__controls {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-3);
-  justify-content: space-between;
 }
 
-.search-box {
-  flex: 1;
+.search {
+  width: min(22rem, 42vw);
 }
 
-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: var(--md-sys-color-on-surface);
-  font-size: 1rem;
-  outline: none;
+input,
+select {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--font-size-sm);
 }
 
-input::placeholder {
-  color: var(--md-sys-color-outline);
-}
-
-.controls-group {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.dropdown {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  background: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-@media (max-width: 600px) {
-  .panel-controls {
+@media (max-width: 48rem) {
+  .articles-header {
+    align-items: stretch;
     flex-direction: column;
   }
 
-  .search-box {
-    flex: none;
+  .articles-header__controls {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .controls-group {
+  .search {
     width: 100%;
-    justify-content: space-between;
   }
 }

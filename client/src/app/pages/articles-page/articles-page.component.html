@@ -1,10 +1,19 @@
-<app-articles-list-header (addArticle)="openModal()" (openFilters)="openModal()"></app-articles-list-header>
-<app-article-list [articles]="articles"></app-article-list>
+<section class="layout-container layout-stack articles-page">
+  <app-articles-list-header
+    [query]="query()"
+    [sort]="sort()"
+    (queryChange)="query.set($event)"
+    (sortChange)="sort.set($event)"
+  />
 
-<ng-template #modalCreateContent let-data let-close="close" let-onConfirm="onConfirm">
-  <app-create-content-component
-    [onCancel]="close"
-    [onConfirmAction]="handleContentSelection">
-  </app-create-content-component>
-</ng-template>
-<app-modal></app-modal>
+  @if (isLoading()) {
+    <app-spinner label="Загружаем посты…" />
+  } @else if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+    <button class="retry-button" type="button" (click)="loadArticles()">
+      Попробовать снова
+    </button>
+  } @else {
+    <app-article-list [articles]="visibleArticles()" />
+  }
+</section>

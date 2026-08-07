@@ -1,25 +1,9 @@
 :host {
-  display: flex;
-  flex-direction: column;
   min-height: 100dvh;
-  background-color: var(--md-sys-color-background);
+  display: block;
+  background: var(--color-background);
 }
 
 .main-content {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  background-color: var(--md-sys-color-background);
-}
-
-.main-header {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.main-footer {
-  margin-top: 30px;
-  font-size: 12px;
-  color: #888;
+  min-height: calc(100dvh - var(--header-height));
 }

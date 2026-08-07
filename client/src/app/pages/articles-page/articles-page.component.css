@@ -1,4 +1,15 @@
-:host {
-  height: calc(100dvh - var(--app-height));
-  overflow: auto;
+.articles-page {
+  padding-block: var(--page-block-padding);
+}
+
+.retry-button {
+  width: fit-content;
+  min-height: var(--control-height);
+  padding-inline: var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  cursor: pointer;
 }

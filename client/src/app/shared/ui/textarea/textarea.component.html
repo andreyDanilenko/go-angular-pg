@@ -1,0 +1,18 @@
+<div class="field">
+  <label class="field__label" [for]="inputId">{{ label }}</label>
+  <textarea
+    class="field__control"
+    [class.field__control--error]="showError"
+    [id]="inputId"
+    [formControl]="control"
+    [placeholder]="placeholder"
+    [attr.aria-invalid]="showError"
+    [attr.aria-describedby]="showError ? inputId + '-error' : null"
+    rows="6"
+  ></textarea>
+  <div class="field__message" aria-live="polite">
+    @if (showError) {
+      <span [id]="inputId + '-error'">{{ errorMessage }}</span>
+    }
+  </div>
+</div>

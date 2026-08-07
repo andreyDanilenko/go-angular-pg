@@ -1,16 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { HeaderComponent } from '../../components/shared/header/header.component';
-import { UserService } from '../../core/services/user.service';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { SessionService } from '../../core/session/session.service';
 
 @Component({
-  selector: 'main-layout',
+  selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent],
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.css']
+  styleUrl: './main-layout.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent implements OnInit {
+  private readonly session = inject(SessionService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    if (!this.session.user()) {
+      this.session.load().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    }
+  }
+}

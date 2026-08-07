@@ -1,33 +1,20 @@
-export interface Article {
+export type ArticleCategory = 'general' | 'tech' | 'science' | 'politics' | 'health';
+
+export type Article = {
   id: string;
   authorId: string;
   title: string;
   content: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  createdAt: string;
+  updatedAt: string;
   category: ArticleCategory;
   authorName: string;
-}
-
-export enum ArticleCategory {
-  General = 'general',
-  Tech = 'tech',
-  Science = 'science',
-  Politics = 'politics',
-  Health = 'health'
-}
-
-export type CreateArticleInput = {
-  title: string;
-  content: string;
-  category: ArticleCategory;
 };
 
-export const CATEGORY_LABELS: Record<ArticleCategory, string> = {
-  [ArticleCategory.General]: 'Общее',
-  [ArticleCategory.Tech]: 'Технологии',
-  [ArticleCategory.Science]: 'Наука',
-  [ArticleCategory.Politics]: 'Политика',
-  [ArticleCategory.Health]: 'Здоровье',
+export const ARTICLE_CATEGORY_LABELS: Record<ArticleCategory, string> = {
+  general: 'Общее',
+  tech: 'Технологии',
+  science: 'Наука',
+  politics: 'Политика',
+  health: 'Здоровье',
 };
-

@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ParticlesBackgroundComponent } from '../../components/features/auth-bg/bg.component';
+
+import { ThemeToggleComponent } from '../../components/shared/uikit/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, ParticlesBackgroundComponent],
+  imports: [RouterOutlet, ThemeToggleComponent],
   templateUrl: './auth-layout.component.html',
-  styleUrls: ['./auth-layout.component.css']
+  styleUrl: './auth-layout.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthLayoutComponent {}

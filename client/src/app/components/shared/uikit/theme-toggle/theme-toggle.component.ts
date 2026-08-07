@@ -1,18 +1,20 @@
-import { Component } from '@angular/core';
-import { ThemeService } from '../../../../core/services/theme.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+
+import { ThemeService } from '../../../../core/theme/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
+  standalone: true,
   templateUrl: './theme-toggle.component.html',
+  styleUrl: './theme-toggle.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeToggleComponent {
-  constructor(private themeService: ThemeService) {}
+  private readonly themeService = inject(ThemeService);
 
-  get isDarkMode(): boolean {
-    return this.themeService.isDarkMode();
-  }
+  readonly theme = this.themeService.theme;
 
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
+  toggle(): void {
+    this.themeService.toggle();
   }
 }

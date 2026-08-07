@@ -1,17 +1,16 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ArticleCardComponent } from '../article-card/article-card.component';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+
 import { Article } from '../../../core/types/article.model';
+import { ArticleCardComponent } from '../article-card/article-card.component';
 
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, ArticleCardComponent],
+  imports: [ArticleCardComponent],
   templateUrl: './article-list.component.html',
-  styleUrls: ['./article-list.component.css'],
+  styleUrl: './article-list.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleListComponent {
-  @Input() articles!: Article[];
-
-  constructor() {}
+  @Input({ required: true }) articles: readonly Article[] = [];
 }

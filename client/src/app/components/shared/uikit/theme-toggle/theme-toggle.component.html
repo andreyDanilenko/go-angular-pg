@@ -1,7 +1,8 @@
 <button
-  class="btn-error btn-sm"
-  (click)="toggleTheme()"
-  [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+  class="theme-toggle"
+  type="button"
+  [attr.aria-label]="theme() === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'"
+  (click)="toggle()"
 >
-  {{ isDarkMode ? 'Темная тема' : 'Светлая тема' }}
+  <span aria-hidden="true">{{ theme() === 'dark' ? '☀' : '☾' }}</span>
 </button>

@@ -1,104 +1,108 @@
+:host {
+  min-width: 0;
+  display: block;
+}
+
 .article-card {
-  cursor: pointer;
-  background-color: var(--md-sys-color-surface);
-  border-radius: var(--radius-xl);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
   height: 100%;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-normal),
+    transform var(--duration-normal),
+    box-shadow var(--duration-normal);
 }
 
 .article-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.article-image {
-  height: 200px;
-  width: 100%;
-  object-fit: cover;
+.article-card__visual {
+  min-height: 9rem;
+  padding: var(--space-6);
+  display: grid;
+  place-items: center;
+  color: var(--color-on-category);
+  background: var(--color-category-general);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
 }
 
-.article-content {
-  flex: 1;
+.article-card__visual--tech {
+  background: var(--color-category-tech);
+}
+
+.article-card__visual--science {
+  background: var(--color-category-science);
+}
+
+.article-card__visual--politics {
+  background: var(--color-category-politics);
+}
+
+.article-card__visual--health {
+  background: var(--color-category-health);
+}
+
+.article-card__content {
+  padding: var(--space-5);
   display: flex;
   flex-direction: column;
-  padding: var(--space-4);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  gap: var(--space-3);
 }
 
-.article-tag {
-  display: inline-block;
+.article-card__category {
+  width: fit-content;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
-  margin-right: auto;
-  margin-bottom: var(--space-3);
 }
 
-.article-tag.health,
-.article-tag.politics {
-  background-color: var(--md-sys-color-secondary-container);
-  color: white;
-}
-
-.article-tag.tech,
-.article-tag.general {
-  background-color: var(--md-sys-color-primary-container);
-  color: white;
-}
-
-.article-tag.science {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: white;
-}
-
-.article-title {
+.article-card__title {
+  color: var(--color-text);
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.4;
-  margin-bottom: var(--space-2);
-  color: var(--md-sys-color-on-surface);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
 }
 
-.article-excerpt {
-  font-size: var(--font-size-sm);
-  color: var(--md-sys-color-on-surface-variant);
-  line-height: 1.5;
-  margin-bottom: var(--space-3);
+.article-card__excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  line-height: var(--line-height-body);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
-.article-meta {
+.article-card__meta {
   margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-subtle);
   font-size: var(--font-size-xs);
-  color: var(--md-sys-color-on-surface-variant);
 }
 
-.article-author {
-  display: flex;
-  align-items: center;
-}
+@media (prefers-reduced-motion: reduce) {
+  .article-card {
+    transition: none;
+  }
 
-.article-author-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  margin-right: var(--space-2);
-  object-fit: cover;
-}
-
-.article-date {
-  display: flex;
-  align-items: center;
-}
-
-.article-date-icon {
-  margin-right: var(--space-1);
-  margin-top: var(--space-1);
+  .article-card:hover {
+    transform: none;
+  }
 }

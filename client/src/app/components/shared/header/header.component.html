@@ -1,41 +1,17 @@
-<header class="Header">
-  <div class="Header__Left">
-    <button
-      type="button"
-      class="btn-icon Header__MenuButton"
-      (click)="isDrawerOpen = true"
-      aria-label="Открыть меню"
-    >
-      <svg class="Header__MenuIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="4" y1="12" x2="20" y2="12"/>
-        <line x1="4" y1="18" x2="20" y2="18"/>
-      </svg>
-    </button>
+<header class="header">
+  <div class="layout-container header__content">
+    <a class="header__brand" routerLink="/articles">LifeDream</a>
 
-    <a class="Header__Title" routerLink="/">
-      Главная
-    </a>
-  </div>
+    <nav class="header__navigation" aria-label="Основная навигация">
+      <a routerLink="/articles" routerLinkActive="header__link--active">Посты</a>
+      <a routerLink="/profile" routerLinkActive="header__link--active">Профиль</a>
+    </nav>
 
-  <div class="Header__Right">
-    @if (currentUser) {
-      <span class="Header__UserChip">
-        {{ displayName }}
-      </span>
-    }
-    <app-theme-toggle></app-theme-toggle>
+    <div class="header__actions">
+      @if (displayName()) {
+        <span class="header__user">{{ displayName() }}</span>
+      }
+      <app-theme-toggle />
+    </div>
   </div>
 </header>
-
-<app-drawer
-  [isOpen]="isDrawerOpen"
-  (overlayClick)="isDrawerOpen = false"
->
-  <nav class="NavList">
-    <a class="NavList__Link" routerLink="/" [class.active-link]="isActive('/')">Главная</a>
-    <a class="NavList__Link" routerLink="/profile" [class.active-link]="isActive('/profile')">Профиль</a>
-    <a class="NavList__Link" routerLink="/articles" [class.active-link]="isActive('/articles')">Статьи</a>
-    <a class="NavList__Link" routerLink="/messenger" [class.active-link]="isActive('/messenger')">Мессенджер</a>
-  </nav>
-</app-drawer>

@@ -1,5 +1,12 @@
-  <div class="articles-list">
+@if (articles.length) {
+  <div class="article-list">
     @for (article of articles; track article.id) {
-      <app-article-card [article]="article"></app-article-card>
+      <app-article-card [article]="article" />
     }
   </div>
+} @else {
+  <div class="article-list__empty">
+    <h2>Посты не найдены</h2>
+    <p>Попробуйте изменить поисковый запрос.</p>
+  </div>
+}

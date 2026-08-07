@@ -1,79 +1,75 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+
 import { ArticleListComponent } from '../../components/articles/articles-list/article-list.component';
+import {
+  ArticleSort,
+  ArticlesListHeaderComponent,
+} from '../../components/articles/articles-list-header/articles-list-header.component';
+import { getApiErrorMessage } from '../../core/api/api-error';
 import { Article } from '../../core/types/article.model';
-import { ArticleService } from '../../core/services/article.service';
-import { Router } from '@angular/router';
-import { ArticlesHeaderHeaderComponent } from '../../components/articles/articles-list-header/articles-list-header.component';
-import { ModalService } from '../../core/services/modal.service';
-import { ModalComponent } from '../../components/shared/modal/modal.component';
-import { CreateContentComponent } from '../../components/modalContents/create-content-modal/create-content-modal.component';
+import { ArticleApi } from '../../features/articles/data-access/article-api.service';
+import { AlertComponent } from '../../shared/ui/alert/alert.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 
 @Component({
   selector: 'app-articles',
   standalone: true,
-  imports: [CommonModule, ArticleListComponent, ArticlesHeaderHeaderComponent, ModalComponent, CreateContentComponent],
+  imports: [
+    ArticleListComponent,
+    ArticlesListHeaderComponent,
+    AlertComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './articles-page.component.html',
-  styleUrls: ['./articles-page.component.css'],
-  styles: []
+  styleUrl: './articles-page.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArticlesPageComponent {
-  articles: Article[] = [];
-  isLoading = true;
-  error: string | null = null;
+export class ArticlesPageComponent implements OnInit {
+  private readonly articleApi = inject(ArticleApi);
+  private readonly articles = signal<readonly Article[]>([]);
 
-  @ViewChild('modalCreateContent') modalCreateContent!: TemplateRef<any>;
+  readonly isLoading = signal(true);
+  readonly errorMessage = signal('');
+  readonly query = signal('');
+  readonly sort = signal<ArticleSort>('newest');
+  readonly visibleArticles = computed(() => {
+    const query = this.query().trim().toLocaleLowerCase('ru-RU');
+    const filtered = query
+      ? this.articles().filter((article) =>
+          `${article.title} ${article.content} ${article.authorName}`
+            .toLocaleLowerCase('ru-RU')
+            .includes(query),
+        )
+      : [...this.articles()];
 
-  constructor(private articleService: ArticleService, private router: Router, private modalService: ModalService) {}
+    return filtered.sort((left, right) => {
+      if (this.sort() === 'title') {
+        return left.title.localeCompare(right.title, 'ru-RU');
+      }
 
-  openModal() {
-    this.modalService.open({
-      content: this.modalCreateContent,
-      title: 'Что вы хотите создать?'
+      const difference = Date.parse(left.createdAt) - Date.parse(right.createdAt);
+      return this.sort() === 'oldest' ? difference : -difference;
     });
-  }
-
-  handleContentSelection = (type: 'post' | 'article') => {
-    console.log('Выбран тип:', type);
-    this.modalService.close();
-    // Дополнительная логика: навигация, создание и т.д.
-    if (type === 'post') {
-      this.router.navigate(['/create/post']);
-    } else {
-      this.router.navigate(['/create/article']);
-    }
-  }
+  });
 
   ngOnInit(): void {
     this.loadArticles();
   }
 
   loadArticles(): void {
-    this.isLoading = true;
-    this.error = null;
-
-    this.articleService.getAllArticles().subscribe({
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+    this.articleApi.getAll().subscribe({
       next: (articles) => {
-        this.articles = articles;
-        this.isLoading = false;
+        this.articles.set(articles);
+        this.isLoading.set(false);
       },
-      error: (err) => {
-        this.error = 'Не удалось загрузить статьи';
-        this.isLoading = false;
-        console.error(err);
-      }
+      error: (error: unknown) => {
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Не удалось загрузить посты.'),
+        );
+        this.isLoading.set(false);
+      },
     });
-  }
-
-  formatDate(date: string | Date): string {
-    return new Date(date).toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  viewArticle(articleId: string) {
-    this.router.navigate(['/posts', articleId]);
   }
 }
