@@ -1,68 +1,57 @@
 import { Routes } from '@angular/router';
-import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { NoAuthGuard } from './pages/guard/not-auth-guard';
-import { AuthGuard } from './pages/guard/auth-guard';
-import { AuthComponent } from './pages/auth/auth.component';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import { HomeComponent } from './pages/main/main.component';
-import { ProfilePageComponent } from './pages/profile/profile-page.component';
-import { MessengerPageComponent } from './pages/chat-page/chat-page.component';
-import { ArticlesPageComponent } from './pages/articles-page/articles-page.component';
-import { ArticlePageComponent } from './pages/article-page/article-page.component';
-import { ProfileEditComponent } from './pages/profile-edit/profile-edit.component';
-import { PostCreateComponent } from './pages/post-create/post-create.component';
-import { ArticleEditComponent } from './pages/article-edit/article-edit.component';
+
+import { authGuard, guestGuard } from './core/auth/auth.guard';
+
 export const routes: Routes = [
   {
-    path: '',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: HomeComponent },
-    ]
-  },
-  {
     path: 'auth',
-    component: AuthLayoutComponent,
-    canActivate: [NoAuthGuard],
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./layouts/auth-layout/auth-layout.component').then(
+        ({ AuthLayoutComponent }) => AuthLayoutComponent,
+      ),
     children: [
-      { path: 'login', component: AuthComponent },
-      { path: '', redirectTo: 'login', pathMatch: 'full' }
-    ]
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./pages/auth/auth.component').then(
+            ({ AuthComponent }) => AuthComponent,
+          ),
+      },
+      { path: '', pathMatch: 'full', redirectTo: 'login' },
+    ],
   },
   {
-    path: 'messenger',
-    canActivate: [AuthGuard],
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./layouts/main-layout/main-layout.component').then(
+        ({ MainLayoutComponent }) => MainLayoutComponent,
+      ),
     children: [
-      { path: '', component: MessengerPageComponent },
-    ]
+      { path: '', pathMatch: 'full', redirectTo: 'articles' },
+      {
+        path: 'articles',
+        loadComponent: () =>
+          import('./pages/articles-page/articles-page.component').then(
+            ({ ArticlesPageComponent }) => ArticlesPageComponent,
+          ),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./pages/profile/profile-page.component').then(
+            ({ ProfilePageComponent }) => ProfilePageComponent,
+          ),
+      },
+      {
+        path: 'profile/edit',
+        loadComponent: () =>
+          import('./pages/profile-edit/profile-edit.component').then(
+            ({ ProfileEditComponent }) => ProfileEditComponent,
+          ),
+      },
+    ],
   },
-  {
-    path: 'articles',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: ArticlesPageComponent },
-      { path: ':id', component: ArticlePageComponent },
-      { path: ':id/edit', component: ArticleEditComponent },
-    ]
-  },
-  {
-    path: 'create',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'post', component: PostCreateComponent },
-    ]
-  },
-  {
-    path: 'profile',
-    component: MainLayoutComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: ProfilePageComponent },
-      { path: 'edit', component: ProfileEditComponent },
-    ]
-  },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
