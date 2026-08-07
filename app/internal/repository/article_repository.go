@@ -1,20 +1,16 @@
 package repository
 
 import (
-	"admin/panel/internal/model"
 	"context"
 	"errors"
 	"fmt"
-	"log"
+
+	"admin/panel/internal/model"
 
 	"gorm.io/gorm"
 )
 
-var (
-	ErrArticleNotFound = errors.New("article not found")
-	ErrInvalidCategory = errors.New("invalid article category")
-	ErrNothingToDelete = errors.New("no articles were deleted")
-)
+var ErrArticleNotFound = errors.New("article not found")
 
 type ArticleRepository struct {
 	db *gorm.DB
@@ -24,137 +20,101 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 	return &ArticleRepository{db: db}
 }
 
-func (r *ArticleRepository) CreateArticle(
+func (r *ArticleRepository) Create(
 	ctx context.Context,
 	authorID string,
-	params model.ArticleInput,
+	input model.ArticleInput,
 ) (*model.Article, error) {
-	log.Printf("Creating article for authorID: %s, title: %s, category: %s",
-		authorID, params.Title, params.Category)
-
-	if !params.Category.IsValid() {
-		log.Printf("Invalid category: %s", params.Category)
-		return nil, fmt.Errorf("%w", ErrInvalidCategory)
-	}
-
 	var authorCount int64
 	if err := r.db.WithContext(ctx).
 		Model(&model.User{}).
 		Where("id = ?", authorID).
 		Count(&authorCount).Error; err != nil {
-
-		log.Printf("Error checking author existence: %v", err)
-		return nil, fmt.Errorf("failed to check author: %w", err)
+		return nil, fmt.Errorf("check article author: %w", err)
 	}
-
 	if authorCount == 0 {
-		log.Printf("Author not found: %s", authorID)
-		return nil, fmt.Errorf("author with id %s not found", authorID)
+		return nil, fmt.Errorf("check article author: user not found")
 	}
 
 	article := &model.Article{
-		Title:    params.Title,
-		Content:  params.Content,
-		Category: params.Category,
 		AuthorID: authorID,
+		Title:    input.Title,
+		Content:  input.Content,
+		Category: input.Category,
 	}
-
 	if err := r.db.WithContext(ctx).Create(article).Error; err != nil {
-		log.Printf("Error creating article: %v", err)
-
-		if errors.Is(err, gorm.ErrForeignKeyViolated) {
-			log.Printf("Foreign key violation - author might not exist despite previous check")
-			return nil, fmt.Errorf("author does not exist")
-		}
-
-		return nil, fmt.Errorf("failed to create article: %w", err)
+		return nil, fmt.Errorf("create article: %w", err)
 	}
-
-	log.Printf("Successfully created article with ID: %s", article.ID)
 	return article, nil
 }
 
-func (r *ArticleRepository) GetArticleByID(ctx context.Context, id string) (*model.Article, error) {
-	var article model.Article
-
-	result := r.db.WithContext(ctx).
-		Where("id = ?", id).
-		First(&article)
-
-	if result.RowsAffected == 0 {
-		return nil, fmt.Errorf("article not found")
-	}
-
-	if result.Error != nil {
-		return nil, fmt.Errorf("database error: %w", result.Error)
-	}
-
-	return &article, nil
-}
-
-func (r *ArticleRepository) GetAllArticles(ctx context.Context) ([]*model.ArticleWithAuthor, error) {
-	var articles []*model.ArticleWithAuthor
-	err := r.db.WithContext(ctx).
-		Table("articles").
-		Select("articles.*, users.id as author_id, users.username as author_name").
-		Joins("LEFT JOIN users ON users.id = articles.author_id").
-		Order("articles.created_at DESC").
-		Scan(&articles).Error
-
-	if err != nil {
-		return nil, err
-	}
-	return articles, nil
-}
-
-func (r *ArticleRepository) GetArticlesByAuthor(ctx context.Context, authorID string) ([]*model.Article, error) {
-	var articles []*model.Article
-	result := r.db.WithContext(ctx).
-		Where("author_id = ?", authorID).
-		Order("created_at DESC").
-		Find(&articles)
-
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return articles, nil
-}
-
-func (r *ArticleRepository) UpdateArticle(ctx context.Context, id string, params model.ArticleInput) (*model.Article, error) {
-
+func (r *ArticleRepository) GetByID(ctx context.Context, id string) (*model.Article, error) {
 	var article model.Article
 	if err := r.db.WithContext(ctx).First(&article, "id = ?", id).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrArticleNotFound
+		}
+		return nil, fmt.Errorf("get article: %w", err)
 	}
-
-	result := r.db.WithContext(ctx).
-		Model(&article).
-		Updates(map[string]interface{}{
-			"title":    params.Title,
-			"content":  params.Content,
-			"category": params.Category,
-		})
-
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
 	return &article, nil
 }
 
-func (r *ArticleRepository) DeleteArticle(ctx context.Context, id string) error {
+func (r *ArticleRepository) GetAll(ctx context.Context) ([]model.ArticleWithAuthor, error) {
+	articles := make([]model.ArticleWithAuthor, 0)
+	if err := r.db.WithContext(ctx).
+		Table("articles").
+		Select(`articles.*, COALESCE(NULLIF(users.username, ''), users.email, 'Без автора') AS author_name`).
+		Joins("LEFT JOIN users ON users.id = articles.author_id").
+		Order("articles.created_at DESC").
+		Scan(&articles).Error; err != nil {
+		return nil, fmt.Errorf("list articles: %w", err)
+	}
+	return articles, nil
+}
+
+func (r *ArticleRepository) GetByAuthor(
+	ctx context.Context,
+	authorID string,
+) ([]model.Article, error) {
+	articles := make([]model.Article, 0)
+	if err := r.db.WithContext(ctx).
+		Where("author_id = ?", authorID).
+		Order("created_at DESC").
+		Find(&articles).Error; err != nil {
+		return nil, fmt.Errorf("list author articles: %w", err)
+	}
+	return articles, nil
+}
+
+func (r *ArticleRepository) Update(
+	ctx context.Context,
+	id string,
+	input model.ArticleInput,
+) (*model.Article, error) {
 	result := r.db.WithContext(ctx).
+		Model(&model.Article{}).
 		Where("id = ?", id).
-		Delete(&model.Article{})
-
+		Updates(map[string]any{
+			"title":    input.Title,
+			"content":  input.Content,
+			"category": input.Category,
+		})
 	if result.Error != nil {
-		return result.Error
+		return nil, fmt.Errorf("update article: %w", result.Error)
 	}
-
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("record not found")
+		return nil, ErrArticleNotFound
 	}
+	return r.GetByID(ctx, id)
+}
 
+func (r *ArticleRepository) Delete(ctx context.Context, id string) error {
+	result := r.db.WithContext(ctx).Delete(&model.Article{}, "id = ?", id)
+	if result.Error != nil {
+		return fmt.Errorf("delete article: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return ErrArticleNotFound
+	}
 	return nil
 }

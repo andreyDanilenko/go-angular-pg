@@ -1,58 +1,53 @@
 package middleware
 
 import (
-	"admin/panel/internal/contract"
 	"context"
-
 	"net/http"
 	"strings"
+
+	"admin/panel/internal/contract"
+	"admin/panel/internal/model"
 )
 
 type contextKey string
 
 const (
-	UserIDKey contextKey = "userID"
-	RoleKey   contextKey = "role"
+	userIDKey contextKey = "userID"
+	roleKey   contextKey = "role"
 )
 
-func JWTFromQuery(tokenManager contract.TokenManager, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
+func JWTAuth(
+	tokenManager contract.TokenManager,
+	errorWriter contract.ErrorWriter,
+) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			token := r.URL.Query().Get("token")
-			userID, role, err := tokenManager.Extract(token)
-			if err != nil {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid token")
+			authorization := r.Header.Get("Authorization")
+			token, found := strings.CutPrefix(authorization, "Bearer ")
+			if !found || strings.TrimSpace(token) == "" {
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Требуется авторизация")
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), UserIDKey, userID)
-			ctx = context.WithValue(ctx, RoleKey, role)
+			userID, role, err := tokenManager.Extract(token)
+			if err != nil {
+				errorWriter.WriteError(w, http.StatusUnauthorized, "Сессия недействительна")
+				return
+			}
 
+			ctx := context.WithValue(r.Context(), userIDKey, userID)
+			ctx = context.WithValue(ctx, roleKey, role)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
-func JWTAuth(tokenManager contract.TokenManager, errorWriter contract.ErrorWriter) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if !strings.HasPrefix(authHeader, "Bearer ") {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Missing or invalid Authorization header")
-				return
-			}
+func UserID(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value(userIDKey).(string)
+	return userID, ok && userID != ""
+}
 
-			token := strings.TrimPrefix(authHeader, "Bearer ")
-			userID, role, err := tokenManager.Extract(token)
-			if err != nil {
-				errorWriter.WriteError(w, http.StatusUnauthorized, "Invalid token")
-				return
-			}
-
-			ctx := context.WithValue(r.Context(), UserIDKey, userID)
-			ctx = context.WithValue(ctx, RoleKey, role)
-
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
+func Role(ctx context.Context) (model.UserRole, bool) {
+	role, ok := ctx.Value(roleKey).(model.UserRole)
+	return role, ok
 }

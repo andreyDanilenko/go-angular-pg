@@ -1,178 +1,157 @@
 package handler
 
 import (
+	"encoding/json"
+	"errors"
+	"net/http"
+
 	"admin/panel/internal/contract"
 	"admin/panel/internal/middleware"
 	"admin/panel/internal/model"
+	"admin/panel/internal/repository"
 	"admin/panel/internal/service"
-	"encoding/json"
-	"log"
-	"net/http"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 )
 
 type ArticleHandler struct {
-	service      *service.ArticleService
-	errorWriter  contract.ErrorWriter
-	responseJSON contract.ResponseWriter
+	service        *service.ArticleService
+	validator      *validator.Validate
+	errorWriter    contract.ErrorWriter
+	responseWriter contract.ResponseWriter
 }
 
 func NewArticleHandler(
 	service *service.ArticleService,
-	ew contract.ErrorWriter,
-	rw contract.ResponseWriter,
+	errorWriter contract.ErrorWriter,
+	responseWriter contract.ResponseWriter,
 ) *ArticleHandler {
 	return &ArticleHandler{
-		service:      service,
-		errorWriter:  ew,
-		responseJSON: rw,
+		service:        service,
+		validator:      validator.New(),
+		errorWriter:    errorWriter,
+		responseWriter: responseWriter,
 	}
 }
-func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Unauthorized")
+
+func (h *ArticleHandler) Create(w http.ResponseWriter, r *http.Request) {
+	userID, _, ok := currentIdentity(r)
+	if !ok {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Требуется авторизация")
 		return
 	}
+	input, ok := h.decodeInput(w, r)
+	if !ok {
+		return
+	}
+	article, err := h.service.Create(r.Context(), userID, input)
+	if err != nil {
+		h.writeError(w, err)
+		return
+	}
+	h.responseWriter.WriteJSON(w, http.StatusCreated, article)
+}
 
+func (h *ArticleHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	article, err := h.service.GetByID(r.Context(), chi.URLParam(r, "id"))
+	if err != nil {
+		h.writeError(w, err)
+		return
+	}
+	h.responseWriter.WriteJSON(w, http.StatusOK, article)
+}
+
+func (h *ArticleHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	articles, err := h.service.GetAll(r.Context())
+	if err != nil {
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Не удалось загрузить посты")
+		return
+	}
+	h.responseWriter.WriteJSON(w, http.StatusOK, articles)
+}
+
+func (h *ArticleHandler) GetCurrentUserArticles(w http.ResponseWriter, r *http.Request) {
+	userID, _, ok := currentIdentity(r)
+	if !ok {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Требуется авторизация")
+		return
+	}
+	articles, err := h.service.GetByAuthor(r.Context(), userID)
+	if err != nil {
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Не удалось загрузить посты пользователя")
+		return
+	}
+	h.responseWriter.WriteJSON(w, http.StatusOK, articles)
+}
+
+func (h *ArticleHandler) Update(w http.ResponseWriter, r *http.Request) {
+	userID, role, ok := currentIdentity(r)
+	if !ok {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Требуется авторизация")
+		return
+	}
+	input, ok := h.decodeInput(w, r)
+	if !ok {
+		return
+	}
+	article, err := h.service.Update(
+		r.Context(),
+		chi.URLParam(r, "id"),
+		userID,
+		role,
+		input,
+	)
+	if err != nil {
+		h.writeError(w, err)
+		return
+	}
+	h.responseWriter.WriteJSON(w, http.StatusOK, article)
+}
+
+func (h *ArticleHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	userID, role, ok := currentIdentity(r)
+	if !ok {
+		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Требуется авторизация")
+		return
+	}
+	if err := h.service.Delete(r.Context(), chi.URLParam(r, "id"), userID, role); err != nil {
+		h.writeError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ArticleHandler) decodeInput(w http.ResponseWriter, r *http.Request) (model.ArticleInput, bool) {
 	var input model.ArticleInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		h.errorWriter.WriteWithCode(
-			w,
-			http.StatusBadRequest,
-			"INVALID_REQUEST",
-			"Invalid request payload",
-			nil,
-		)
-		return
+	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&input); err != nil {
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "invalid_body", "Неверный формат запроса", nil)
+		return model.ArticleInput{}, false
 	}
-
-	if !input.Category.IsValid() {
-		h.errorWriter.WriteWithCode(
-			w,
-			http.StatusBadRequest,
-			"INVALID_CATEGORY",
-			"Invalid article category",
-			map[string]string{"valid_categories": "general"},
-		)
-		return
+	if err := h.validator.Struct(input); err != nil || !input.Category.IsValid() {
+		h.errorWriter.WriteWithCode(w, http.StatusBadRequest, "validation_failed", "Проверьте поля поста", nil)
+		return model.ArticleInput{}, false
 	}
-
-	article, err := h.service.CreateArticle(r.Context(), userID, input)
-	if err != nil {
-		log.Printf("Failed to create article: %v", err) // Логируем полную ошибку
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Failed to create article")
-		return
-	}
-
-	h.responseJSON.WriteJSON(w, http.StatusCreated, article)
+	return input, true
 }
 
-func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-
-	article, err := h.service.GetArticle(r.Context(), id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
+func (h *ArticleHandler) writeError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, repository.ErrArticleNotFound):
+		h.errorWriter.WriteError(w, http.StatusNotFound, "Пост не найден")
+	case errors.Is(err, service.ErrArticleForbidden):
+		h.errorWriter.WriteError(w, http.StatusForbidden, "Недостаточно прав для изменения поста")
+	case errors.Is(err, service.ErrInvalidArticleCategory):
+		h.errorWriter.WriteError(w, http.StatusBadRequest, "Некорректная категория")
+	default:
+		h.errorWriter.WriteError(w, http.StatusInternalServerError, "Не удалось выполнить операцию с постом")
 	}
-
-	h.responseJSON.WriteJSON(w, http.StatusCreated, article)
 }
 
-func (h *ArticleHandler) GetUserArticles(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	articles, err := h.service.GetArticlesByAuthor(r.Context(), userID)
-	if err != nil {
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "articles not found")
-		return
-	}
-
-	h.responseJSON.WriteJSON(w, http.StatusCreated, articles)
-}
-
-func (h *ArticleHandler) GetAllArticles(w http.ResponseWriter, r *http.Request) {
-	articles, err := h.service.GetAllArticles(r.Context())
-	if err != nil {
-		h.errorWriter.WriteError(w, http.StatusInternalServerError, "articles not found")
-		return
-	}
-
-	h.responseJSON.WriteJSON(w, http.StatusOK, articles)
-}
-
-func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	articleID := chi.URLParam(r, "id")
-	var input model.ArticleInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		h.errorWriter.WriteWithCode(
-			w,
-			http.StatusBadRequest,
-			"INVALID_REQUEST",
-			"Invalid request payload",
-			nil,
-		)
-		return
-	}
-
-	if !input.Category.IsValid() {
-		validCategories := make([]string, len(model.GetValidCategories()))
-		for i, cat := range model.GetValidCategories() {
-			validCategories[i] = string(cat)
-		}
-
-		h.errorWriter.WriteWithCode(
-			w,
-			http.StatusBadRequest,
-			"INVALID_CATEGORY",
-			"Invalid article category",
-			map[string]string{"valid_categories": strings.Join(validCategories, ", ")},
-		)
-		return
-	}
-
-	article, err := h.service.UpdateArticle(r.Context(), articleID, userID, input)
-	if err != nil {
-		statusCode := http.StatusInternalServerError
-		if strings.Contains(err.Error(), "forbidden:") {
-			statusCode = http.StatusForbidden
-		}
-		h.errorWriter.WriteError(w, statusCode, err.Error())
-		return
-	}
-
-	h.responseJSON.WriteJSON(w, http.StatusOK, article)
-}
-
-func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		h.errorWriter.WriteError(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-	id := chi.URLParam(r, "id")
-
-	if err := h.service.DeleteArticle(r.Context(), id, userID); err != nil {
-		statusCode := http.StatusInternalServerError
-		if strings.Contains(err.Error(), "forbidden:") {
-			statusCode = http.StatusForbidden
-		}
-		h.errorWriter.WriteError(w, statusCode, err.Error())
-		return
-	}
-
-	h.responseJSON.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+func currentIdentity(r *http.Request) (string, model.UserRole, bool) {
+	userID, userOK := middleware.UserID(r.Context())
+	role, roleOK := middleware.Role(r.Context())
+	return userID, role, userOK && roleOK
 }

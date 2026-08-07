@@ -1,4 +1,4 @@
-<article class="article-card">
+<a class="article-card" [routerLink]="['/articles', article.id]">
   <div
     [class]="'article-card__visual article-card__visual--' + article.category"
     aria-hidden="true"
@@ -11,10 +11,10 @@
     <h2 class="article-card__title">{{ article.title }}</h2>
     <p class="article-card__excerpt">{{ article.content }}</p>
     <footer class="article-card__meta">
-      <span>{{ article.authorName }}</span>
+      <span>{{ article.authorName || 'Без автора' }}</span>
       <time [attr.datetime]="article.createdAt">
-        {{ article.createdAt | date: 'd MMMM y' : '' : 'ru-RU' }}
+        {{ article.createdAt | date: 'd MMMM y' }}
       </time>
     </footer>
   </div>
-</article>
+</a>

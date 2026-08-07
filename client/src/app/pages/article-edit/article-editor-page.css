@@ -1,0 +1,25 @@
+.article-editor-page {
+  max-width: var(--profile-max-width);
+  padding-block: var(--page-block-padding);
+  display: grid;
+  gap: var(--space-6);
+}
+
+.article-editor-page header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.article-editor-page header p {
+  color: var(--color-action);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.article-editor-page h1 {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}

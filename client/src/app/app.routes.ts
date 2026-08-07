@@ -38,6 +38,27 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'articles/create',
+        loadComponent: () =>
+          import('./pages/article-create/article-create.component').then(
+            ({ ArticleCreateComponent }) => ArticleCreateComponent,
+          ),
+      },
+      {
+        path: 'articles/:id/edit',
+        loadComponent: () =>
+          import('./pages/article-edit/article-edit.component').then(
+            ({ ArticleEditComponent }) => ArticleEditComponent,
+          ),
+      },
+      {
+        path: 'articles/:id',
+        loadComponent: () =>
+          import('./pages/article-page/article-page.component').then(
+            ({ ArticlePageComponent }) => ArticlePageComponent,
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./pages/profile/profile-page.component').then(

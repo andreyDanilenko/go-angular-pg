@@ -1,21 +1,34 @@
 package middleware
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 )
 
-func Logger(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		userID, _ := r.Context().Value(UserIDKey).(string)
+type responseRecorder struct {
+	http.ResponseWriter
+	status int
+}
 
-		log.Printf("➡️  %s %s | userID: %s | from: %s", r.Method, r.URL.Path, userID, r.RemoteAddr)
+func (r *responseRecorder) WriteHeader(status int) {
+	r.status = status
+	r.ResponseWriter.WriteHeader(status)
+}
 
-		next.ServeHTTP(w, r)
-
-		duration := time.Since(start)
-		log.Printf("✅ Done %s %s in %v", r.Method, r.URL.Path, duration)
-	})
+func Logger(logger *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			startedAt := time.Now()
+			recorder := &responseRecorder{ResponseWriter: w, status: http.StatusOK}
+			next.ServeHTTP(recorder, r)
+			logger.Info(
+				"http request",
+				"method", r.Method,
+				"path", r.URL.Path,
+				"status", recorder.status,
+				"duration", time.Since(startedAt),
+			)
+		})
+	}
 }

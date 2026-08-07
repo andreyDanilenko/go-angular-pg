@@ -8,8 +8,10 @@ export type Article = {
   createdAt: string;
   updatedAt: string;
   category: ArticleCategory;
-  authorName: string;
+  authorName?: string;
 };
+
+export type ArticleInput = Pick<Article, 'title' | 'content' | 'category'>;
 
 export const ARTICLE_CATEGORY_LABELS: Record<ArticleCategory, string> = {
   general: 'Общее',

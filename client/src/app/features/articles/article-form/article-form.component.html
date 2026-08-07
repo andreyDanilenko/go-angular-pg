@@ -1,0 +1,37 @@
+<form class="article-form layout-stack" [formGroup]="form" (ngSubmit)="submit()">
+  @if (errorMessage) {
+    <app-alert>{{ errorMessage }}</app-alert>
+  }
+
+  <app-input
+    inputId="articleTitle"
+    label="Заголовок"
+    placeholder="Короткий и понятный заголовок"
+    errorMessage="От 5 до 100 символов"
+    [control]="form.controls.title"
+  />
+
+  <label class="article-form__category">
+    <span>Категория</span>
+    <select formControlName="category">
+      <option value="general">Общее</option>
+      <option value="tech">Технологии</option>
+      <option value="science">Наука</option>
+      <option value="politics">Политика</option>
+      <option value="health">Здоровье</option>
+    </select>
+  </label>
+
+  <app-textarea
+    inputId="articleContent"
+    label="Текст поста"
+    placeholder="Напишите содержательный текст"
+    errorMessage="От 10 до 50 000 символов"
+    [control]="form.controls.content"
+  />
+
+  <div class="layout-cluster article-form__actions">
+    <app-button variant="secondary" (pressed)="cancelled.emit()">Отмена</app-button>
+    <app-button type="submit" [loading]="isSubmitting">Сохранить</app-button>
+  </div>
+</form>

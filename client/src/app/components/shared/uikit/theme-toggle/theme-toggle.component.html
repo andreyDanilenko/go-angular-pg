@@ -1,8 +1,0 @@
-<button
-  class="theme-toggle"
-  type="button"
-  [attr.aria-label]="theme() === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'"
-  (click)="toggle()"
->
-  <span aria-hidden="true">{{ theme() === 'dark' ? '☀' : '☾' }}</span>
-</button>

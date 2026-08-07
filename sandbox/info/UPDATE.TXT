@@ -1,4 +1,0 @@
-brew update
-brew upgrade postgresql@17
-echo 'export PATH="'$(brew --prefix postgresql@17)'/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc

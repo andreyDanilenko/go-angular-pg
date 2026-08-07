@@ -7,7 +7,7 @@
 После рефакторинга приложение должно содержать только следующие пользовательские сценарии:
 
 1. Авторизация — служебный сценарий, необходимый для доступа к профилю.
-2. Листинг постов.
+2. Полноценная работа с постами: листинг, поиск, фильтры, сортировка, просмотр, создание, редактирование и удаление.
 3. Просмотр профиля.
 4. Редактирование профиля — считаем частью профиля и сохраняем по умолчанию.
 5. Выход из аккаунта и переключение светлой/тёмной темы.
@@ -20,6 +20,9 @@
 | `/` | Перенаправление на `/articles` |
 | `/auth/login` | Авторизация |
 | `/articles` | Листинг постов |
+| `/articles/:id` | Просмотр поста |
+| `/articles/:id/edit` | Редактирование поста |
+| `/articles/create` | Создание поста |
 | `/profile` | Профиль пользователя |
 | `/profile/edit` | Редактирование профиля |
 
@@ -27,7 +30,7 @@
 
 - health/readiness/liveness;
 - запуск и подтверждение авторизации;
-- получение списка постов;
+- полноценный сервис постов: общий список, пост по ID, список автора, создание, обновление и удаление;
 - получение текущего пользователя;
 - обновление только текущего пользователя.
 
@@ -35,8 +38,6 @@
 
 - главная демонстрационная страница;
 - мессенджер, WebSocket и вся серверная логика чата;
-- просмотр отдельного поста;
-- создание, редактирование и удаление постов;
 - модальные окна создания контента;
 - получение списка пользователей и чужого профиля;
 - публичный `/api/dump` и `storage.json`;
@@ -45,7 +46,7 @@
 - разрешения, существующие только для удалённых действий;
 - тестовые HTML-файлы, старые миграторы и закомментированный код, не относящийся к целевым сценариям.
 
-Перед удалением данных нужно подтвердить только одно продуктовое решение: профиль остаётся редактируемым или становится read-only. План исходит из сохранения `/profile/edit`. Удаление таблиц чата из рабочей БД не должно выполняться автоматически: сначала резервная копия, затем отдельная обратимая миграция.
+Профиль остаётся редактируемым. Удаление таблиц чата из рабочей БД не должно выполняться автоматически: сначала резервная копия, затем отдельная обратимая миграция.
 
 ## 2. Зафиксированное исходное состояние
 
@@ -114,7 +115,7 @@ app/
 
 Границы сервисов:
 
-- `api` хранит пользователей, посты и коды подтверждения, создаёт задания на доставку и не импортирует SMTP/Telegram SDK;
+- `api` хранит пользователей, полноценный CRUD постов и коды подтверждения, создаёт задания на доставку и не импортирует SMTP/Telegram SDK;
 - `email-service` владеет SMTP-конфигурацией, шаблонами, отправкой кодов, retry и idempotency;
 - `telegram-service` владеет bot token/chat ID, форматированием сообщений, retry и idempotency;
 - общими остаются только небольшие versioned DTO/контракты сообщений; модели хранилища и vendor clients между сервисами не разделяются;
@@ -157,7 +158,10 @@ client/src/app/
 │   │   ├── article-card/
 │   │   ├── article-list/
 │   │   ├── article-toolbar/
-│   │   └── articles-page/
+│   │   ├── article-form/
+│   │   ├── articles-page/
+│   │   ├── article-page/
+│   │   └── article-edit-page/
 │   └── profile/
 │       ├── data-access/
 │       ├── profile-summary/
@@ -226,7 +230,7 @@ client/src/app/
 
 ### Уровень 5. Feature-компоненты
 
-- `ArticleCard` только отображает пост и не выполняет навигацию на удалённую страницу.
+- `ArticleCard` отображает пост и ведёт на его детальную страницу.
 - `ArticleList` отвечает за сетку, пустое состояние и track-by.
 - `ArticleToolbar` либо реально фильтрует/сортирует данные, либо удаляется; декоративных кнопок без поведения быть не должно.
 - `ProfileSummary` отображает данные пользователя.
@@ -321,14 +325,14 @@ Telegram SDK и SMTP-код не удаляются из репозитория:
 
 ### Этап 1. Удаление лишнего фронтенда
 
-- [ ] Оставить только auth, articles list, profile и profile edit routes.
+- [ ] Оставить auth, полный CRUD постов, profile и profile edit routes.
 - [ ] Перенаправлять `/` на `/articles`.
-- [ ] Удалить home, messenger, article details, create/edit post и их компоненты.
+- [ ] Удалить home, messenger и их компоненты; detail/create/edit post сохранить и привести к общей форме.
 - [ ] Удалить WebSocket, chat, modal/create-content и permission services.
 - [ ] Упростить `App`: убрать подключение WebSocket и дублирующую инициализацию пользователя.
 - [ ] Упростить header/navigation до двух продуктовых разделов.
-- [ ] Удалить неработающие кнопки; поиск/сортировку либо реализовать, либо убрать.
-- [ ] Удалить переход карточки на detail route.
+- [ ] Реализовать рабочие поиск, сортировку и фильтры категорий.
+- [ ] Сохранить переход карточки на detail route и CRUD-действия с проверкой permissions.
 
 Готово, когда production build проходит и в исходниках нет импортов удалённых feature-модулей.
 
@@ -337,7 +341,7 @@ Telegram SDK и SMTP-код не удаляются из репозитория:
 - [ ] Удалить chat handler/service/repository/models, WebSocket hub и маршруты.
 - [ ] Удалить `/api/dump`, dump handler и tracked dump-файлы.
 - [ ] Удалить `sandbox/`, `storage.json`, `markdown/` и прочие старые прототипы после проверки, что production-код их не использует.
-- [ ] Удалить article create/update/delete/get-by-id и permissions middleware, если они больше не используются.
+- [ ] Сохранить и привести к чистому контракту article list/get/create/update/delete; проверять владельца или роль администратора в service-layer.
 - [ ] Оставить обновление только собственного профиля; исключить возможность подменить user ID в URL.
 - [ ] Убрать создание Telegram/SMTP clients из startup path основного API и временно скрыть их за маленькими интерфейсами доставки.
 - [ ] Упростить `AutoMigrate` до реально используемых моделей.
@@ -345,7 +349,7 @@ Telegram SDK и SMTP-код не удаляются из репозитория:
 - [ ] Разделить сборку зависимостей, router и запуск HTTP-сервера без сложного DI-контейнера.
 - [ ] Добавить graceful shutdown и явные timeouts HTTP-сервера.
 
-Готово, когда API не зависит от Telegram-конфигурации, WebSocket удалён, а тесты подтверждают целевой API-контракт.
+Готово, когда API не зависит от Telegram-конфигурации, WebSocket удалён, а тесты подтверждают auth/profile и полный CRUD постов.
 
 ### Этап 3. Выделение email- и Telegram-сервисов
 
@@ -423,8 +427,8 @@ Telegram SDK и SMTP-код не удаляются из репозитория:
 
 ### Этап 9. Тесты, документация и релизная проверка
 
-- [ ] Unit/component tests: auth states, list loading/error/empty/success, search/sort, profile view/edit/validation/logout/theme.
-- [ ] Backend tests: auth handlers/services, list articles, current user, forbidden profile update, error responses.
+- [ ] Unit/component tests: auth states, list loading/error/empty/success, search/sort/filters, article create/read/update/delete, profile view/edit/validation/logout/theme.
+- [ ] Backend tests: auth handlers/services, полный CRUD постов, ownership/admin permissions, current user, forbidden profile update и error responses.
 - [ ] Notification tests: атомарная постановка задания, email/Telegram delivery, idempotency, retry и недоступность внешнего провайдера.
 - [ ] API contract smoke tests против тестовой PostgreSQL.
 - [ ] Responsive/a11y проверка на 320, 768 и 1280+ px, клавиатурная навигация и screen-reader labels.
@@ -437,8 +441,8 @@ Telegram SDK и SMTP-код не удаляются из репозитория:
 
 ## 10. Финальные критерии готовности
 
-- В UI доступны только auth, list posts и profile/profile edit.
-- В API нет dump, chat/WebSocket, чужих профилей и mutating article endpoints.
+- В UI доступны auth, полный CRUD постов с фильтрами и profile/profile edit; удалён только чат и демонстрационный мусор.
+- В API нет dump и chat/WebSocket; полный CRUD постов сохранён и защищён ownership/admin permissions.
 - Основной API запускается без SMTP/Telegram secrets; email-service и telegram-service имеют собственные конфигурации и health checks.
 - Email-коды и Telegram-уведомления сохраняются, доставляются через явный контракт и не теряются при кратковременной недоступности провайдера.
 - Нет неработающих кнопок, мёртвых маршрутов и ссылок на удалённые страницы.

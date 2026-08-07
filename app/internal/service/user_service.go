@@ -1,202 +1,174 @@
 package service
 
 import (
-	"admin/panel/internal/contract"
-	"admin/panel/internal/middleware"
-	"admin/panel/internal/model"
-	"admin/panel/internal/repository"
 	"context"
+	"crypto/rand"
 	"errors"
 	"fmt"
+	"log/slog"
+	"math/big"
 	"time"
 
-	"math/rand/v2"
+	"admin/panel/internal/contract"
+	"admin/panel/internal/model"
+	"admin/panel/internal/repository"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
+const (
+	verificationCodeTTL = 2 * time.Minute
+	tokenTTL            = 30 * 24 * time.Hour
+)
+
+var (
+	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrInvalidCode        = errors.New("invalid or expired code")
+	ErrUserNotFound       = errors.New("user not found")
+)
+
+type NotificationQueue interface {
+	EnqueueAuthRequest(ctx context.Context, code *model.EmailCode, email string) error
+	EnqueueTelegram(ctx context.Context, kind, idempotencyKey, message string) error
+}
+
 type UserService struct {
-	repo         *repository.UserRepository
-	emailService *EmailService
-	tokenManager contract.TokenManager
+	repository        *repository.UserRepository
+	notificationQueue NotificationQueue
+	tokenManager      contract.TokenManager
+	logger            *slog.Logger
 }
 
-func NewUserService(repo *repository.UserRepository, emailService *EmailService, tokenManager contract.TokenManager) *UserService {
+func NewUserService(
+	repository *repository.UserRepository,
+	notificationQueue NotificationQueue,
+	tokenManager contract.TokenManager,
+	logger *slog.Logger,
+) *UserService {
 	return &UserService{
-		repo:         repo,
-		emailService: emailService,
-		tokenManager: tokenManager,
+		repository:        repository,
+		notificationQueue: notificationQueue,
+		tokenManager:      tokenManager,
+		logger:            logger,
 	}
 }
 
-func (s *UserService) StartAuthFlow(ctx context.Context, input model.SignInInput) (*model.User, error) {
-	user, err := s.repo.GetByEmail(ctx, input.Email)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, fmt.Errorf("failed to check user existence: %w", err)
+func (s *UserService) StartAuthFlow(
+	ctx context.Context,
+	input model.SignInInput,
+) error {
+	user, err := s.repository.GetByEmail(ctx, input.Email)
+	if err != nil {
+		return err
 	}
-
 	if user == nil {
-		user, err = s.repo.Create(ctx, model.SignInInput{
-			Email:    input.Email,
-			Password: input.Password,
-		})
+		user, err = s.repository.Create(ctx, input)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create user: %w", err)
+			return err
 		}
-	} else {
-		if err := bcrypt.CompareHashAndPassword(
-			[]byte(user.Password),
-			[]byte(input.Password),
-		); err != nil {
-			return nil, errors.New("invalid password")
-		}
+	} else if err := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(input.Password),
+	); err != nil {
+		return ErrInvalidCredentials
 	}
 
-	// 4. Генерация и отправка кода (без изменений)
-	_ = s.repo.DeleteExistingEmailCodes(ctx, user.ID)
-	code := fmt.Sprintf("%06d", rand.IntN(1000000))
-
-	err = s.repo.SaveEmailCode(ctx, &model.EmailCode{
-		ID:        uuid.NewString(),
+	code, err := generateVerificationCode()
+	if err != nil {
+		return fmt.Errorf("generate verification code: %w", err)
+	}
+	emailCode := &model.EmailCode{
 		UserID:    user.ID,
 		Code:      code,
-		ExpiresAt: time.Now().Add(2 * time.Minute),
-	})
+		ExpiresAt: time.Now().UTC().Add(verificationCodeTTL),
+	}
+	if err := s.notificationQueue.EnqueueAuthRequest(ctx, emailCode, user.Email); err != nil {
+		return fmt.Errorf("queue verification code: %w", err)
+	}
+	return nil
+}
+
+func (s *UserService) ConfirmCode(
+	ctx context.Context,
+	email string,
+	code string,
+) (string, error) {
+	user, err := s.repository.GetByEmail(ctx, email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save verification code: %w", err)
+		return "", err
+	}
+	if user == nil {
+		return "", ErrInvalidCode
 	}
 
-	go s.emailService.SendEmail(user.Email, code)
+	storedCode, err := s.repository.GetEmailCode(ctx, user.ID, code)
+	if err != nil {
+		return "", err
+	}
+	if storedCode == nil || time.Now().UTC().After(storedCode.ExpiresAt) {
+		if storedCode != nil {
+			_ = s.repository.DeleteEmailCode(ctx, storedCode.ID)
+		}
+		return "", ErrInvalidCode
+	}
 
+	expiresAt := time.Now().UTC().Add(tokenTTL)
+	token, err := s.tokenManager.Generate(user.ID, user.Role, tokenTTL)
+	if err != nil {
+		return "", fmt.Errorf("generate token: %w", err)
+	}
+	if err := s.repository.ConsumeCodeAndSaveToken(
+		ctx,
+		storedCode.ID,
+		user.ID,
+		token,
+		expiresAt,
+	); err != nil {
+		return "", err
+	}
+
+	if err := s.notificationQueue.EnqueueTelegram(
+		ctx,
+		"auth_confirmed",
+		"auth-confirmed:"+storedCode.ID,
+		fmt.Sprintf("✅ Успешная авторизация\nEmail: %s\nID: %s", user.Email, user.ID),
+	); err != nil {
+		s.logger.Error("failed to queue Telegram auth notification", "user_id", user.ID, "error", err)
+	}
+
+	return token, nil
+}
+
+func (s *UserService) GetCurrentUser(ctx context.Context, userID string) (*model.User, error) {
+	user, err := s.repository.GetByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, ErrUserNotFound
+	}
 	return user, nil
 }
 
-func (s *UserService) ConfirmCode(ctx context.Context, email, code string) (*model.User, string, error) {
-	user, err := s.repo.GetByEmail(ctx, email)
-	if err != nil || user == nil {
-		return nil, "", errors.New("user not found from email")
-	}
-
-	storedCode, err := s.repo.GetEmailCode(ctx, user.ID, code)
-	if err != nil || storedCode == nil {
-		return nil, "", errors.New("invalid or expired code")
-	}
-
-	if time.Now().After(storedCode.ExpiresAt) {
-		_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
-		return nil, "", errors.New("code expired")
-	}
-
-	_ = s.repo.DeleteEmailCode(ctx, storedCode.ID)
-	token, err := s.tokenManager.Generate(user.ID, user.Role, 720*time.Hour)
-	if err != nil {
-		return nil, "", err
-	}
-
-	updates := map[string]interface{}{
-		"token":         token,
-		"token_expires": time.Now().Add(720 * time.Hour),
-		"updated_at":    time.Now(),
-	}
-
-	if err := s.repo.UpdateFields(ctx, user.ID, updates); err != nil {
-		return nil, "", fmt.Errorf("failed to save token: %w", err)
-	}
-
-	return user, token, nil
-}
-
-// Получение списка пользователей
-func (s *UserService) GetUsers(ctx context.Context) ([]model.UserShort, error) {
-	users, err := s.repo.GetAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	shortUsers := make([]model.UserShort, 0, len(users))
-	for _, u := range users {
-		shortUsers = append(shortUsers, model.UserShort{
-			ID:        u.ID,
-			Username:  u.Username,
-			FirstName: u.FirstName,
-			LastName:  u.LastName,
-			Email:     u.Email,
-			Role:      u.Role,
-		})
-	}
-	return shortUsers, nil
-}
-
-func (s *UserService) GetUserMe(ctx context.Context, id string) (*model.User, error) {
-	user, err := s.repo.GetByID(ctx, id)
+func (s *UserService) UpdateCurrentUser(
+	ctx context.Context,
+	userID string,
+	input model.UpdateUserInput,
+) (*model.User, error) {
+	user, err := s.repository.Update(ctx, userID, input)
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found from me ID")
+		return nil, ErrUserNotFound
 	}
-
-	fullUser := &model.User{
-		ID:           user.ID,
-		Username:     user.Username,
-		FirstName:    user.FirstName,
-		LastName:     user.LastName,
-		MiddleName:   user.MiddleName,
-		Role:         user.Role,
-		Token:        user.Token,
-		TokenExpires: user.TokenExpires,
-		Email:        user.Email,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
-	}
-
-	return fullUser, nil
+	return user, nil
 }
 
-// Получение полного пользователя по ID
-func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
-	user, err := s.repo.GetByID(ctx, id)
+func generateVerificationCode() (string, error) {
+	number, err := rand.Int(rand.Reader, big.NewInt(1_000_000))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	if user == nil {
-		return nil, errors.New("user not found from by ID")
-	}
-
-	// Тут надо будет минимизтировать информацию так как это будет для всех
-	fullUser := &model.User{
-		ID:         user.ID,
-		Username:   user.Username,
-		FirstName:  user.FirstName,
-		LastName:   user.LastName,
-		MiddleName: user.MiddleName,
-		Role:       user.Role,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
-	}
-
-	return fullUser, nil
-}
-
-func (s *UserService) UpdateUser(ctx context.Context, userID string, input model.UpdateUserInput) (*model.User, error) {
-	authUserID := ctx.Value(middleware.UserIDKey).(string)
-	role := ctx.Value(middleware.RoleKey).(model.UserRole)
-
-	if authUserID != userID && role != model.RoleAdmin {
-		return nil, errors.New("нельзя редактировать другого пользователя")
-	}
-
-	if role == model.RoleAdmin {
-		if input.Role != "" {
-			if !model.UserRole(input.Role).IsValid() {
-				return nil, errors.New("недопустимая роль")
-			}
-		}
-	} else {
-		input.Role = ""
-	}
-
-	return s.repo.UpdateUser(ctx, userID, input)
+	return fmt.Sprintf("%06d", number.Int64()), nil
 }

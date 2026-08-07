@@ -1,7 +1,10 @@
 <header class="articles-header">
   <div>
     <p class="articles-header__eyebrow">Публикации</p>
-    <h1>Посты</h1>
+    <div class="articles-header__title-row">
+      <h1>Посты</h1>
+      <app-button size="small" (pressed)="createArticle.emit()">Создать</app-button>
+    </div>
   </div>
 
   <div class="articles-header__controls">
@@ -13,6 +16,18 @@
         [value]="query"
         (input)="updateQuery($event)"
       />
+    </label>
+
+    <label>
+      <span class="sr-only">Фильтр по категории</span>
+      <select [value]="category" (change)="updateCategory($event)">
+        <option value="all">Все категории</option>
+        <option value="general">Общее</option>
+        <option value="tech">Технологии</option>
+        <option value="science">Наука</option>
+        <option value="politics">Политика</option>
+        <option value="health">Здоровье</option>
+      </select>
     </label>
 
     <label>

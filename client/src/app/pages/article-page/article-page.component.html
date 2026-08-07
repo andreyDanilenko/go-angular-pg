@@ -1,0 +1,64 @@
+<main class="layout-container article-page">
+  @if (isLoading()) {
+    <app-spinner label="Загружаем пост" />
+  } @else if (article(); as currentArticle) {
+    <article class="article-page__content">
+      <header class="article-page__header">
+        <div class="layout-cluster article-page__meta">
+          <span class="article-page__category">
+            {{ categoryLabel(currentArticle.category) }}
+          </span>
+          <time [attr.datetime]="currentArticle.createdAt">
+            {{ currentArticle.createdAt | date: 'd MMMM y, HH:mm' }}
+          </time>
+        </div>
+
+        <h1>{{ currentArticle.title }}</h1>
+        <p class="article-page__author">
+          Автор: {{ currentArticle.authorName || 'Без автора' }}
+        </p>
+      </header>
+
+      <div class="article-page__body">{{ currentArticle.content }}</div>
+
+      @if (errorMessage()) {
+        <app-alert>{{ errorMessage() }}</app-alert>
+      }
+
+      <footer class="layout-cluster article-page__actions">
+        <app-button variant="secondary" (pressed)="backToArticles()">
+          К списку
+        </app-button>
+
+        @if (canManage() && !isConfirmingDelete()) {
+          <app-button (pressed)="edit()">Редактировать</app-button>
+          <app-button variant="danger" (pressed)="requestDelete()">Удалить</app-button>
+        }
+      </footer>
+
+      @if (isConfirmingDelete()) {
+        <section class="article-page__confirmation" aria-labelledby="delete-title">
+          <div>
+            <h2 id="delete-title">Удалить пост?</h2>
+            <p>Отменить это действие будет невозможно.</p>
+          </div>
+          <div class="layout-cluster">
+            <app-button variant="secondary" [disabled]="isDeleting()" (pressed)="cancelDelete()">
+              Отмена
+            </app-button>
+            <app-button variant="danger" [loading]="isDeleting()" (pressed)="deleteArticle()">
+              Удалить
+            </app-button>
+          </div>
+        </section>
+      }
+    </article>
+  } @else {
+    <section class="layout-stack article-page__error">
+      <app-alert>{{ errorMessage() || 'Пост не найден.' }}</app-alert>
+      <app-button variant="secondary" (pressed)="backToArticles()">
+        Вернуться к постам
+      </app-button>
+    </section>
+  }
+</main>

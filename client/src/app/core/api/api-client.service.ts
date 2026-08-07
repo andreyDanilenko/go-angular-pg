@@ -21,6 +21,10 @@ export class ApiClient {
     return this.http.put<Response>(this.url(path), body);
   }
 
+  delete<Response>(path: string): Observable<Response> {
+    return this.http.delete<Response>(this.url(path));
+  }
+
   private url(path: string): string {
     return `${this.baseUrl}/${path.replace(/^\//, '')}`;
   }

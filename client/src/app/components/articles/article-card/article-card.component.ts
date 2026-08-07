@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import {
   ARTICLE_CATEGORY_LABELS,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-article-card',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './article-card.component.html',
   styleUrl: './article-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,9 +19,7 @@ import {
 export class ArticleCardComponent {
   @Input({ required: true }) article!: Article;
 
-  readonly categoryLabels = ARTICLE_CATEGORY_LABELS;
-
   categoryLabel(category: ArticleCategory): string {
-    return this.categoryLabels[category];
+    return ARTICLE_CATEGORY_LABELS[category];
   }
 }

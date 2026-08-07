@@ -1,91 +1,92 @@
 package service
 
 import (
-	"admin/panel/internal/middleware"
+	"context"
+	"errors"
+
 	"admin/panel/internal/model"
 	"admin/panel/internal/repository"
-	"fmt"
+)
 
-	"context"
+var (
+	ErrArticleForbidden       = errors.New("article action is forbidden")
+	ErrInvalidArticleCategory = errors.New("invalid article category")
 )
 
 type ArticleService struct {
-	repo *repository.ArticleRepository
+	repository *repository.ArticleRepository
 }
 
-func NewArticleService(repo *repository.ArticleRepository) *ArticleService {
-	return &ArticleService{repo: repo}
+func NewArticleService(repository *repository.ArticleRepository) *ArticleService {
+	return &ArticleService{repository: repository}
 }
 
-func (s *ArticleService) CreateArticle(
+func (s *ArticleService) Create(
 	ctx context.Context,
 	authorID string,
 	input model.ArticleInput,
 ) (*model.Article, error) {
 	if !input.Category.IsValid() {
-		return nil, fmt.Errorf("invalid article category")
+		return nil, ErrInvalidArticleCategory
 	}
-
-	return s.repo.CreateArticle(
-		ctx,
-		authorID,
-		input,
-	)
+	return s.repository.Create(ctx, authorID, input)
 }
 
-func (s *ArticleService) GetArticle(ctx context.Context, id string) (*model.Article, error) {
-	return s.repo.GetArticleByID(ctx, id)
+func (s *ArticleService) GetByID(ctx context.Context, id string) (*model.Article, error) {
+	return s.repository.GetByID(ctx, id)
 }
 
-func (s *ArticleService) GetArticlesByAuthor(ctx context.Context, authorID string) ([]*model.Article, error) {
-	return s.repo.GetArticlesByAuthor(ctx, authorID)
+func (s *ArticleService) GetAll(ctx context.Context) ([]model.ArticleWithAuthor, error) {
+	return s.repository.GetAll(ctx)
 }
 
-func (s *ArticleService) GetAllArticles(ctx context.Context) ([]*model.ArticleWithAuthor, error) {
-	return s.repo.GetAllArticles(ctx)
+func (s *ArticleService) GetByAuthor(
+	ctx context.Context,
+	authorID string,
+) ([]model.Article, error) {
+	return s.repository.GetByAuthor(ctx, authorID)
 }
 
-func (s *ArticleService) UpdateArticle(ctx context.Context, articleID string, userID string, input model.ArticleInput) (*model.Article, error) {
-	article, err := s.repo.GetArticleByID(ctx, articleID)
+func (s *ArticleService) Update(
+	ctx context.Context,
+	articleID string,
+	userID string,
+	role model.UserRole,
+	input model.ArticleInput,
+) (*model.Article, error) {
+	if !input.Category.IsValid() {
+		return nil, ErrInvalidArticleCategory
+	}
+	if err := s.authorize(ctx, articleID, userID, role); err != nil {
+		return nil, err
+	}
+	return s.repository.Update(ctx, articleID, input)
+}
+
+func (s *ArticleService) Delete(
+	ctx context.Context,
+	articleID string,
+	userID string,
+	role model.UserRole,
+) error {
+	if err := s.authorize(ctx, articleID, userID, role); err != nil {
+		return err
+	}
+	return s.repository.Delete(ctx, articleID)
+}
+
+func (s *ArticleService) authorize(
+	ctx context.Context,
+	articleID string,
+	userID string,
+	role model.UserRole,
+) error {
+	article, err := s.repository.GetByID(ctx, articleID)
 	if err != nil {
-		return nil, fmt.Errorf("repository update error: %w", err)
+		return err
 	}
-
-	if article == nil {
-		return nil, fmt.Errorf("not found: article %s not found", articleID)
+	if article.AuthorID != userID && role != model.RoleAdmin {
+		return ErrArticleForbidden
 	}
-
-	if article.AuthorID != userID {
-		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
-		if !ok || role != model.RoleAdmin {
-			return nil, fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
-		}
-	}
-
-	updatedArticle, err := s.repo.UpdateArticle(ctx, articleID, input)
-	if err != nil {
-		return nil, fmt.Errorf("repository update error: %w", err)
-	}
-
-	return updatedArticle, nil
-}
-
-func (s *ArticleService) DeleteArticle(ctx context.Context, articleID, userID string) error {
-	article, err := s.repo.GetArticleByID(ctx, articleID)
-	if err != nil {
-		return fmt.Errorf("repository update error: %w", err)
-	}
-
-	if article == nil {
-		return fmt.Errorf("not found: article %s not found", articleID)
-	}
-
-	if article.AuthorID != userID {
-		role, ok := ctx.Value(middleware.RoleKey).(model.UserRole)
-		if !ok || role != model.RoleAdmin {
-			return fmt.Errorf("forbidden: user %s is not author of article %s", userID, articleID)
-		}
-	}
-
-	return s.repo.DeleteArticle(ctx, articleID)
+	return nil
 }
