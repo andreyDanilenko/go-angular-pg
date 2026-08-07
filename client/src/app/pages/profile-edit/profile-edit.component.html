@@ -1,109 +1,62 @@
-<div class="profile-edit">
-  @if (user && !loading) {
-    <div class="edit-content">
-      <div class="edit-header">
-        <h1 class="text-3xl">Редактирование профиля</h1>
+<section class="layout-container profile-edit-page">
+  @if (isLoading() && !user()) {
+    <app-spinner label="Загружаем профиль…" />
+  } @else if (user(); as currentUser) {
+    <header>
+      <p class="profile-edit-page__eyebrow">Аккаунт</p>
+      <h1>Редактирование профиля</h1>
+      <p>{{ currentUser.email }}</p>
+    </header>
+
+    <form class="profile-form layout-stack" [formGroup]="form" (ngSubmit)="save()">
+      @if (errorMessage()) {
+        <app-alert>{{ errorMessage() }}</app-alert>
+      }
+
+      <div class="profile-form__grid">
+        <app-input
+          inputId="username"
+          label="Никнейм"
+          autocomplete="nickname"
+          errorMessage="От 3 до 50 символов"
+          [control]="form.controls.username"
+        />
+        <app-input
+          inputId="firstName"
+          label="Имя"
+          autocomplete="given-name"
+          errorMessage="От 2 до 50 символов"
+          [control]="form.controls.firstName"
+        />
+        <app-input
+          inputId="lastName"
+          label="Фамилия"
+          autocomplete="family-name"
+          errorMessage="От 2 до 50 символов"
+          [control]="form.controls.lastName"
+        />
+        <app-input
+          inputId="middleName"
+          label="Отчество"
+          errorMessage="Не более 50 символов"
+          [control]="form.controls.middleName"
+        />
       </div>
 
-      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="edit-form">
-        <div class="form-group">
-          <label for="username" class="form-label">Никнейм</label>
-          <input
-            id="username"
-            type="text"
-            formControlName="username"
-            class="btn btn-gray-outline btn-md"
-            [class.error]="username?.invalid && username?.touched"
-            placeholder="3–50 символов"
-          >
-          <div class="error-message" *ngIf="username?.invalid && username?.touched">
-            <span *ngIf="username?.errors?.['minlength']">Минимум 3 символа</span>
-            <span *ngIf="username?.errors?.['maxlength']">Максимум 50 символов</span>
-          </div>
-        </div>
+      <app-textarea
+        inputId="bio"
+        label="Обо мне"
+        placeholder="Расскажите немного о себе"
+        errorMessage="Не более 2000 символов"
+        [control]="form.controls.bio"
+      />
 
-        <div class="form-group">
-          <label for="firstName" class="form-label">Имя</label>
-          <input
-            id="firstName"
-            type="text"
-            formControlName="first_name"
-            class="btn btn-gray-outline btn-md"
-            [class.error]="first_name?.invalid && first_name?.touched"
-          >
-          <div class="error-message" *ngIf="first_name?.invalid && first_name?.touched">
-            <span *ngIf="first_name?.errors?.['minlength']">Минимум 2 символа</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="lastName" class="form-label">Фамилия</label>
-          <input
-            id="lastName"
-            type="text"
-            formControlName="last_name"
-            class="btn btn-gray-outline btn-md"
-            [class.error]="last_name?.invalid && last_name?.touched"
-          >
-          <div class="error-message" *ngIf="last_name?.invalid && last_name?.touched">
-            <span *ngIf="last_name?.errors?.['minlength']">Минимум 2 символа</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="middle_name" class="form-label">Отчество</label>
-          <input
-            id="middle_name"
-            type="text"
-            formControlName="middle_name"
-            class="btn btn-gray-outline btn-md"
-          >
-        </div>
-
-        @if (user.role === 'admin') {
-          <div class="form-group">
-            <label for="bio" class="form-label">Обо мне</label>
-            <textarea
-              id="bio"
-              formControlName="bio"
-              class="form-textarea"
-              rows="5"
-              placeholder="Краткое описание о себе"
-            ></textarea>
-          </div>
-        }
-
-        <div class="form-actions">
-          <button
-            type="button"
-            class="btn-gray-outline btn-sm"
-            (click)="cancel()"
-            [disabled]="saving"
-          >
-            Отмена
-          </button>
-          <button
-            type="submit"
-            class="btn-primary btn-sm"
-            [disabled]="profileForm.invalid || saving"
-          >
-            {{ saving ? 'Сохранение...' : 'Сохранить' }}
-          </button>
-        </div>
-
-        @if (error) {
-          <div class="error-message">
-            {{ error }}
-          </div>
-        }
-
-      </form>
-
-    </div>
+      <div class="layout-cluster profile-form__actions">
+        <app-button variant="secondary" (pressed)="cancel()">Отмена</app-button>
+        <app-button type="submit" [loading]="isSaving()">Сохранить</app-button>
+      </div>
+    </form>
   } @else {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Загрузка данных...</p>
-    </div>
+    <app-alert>Профиль недоступен. Вернитесь назад и повторите попытку.</app-alert>
   }
-</div>
+</section>

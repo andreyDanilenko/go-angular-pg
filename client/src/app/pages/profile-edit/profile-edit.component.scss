@@ -1,1 +1,62 @@
-@import '../../styles/profile.css'
+.profile-edit-page {
+  max-width: var(--profile-max-width);
+  padding-block: var(--page-block-padding);
+  display: grid;
+  gap: var(--space-6);
+}
+
+.profile-edit-page header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.profile-edit-page header h1 {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.profile-edit-page header p:last-child {
+  color: var(--color-text-muted);
+}
+
+.profile-edit-page__eyebrow {
+  color: var(--color-action);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-form {
+  padding: clamp(var(--space-5), 5vw, var(--space-8));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.profile-form__actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 36rem) {
+  .profile-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-form__actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .profile-form__actions app-button {
+    width: 100%;
+  }
+}

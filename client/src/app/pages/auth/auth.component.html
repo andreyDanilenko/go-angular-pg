@@ -1,68 +1,68 @@
-<div class="auth">
-  <h1 class="title">{{ isCodeVerification ? 'Код подтверждения' : 'Авторизация' }}</h1>
+<section class="auth-card">
+  <header class="auth-card__header">
+    <p class="auth-card__eyebrow">LifeDream</p>
+    <h1>{{ isCodeStep() ? 'Подтверждение' : 'Вход' }}</h1>
+    <p>
+      @if (isCodeStep()) {
+        Введите шестизначный код, отправленный на {{ requestedEmail() }}.
+      } @else {
+        Войдите, чтобы открыть посты и свой профиль.
+      }
+    </p>
+  </header>
 
-  <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
-    @if (apiError) {
-      <div class="api-error">
-        {{ apiError }}
+  @if (errorMessage()) {
+    <app-alert>{{ errorMessage() }}</app-alert>
+  }
+
+  @if (isCodeStep()) {
+    <form class="layout-stack" [formGroup]="codeForm" (ngSubmit)="submit()">
+      <app-input
+        inputId="code"
+        label="Код подтверждения"
+        autocomplete="one-time-code"
+        placeholder="000000"
+        errorMessage="Введите шестизначный код"
+        [control]="codeForm.controls.code"
+      />
+
+      <app-button type="submit" [loading]="isSubmitting()">
+        Подтвердить
+      </app-button>
+
+      <div class="auth-card__resend">
+        @if (remainingSeconds() === 0) {
+          <app-button variant="text" (pressed)="requestCode()">
+            Отправить код ещё раз
+          </app-button>
+        } @else {
+          <span>Повторная отправка через {{ remainingSeconds() }} сек.</span>
+        }
       </div>
-    }
-
-    @if (!isCodeVerification) {
-      <div class="auth-input">
-        <app-input
-          label="Email"
-          [control]="form.controls['email']"
-          class="auth-input"
-          type="email"
-          class="app-input"
-          placeholder="example@mail.com"
-          size="md"
-          errorText="Корректный email обязателен"
-        ></app-input>
-
-        <app-input
-          label="Пароль"
-          [control]="form.controls['password']"
-          class="auth-input"
-          type="password"
-          class="app-input"
-          placeholder="Введите пароль"
-          size="md"
-          errorText="Минимум 8 символов"
-        ></app-input>
-      </div>
-
-      <p class="auth-contacts text-sm">
-        <a href="https://t.me/danilllenko" target="_blank" rel="noopener">Telegram @danilllenko</a>
-      </p>
-    }
-
-    @if (isCodeVerification) {
-      <div class="code-verification">
-        <p class="code-instruction">Мы отправили 6-значный код на {{ form.value.email }}</p>
-
-        <app-input
-          [control]="form.controls['code']"
-          type="text"
-          placeholder="Введите 6 цифр"
-          size="md"
-          maxlength="6"
-        ></app-input>
-
-        <div class="resend-code">
-          @if (canResendCode) {
-            <button type="button" class="btn-text" (click)="onAuthRequest()">Отправить код повторно</button>
-          } @else {
-            <span>Запросить код повторно через {{ remainingTime }} сек</span>
-          }
-        </div>
-      </div>
-    }
-
-    <button class="btn btn-primary btn-md" [ngStyle]="{width: '100%'}" [disabled]="form.invalid">{{ isCodeVerification ? 'Подтвердить' : 'Продолжить' }}</button>
-  </form>
-</div>
-
-<app-modal></app-modal>
-
+    </form>
+  } @else {
+    <form class="layout-stack" [formGroup]="credentialsForm" (ngSubmit)="submit()">
+      <app-input
+        inputId="email"
+        label="Email"
+        type="email"
+        autocomplete="email"
+        placeholder="name@example.com"
+        errorMessage="Введите корректный email"
+        [control]="credentialsForm.controls.email"
+      />
+      <app-input
+        inputId="password"
+        label="Пароль"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Не менее 8 символов"
+        errorMessage="Пароль должен содержать не менее 8 символов"
+        [control]="credentialsForm.controls.password"
+      />
+      <app-button type="submit" [loading]="isSubmitting()">
+        Получить код
+      </app-button>
+    </form>
+  }
+</section>

@@ -3,6 +3,7 @@
 }
 
 .button {
+  width: 100%;
   min-height: var(--control-height);
   padding: 0 var(--space-5);
   border: var(--border-width) solid transparent;

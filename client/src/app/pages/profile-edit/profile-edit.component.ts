@@ -1,97 +1,84 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../core/services/user.service';
-import { User } from '../../core/types/user.model';
+
+import { getApiErrorMessage } from '../../core/api/api-error';
+import { SessionService } from '../../core/session/session.service';
+import { AlertComponent } from '../../shared/ui/alert/alert.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { InputComponent } from '../../shared/ui/input/input.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
+import { TextareaComponent } from '../../shared/ui/textarea/textarea.component';
 
 @Component({
   selector: 'app-profile-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    AlertComponent,
+    ButtonComponent,
+    InputComponent,
+    SpinnerComponent,
+    TextareaComponent,
+  ],
   templateUrl: './profile-edit.component.html',
-  styleUrls: ['./profile-edit.component.scss']
+  styleUrl: './profile-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileEditComponent implements OnInit {
-  user: User | null = null;
-  profileForm: FormGroup;
-  loading = true;
-  saving = false;
-  error: string | null = null;
+export class ProfileEditComponent {
+  private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly session = inject(SessionService);
+  private readonly router = inject(Router);
+  private initialized = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private userService: UserService,
-    private router: Router
-  ) {
-    this.profileForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.minLength(3), Validators.maxLength(50)]],
-      first_name: ['', [Validators.minLength(2)]],
-      last_name: ['', [Validators.minLength(2)]],
-      middle_name: [''],
-      bio: ['']
-    });
-  }
+  readonly user = this.session.user;
+  readonly isLoading = this.session.isLoading;
+  readonly isSaving = signal(false);
+  readonly errorMessage = signal('');
+  readonly form = this.formBuilder.group({
+    username: ['', [Validators.minLength(3), Validators.maxLength(50)]],
+    firstName: ['', [Validators.minLength(2), Validators.maxLength(50)]],
+    lastName: ['', [Validators.minLength(2), Validators.maxLength(50)]],
+    middleName: ['', [Validators.maxLength(50)]],
+    bio: ['', [Validators.maxLength(2000)]],
+  });
 
-  ngOnInit(): void {
-    this.loadUserData();
-  }
-
-  private loadUserData(): void {
-    this.userService.getUserMe().subscribe({
-      next: (user) => {
-        this.user = user;
-        console.log(user);
-
-        this.profileForm.patchValue({
-          email: user.email,
-          username: user.username || '',
-          first_name: user.first_name || '',
-          last_name: user.last_name || '',
-          middle_name: user.middle_name || '',
-          bio: user.bio || ''
+  constructor() {
+    effect(() => {
+      const user = this.user();
+      if (user && !this.initialized) {
+        this.form.setValue({
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          middleName: user.middleName,
+          bio: user.bio,
         });
-
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading user data:', error);
-        this.loading = false;
+        this.initialized = true;
       }
     });
   }
 
-  onSubmit(): void {
-    if (this.profileForm.valid && this.user) {
-      this.saving = true;
-      this.error = null;
-
-      const updatedUser: User = {
-        ...this.user,
-        ...this.profileForm.value
-      };
-
-      this.userService.updateUserMe(updatedUser).subscribe({
-        next: () => {
-          this.saving = false;
-          this.router.navigate(['/profile']);
-        },
-        error: (error) => {
-          this.error = 'Ошибка при сохранении';
-          this.saving = false;
-          console.error('Error updating profile:', error);
-        }
-      });
+  save(): void {
+    if (this.form.invalid || this.isSaving()) {
+      this.form.markAllAsTouched();
+      return;
     }
+
+    this.isSaving.set(true);
+    this.errorMessage.set('');
+    this.session.update(this.form.getRawValue()).subscribe({
+      next: () => void this.router.navigate(['/profile']),
+      error: (error: unknown) => {
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Не удалось сохранить профиль.'),
+        );
+        this.isSaving.set(false);
+      },
+    });
   }
 
   cancel(): void {
-    this.router.navigate(['/profile']);
+    void this.router.navigate(['/profile']);
   }
-
-  get email() { return this.profileForm.get('email'); }
-  get username() { return this.profileForm.get('username'); }
-  get first_name() { return this.profileForm.get('first_name'); }
-  get last_name() { return this.profileForm.get('last_name'); }
 }

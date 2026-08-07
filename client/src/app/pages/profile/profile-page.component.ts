@@ -1,90 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { DatePipe } from '@angular/common';
-import { UserService } from '../../core/services/user.service';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { SessionService } from '../../core/session/session.service';
 import { User } from '../../core/types/user.model';
+import { AlertComponent } from '../../shared/ui/alert/alert.component';
+import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [DatePipe, AlertComponent, ButtonComponent, SpinnerComponent],
   templateUrl: './profile-page.component.html',
-  styleUrls: ['./profile-page.component.scss'],
-  providers: [DatePipe]
+  styleUrl: './profile-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfilePageComponent implements OnInit {
-  user: User | null = null;
-  loading = true;
+export class ProfilePageComponent {
+  private readonly session = inject(SessionService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(
-    private userService: UserService,
-    private authService: AuthService,
-    private router: Router,
-    private datePipe: DatePipe
-  ) {}
+  readonly user = this.session.user;
+  readonly isLoading = this.session.isLoading;
 
-  ngOnInit(): void {
-    this.loadUserProfile();
+  avatarInitials(user: User): string {
+    const values = [user.firstName, user.lastName].filter(Boolean);
+    const initials = values.map((value) => value[0]).join('');
+    return (initials || user.username[0] || user.email[0] || '?').toUpperCase();
   }
 
-  private loadUserProfile(): void {
-    this.userService.getUserMe().subscribe({
-      next: (user) => {
-        this.user = user;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading profile:', error);
-        this.loading = false;
-      }
-    });
-  }
-
-  formatDate(date: Date | string): string {
-    return this.datePipe.transform(date, 'dd.MM.yyyy') || '';
-  }
-
-  getDefaultBio(): string {
-    return `Даниленко Андрей Георгиевич
-Fullstack-разработчик с опытом DevOps
-
-Контакты:
-Email: danilenko.a.g@mail.ru
-Telegram: @danilllenko
-GitHub: github.com/andreyDanilenko
-
-Ключевые навыки:
-Frontend: Vue.js (Nuxt 2/3), React (Next.js), Angular, TypeScript
-Backend: Node.js (Express, Nest.js), Go (Gin), REST API
-Базы данных: PostgreSQL
-DevOps: Docker, Nginx, CI/CD (GitHub Actions), Linux
-
-Опыт: 4+ года в коммерческой разработке (Garwin, buzz.ai, lifedream.tech)
-
-Обо мне: Опытный разработчик, фокусирующийся на качестве архитектуры. Осваиваю новые технологии в пет-проектах (Golang, Svelte).`;
-  }
-
-  getAvatarInitials(): string {
-    if (!this.user) return '?';
-    const f = this.user.first_name?.trim();
-    const l = this.user.last_name?.trim();
-    if (f && l) return (f[0] + l[0]).toUpperCase();
-    if (f) return f[0].toUpperCase();
-    if (l) return l[0].toUpperCase();
-    if (this.user.username?.trim()) return this.user.username[0].toUpperCase();
-    if (this.user.email?.trim()) return this.user.email[0].toUpperCase();
-    return '?';
-  }
-
-  editProfile(): void {
-    this.router.navigate(['/profile/edit']);
+  edit(): void {
+    void this.router.navigate(['/profile/edit']);
   }
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/auth']);
+    void this.router.navigate(['/auth/login']);
   }
 }

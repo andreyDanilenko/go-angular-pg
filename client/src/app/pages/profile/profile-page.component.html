@@ -1,75 +1,50 @@
-<div class="profile">
+<section class="layout-container profile-page">
+  @if (isLoading()) {
+    <app-spinner label="Загружаем профиль…" />
+  } @else if (user(); as currentUser) {
+    <header class="profile-page__header">
+      <div>
+        <p class="profile-page__eyebrow">Аккаунт</p>
+        <h1>Профиль</h1>
+      </div>
+      <div class="layout-cluster">
+        <app-button variant="secondary" size="small" (pressed)="edit()">
+          Редактировать
+        </app-button>
+        <app-button variant="danger" size="small" (pressed)="logout()">
+          Выйти
+        </app-button>
+      </div>
+    </header>
 
-  @if (user && !loading) {
-    <div class="profile-content">
-      <div class="profile-header">
-        <h1 class="text-3xl">Профиль</h1>
-        <div class="profile-header-actions">
-          <button type="button" class="btn-primary btn-sm" (click)="editProfile()">Редактировать</button>
-          <button type="button" class="btn-gray-outline btn-sm" (click)="logout()">Выйти</button>
+    <div class="profile-card">
+      <div class="profile-card__identity">
+        <div class="profile-card__avatar" aria-hidden="true">
+          {{ avatarInitials(currentUser) }}
+        </div>
+        <div>
+          <h2>{{ currentUser.username || currentUser.email }}</h2>
+          <p>{{ currentUser.email }}</p>
         </div>
       </div>
 
-      <div class="profile-card">
-        <div class="profile-avatar">
-          <div class="avatar-placeholder">
-            {{ getAvatarInitials() }}
-          </div>
+      <dl class="profile-card__details">
+        <div><dt>Имя</dt><dd>{{ currentUser.firstName || 'Не указано' }}</dd></div>
+        <div><dt>Фамилия</dt><dd>{{ currentUser.lastName || 'Не указана' }}</dd></div>
+        <div><dt>Отчество</dt><dd>{{ currentUser.middleName || 'Не указано' }}</dd></div>
+        <div><dt>Роль</dt><dd>{{ currentUser.role }}</dd></div>
+        <div>
+          <dt>Дата регистрации</dt>
+          <dd>{{ currentUser.createdAt | date: 'dd.MM.yyyy' }}</dd>
         </div>
+      </dl>
 
-        <div class="profile-info">
-          <div class="info-group">
-            <label class="info-label">Email</label>
-            <p class="info-value">{{ user.email }}</p>
-          </div>
-
-          <div class="info-group">
-            <label class="info-label">Никнейм</label>
-            <p class="info-value">{{ user.username }}</p>
-          </div>
-
-          <div class="info-group">
-            <label class="info-label">Имя</label>
-            <p class="info-value">{{ user.first_name }}</p>
-          </div>
-
-          <div class="info-group">
-            <label class="info-label">Фамилия</label>
-            <p class="info-value">{{ user.last_name }}</p>
-          </div>
-
-          @if (user.middle_name) {
-            <div class="info-group">
-              <label class="info-label">Отчество</label>
-              <p class="info-value">{{ user.middle_name }}</p>
-            </div>
-          }
-        </div>
-      </div>
-
-      <div class="profile-stats">
-        <div class="stat-item">
-          <span class="stat-label">Зарегистрирован</span>
-          <span class="stat-date">{{ formatDate(user.created_at) }}</span>
-        </div>
-      </div>
-
-      @if (user.role === 'admin') {
-        <section class="profile-about">
-          <h2 class="profile-about__title">Обо мне</h2>
-          @if (user.bio) {
-            <div class="profile-about__content">{{ user.bio }}</div>
-          } @else {
-            <div class="profile-about__content">{{ getDefaultBio() }}</div>
-          }
-        </section>
-      }
-
+      <section class="profile-card__bio">
+        <h2>Обо мне</h2>
+        <p>{{ currentUser.bio || 'Описание пока не добавлено.' }}</p>
+      </section>
     </div>
   } @else {
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Загрузка профиля...</p>
-    </div>
+    <app-alert>Не удалось загрузить профиль. Обновите страницу.</app-alert>
   }
-</div>
+</section>
