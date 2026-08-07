@@ -1,8 +1,9 @@
 <main class="layout-container article-page">
   @if (isLoading()) {
     <app-spinner label="Загружаем пост" />
-  } @else if (article(); as currentArticle) {
-    <article class="article-page__content">
+  } @else {
+    @if (article(); as currentArticle) {
+      <article class="article-page__content">
       <header class="article-page__header">
         <div class="layout-cluster article-page__meta">
           <span class="article-page__category">
@@ -52,13 +53,14 @@
           </div>
         </section>
       }
-    </article>
-  } @else {
-    <section class="layout-stack article-page__error">
-      <app-alert>{{ errorMessage() || 'Пост не найден.' }}</app-alert>
-      <app-button variant="secondary" (pressed)="backToArticles()">
-        Вернуться к постам
-      </app-button>
-    </section>
+      </article>
+    } @else {
+      <section class="layout-stack article-page__error">
+        <app-alert>{{ errorMessage() || 'Пост не найден.' }}</app-alert>
+        <app-button variant="secondary" (pressed)="backToArticles()">
+          Вернуться к постам
+        </app-button>
+      </section>
+    }
   }
 </main>

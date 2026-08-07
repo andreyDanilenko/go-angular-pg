@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ThemeToggleComponent } from '../../components/shared/uikit/theme-toggle/theme-toggle.component';
+import { ThemeToggleComponent } from '../../shared/ui/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-auth-layout',
