@@ -1,9 +1,20 @@
-/**
- * Единые дизайн-токены приложения.
- * Используются в UIKit и утилитах для единообразного и отзывчивого UI.
- */
 :root {
-  /* Интервалы (уже частично в styles.css, дублируем для импорта компонентами) */
+  color-scheme: light;
+
+  --font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: clamp(1.75rem, 4vw, 2.25rem);
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-body: 1.6;
+  --line-height-heading: 1.2;
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -13,41 +24,53 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
-  --space-16: 4rem;
 
-  /* Радиусы */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.25rem;
-  --radius-full: 9999px;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-full: 999rem;
+  --border-width: 1px;
 
-  /* Минимальный размер зоны нажатия (a11y) */
-  --ui-touch-min: 44px;
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06), 0 4px 12px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 8px 24px rgb(15 23 42 / 0.1);
+  --shadow-lg: 0 20px 50px rgb(15 23 42 / 0.14);
 
-  /* Кнопки: высота и отступы */
-  --ui-btn-h-sm: 36px;
-  --ui-btn-h-md: 44px;
-  --ui-btn-h-lg: 52px;
-  --ui-btn-px-sm: var(--space-3);
-  --ui-btn-px-md: var(--space-5);
-  --ui-btn-px-lg: var(--space-6);
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
 
-  /* Поля ввода */
-  --ui-input-h-sm: 40px;
-  --ui-input-h-md: 48px;
-  --ui-input-h-lg: 56px;
-  --ui-input-px: var(--space-4);
-  --ui-input-py: var(--space-3);
+  --control-height-sm: 2.25rem;
+  --control-height: 2.75rem;
+  --header-height: 4rem;
+  --avatar-size: 4.5rem;
+  --page-max-width: 75rem;
+  --profile-max-width: 52rem;
+  --page-inline-padding: clamp(1rem, 4vw, 2rem);
+  --page-block-padding: clamp(1.5rem, 5vw, 3rem);
+  --article-card-min-width: 18rem;
+  --grid-gap: clamp(1rem, 3vw, 1.5rem);
+  --z-header: 20;
 
-  /* Иконки в хедере/кнопках */
-  --ui-icon-size: 24px;
-  --ui-icon-btn-size: 44px;
-
-  /* Тени */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --color-background: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef1f6;
+  --color-text: #172033;
+  --color-text-muted: #536078;
+  --color-text-subtle: #758198;
+  --color-border: #e0e5ed;
+  --color-border-strong: #bcc5d3;
+  --color-action: #315bd6;
+  --color-action-hover: #2447ad;
+  --color-on-action: #ffffff;
+  --color-accent-soft: #dce6ff;
+  --color-danger: #b42318;
+  --color-on-danger: #ffffff;
+  --color-danger-surface: #fff1f0;
+  --color-focus: #315bd6;
+  --color-on-category: #ffffff;
+  --color-category-general: #475569;
+  --color-category-tech: #2563eb;
+  --color-category-science: #7c3aed;
+  --color-category-politics: #c2410c;
+  --color-category-health: #047857;
 }

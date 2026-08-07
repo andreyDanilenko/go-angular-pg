@@ -1,0 +1,29 @@
+.layout-container {
+  width: min(100%, var(--page-max-width));
+  margin-inline: auto;
+  padding-inline: var(--page-inline-padding);
+}
+
+.layout-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.layout-cluster {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.sr-only {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
