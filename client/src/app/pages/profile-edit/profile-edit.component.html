@@ -1,14 +1,15 @@
 <section class="layout-container profile-edit-page">
   @if (isLoading() && !user()) {
     <app-spinner label="Загружаем профиль…" />
-  } @else if (user(); as currentUser) {
-    <header>
+  } @else {
+    @if (user(); as currentUser) {
+      <header>
       <p class="profile-edit-page__eyebrow">Аккаунт</p>
       <h1>Редактирование профиля</h1>
       <p>{{ currentUser.email }}</p>
-    </header>
+      </header>
 
-    <form class="profile-form layout-stack" [formGroup]="form" (ngSubmit)="save()">
+      <form class="profile-form layout-stack" [formGroup]="form" (ngSubmit)="save()">
       @if (errorMessage()) {
         <app-alert>{{ errorMessage() }}</app-alert>
       }
@@ -55,8 +56,9 @@
         <app-button variant="secondary" (pressed)="cancel()">Отмена</app-button>
         <app-button type="submit" [loading]="isSaving()">Сохранить</app-button>
       </div>
-    </form>
-  } @else {
-    <app-alert>Профиль недоступен. Вернитесь назад и повторите попытку.</app-alert>
+      </form>
+    } @else {
+      <app-alert>Профиль недоступен. Вернитесь назад и повторите попытку.</app-alert>
+    }
   }
 </section>

@@ -1,8 +1,9 @@
 <section class="layout-container profile-page">
   @if (isLoading()) {
     <app-spinner label="Загружаем профиль…" />
-  } @else if (user(); as currentUser) {
-    <header class="profile-page__header">
+  } @else {
+    @if (user(); as currentUser) {
+      <header class="profile-page__header">
       <div>
         <p class="profile-page__eyebrow">Аккаунт</p>
         <h1>Профиль</h1>
@@ -15,9 +16,9 @@
           Выйти
         </app-button>
       </div>
-    </header>
+      </header>
 
-    <div class="profile-card">
+      <div class="profile-card">
       <div class="profile-card__identity">
         <div class="profile-card__avatar" aria-hidden="true">
           {{ avatarInitials(currentUser) }}
@@ -43,8 +44,9 @@
         <h2>Обо мне</h2>
         <p>{{ currentUser.bio || 'Описание пока не добавлено.' }}</p>
       </section>
-    </div>
-  } @else {
-    <app-alert>Не удалось загрузить профиль. Обновите страницу.</app-alert>
+      </div>
+    } @else {
+      <app-alert>Не удалось загрузить профиль. Обновите страницу.</app-alert>
+    }
   }
 </section>
